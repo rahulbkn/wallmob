@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Add Japanese and Hindi; replace Spanish -->
     <!-- Theme Options -->
     <string-array name="theme_options">
         <item>System Default</item>
@@ -17,12 +18,12 @@
     <string-array name="language_options">
         <item>English</item>
         <item>हिंदी (Hindi)</item>
-        <item>Español (Spanish)</item>
+        <item>日本語 (Japanese)</item>
     </string-array>
 
     <string-array name="language_codes">
         <item>en</item>
         <item>hi</item>
-        <item>es</item>
+        <item>ja</item>
     </string-array>
 </resources>

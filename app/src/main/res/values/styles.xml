@@ -1,35 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+    <!-- App theme switched to DayNight Material Components -->
+    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="android:fontFamily">@font/appfont</item>
         <item name="fontFamily">@font/appfont</item>
 
-        <item name="android:statusBarColor">#FFFFFF</item>
-        <item name="android:navigationBarColor">#FFFFFF</item>
+        <!-- Allow system bar background drawing -->
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
 
+        <!-- Let Night mode control light/dark system icons; values-night overrides if needed -->
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:windowLightNavigationBar">true</item>
 
+        <!-- Material colors (refer to colors.xml) -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
 
         <item name="colorSecondary">@color/colorAccent</item>
         <item name="colorSecondaryVariant">@color/colorAccent</item>
         <item name="colorOnSecondary">@color/white</item>
 
-        <item name="android:colorBackground">@color/white</item>
-        <item name="colorOnBackground">@color/black</item>
-        
-        <item name="colorSurface">@color/white</item>
-        <item name="colorOnSurface">@android:color/darker_gray</item>
+        <item name="android:colorBackground">@color/background</item>
+        <item name="colorOnBackground">@color/onBackground</item>
 
-        <item name="android:textColorPrimary">@color/black</item>
-        <item name="android:textColorSecondary">@android:color/darker_gray</item>
+        <item name="colorSurface">@color/surface</item>
+        <item name="colorOnSurface">@color/onSurface</item>
+
+        <item name="android:textColorPrimary">@color/onBackground</item>
+        <item name="android:textColorSecondary">@color/gray_dark</item>
 
         <item name="colorControlNormal">@color/colorControlNormal</item>
         <item name="colorControlHighlight">@color/colorControlHighlight</item>
@@ -46,62 +48,22 @@
 
     <style name="Toolbar.Title.Small" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textColor">@color/onBackground</item>
     </style>
 
     <style name="CustomTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxStrokeColor">@color/black</item>
-        <item name="hintTextColor">@android:color/darker_gray</item>
-        <item name="android:textColorHint">@android:color/darker_gray</item>
+        <item name="boxStrokeColor">@color/text_input_box_stroke</item>
+        <item name="hintTextColor">@color/gray_dark</item>
+        <item name="android:textColorHint">@color/gray_dark</item>
         <item name="android:fontFamily">@font/appfont</item>
         <item name="fontFamily">@font/appfont</item>
     </style>
 
     <style name="PrimaryButton" parent="Widget.MaterialComponents.Button">
-        <item name="backgroundTint">@color/black</item>
+        <item name="backgroundTint">@color/colorPrimary</item>
         <item name="android:textColor">@color/white</item>
         <item name="cornerRadius">8dp</item>
         <item name="android:fontFamily">@font/appfont</item>
-        <item name="fontFamily">@font/appfont</item>
     </style>
-
-    <style name="OutlineButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="strokeColor">@color/black</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="cornerRadius">8dp</item>
-        <item name="android:fontFamily">@font/appfont</item>
-        <item name="fontFamily">@font/appfont</item>
-    </style>
-
-    <style name="Widget.App.MaterialCardView" parent="Widget.MaterialComponents.CardView">
-        <item name="cardCornerRadius">12dp</item>
-        <item name="cardElevation">6dp</item>
-        <item name="strokeWidth">1dp</item>
-        <item name="strokeColor">@color/colorControlNormal</item>
-    </style>
-
-    <style name="ShapeAppearance.BottomSheet" parent="@style/ShapeAppearance.MaterialComponents.LargeComponent">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSizeTopLeft">24dp</item>
-        <item name="cornerSizeTopRight">24dp</item>
-    </style>
-
-    <style name="BottomSheetDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
-    <item name="bottomSheetStyle">@style/BottomSheetStyle</item>
-    <item name="android:windowBackground">@android:color/transparent</item>
-    
-</style>
-<style name="BottomSheetStyle" parent="Widget.MaterialComponents.BottomSheet.Modal">
-    <item name="shapeAppearance">@style/ShapeAppearance.BottomSheet</item>
-</style>
-
-    <style name="BottomNavActiveText">
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="BottomNavInactiveText">
-        <item name="android:textStyle">normal</item>
-    </style>
-
 
 </resources>

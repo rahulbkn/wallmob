@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Night palette -->
+    <color name="colorAccent">#C9A84C</color>
+    <color name="colorPrimary">#121212</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorControlHighlight">#1F1F1F</color>
+    <color name="colorControlNormal">#FFFFFF</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- Semantic colors -->
+    <color name="background">#121212</color>
+    <color name="onBackground">#FFFFFF</color>
+    <color name="surface">#121212</color>
+    <color name="onSurface">#FFFFFF</color>
+    <color name="colorOnPrimary">#000000</color>
+
+    <color name="gray_light">#1E1E1E</color>
+    <color name="gray_medium">#B0B0B0</color>
+    <color name="gray_dark">#CCCCCC</color>
+    <color name="green_success">#4CAF50</color>
+
+    <!-- TextInputLayout stroke colors -->
+    <color name="text_input_box_stroke">#FFFFFF</color>
+    <color name="text_input_box_stroke_focused">#FFFFFF</color>
+</resources>
