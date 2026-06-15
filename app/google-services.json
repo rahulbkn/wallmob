@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "346741807438",
+    "firebase_url": "https://wallmob-wallpaper-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "wallmob-wallpaper",
+    "storage_bucket": "wallmob-wallpaper.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:346741807438:android:3c1a3ccffa25050593e61f",
+        "android_client_info": {
+          "package_name": "com.wall.mob"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "346741807438-3qk62nke2eq5nsga940o5cnsn6attt8n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCPAV0Un4ymT9Y6hmI29CmC_EmOaAJ0t_E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "346741807438-3qk62nke2eq5nsga940o5cnsn6attt8n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
