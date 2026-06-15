@@ -1,6 +1,7 @@
 package com.wall.mob;
 
 import android.content.Context;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -47,9 +49,28 @@ public class CategoryGridAdapter extends RecyclerView.Adapter<CategoryGridAdapte
         CategoryItem category = categories.get(position);
 
         holder.categoryName.setText(category.getName());
-        holder.categoryName.setTextColor(context.getResources().getColor(android.R.color.white));
+        // Use theme attribute for text color so it adapts to day/night
+        int textColor;
+        TypedValue tv = new TypedValue();
+        boolean resolved = context.getTheme().resolveAttribute(com.google.android.material.R.attr.colorOnSurface, tv, true);
+        if (resolved) {
+            if (tv.type >= TypedValue.TYPE_FIRST_COLOR_INT && tv.type <= TypedValue.TYPE_LAST_COLOR_INT) {
+                textColor = tv.data;
+            } else {
+                // attribute references a color resource
+                textColor = ContextCompat.getColor(context, tv.resourceId);
+            }
+        } else {
+            // fallback to app-defined color or Android default
+            try {
+                textColor = ContextCompat.getColor(context, R.color.black);
+            } catch (Exception e) {
+                textColor = 0xFF000000; // black
+            }
+        }
+        holder.categoryName.setTextColor(textColor);
 
-        // 🔥 FIXED: Removed heavy overrides, allowing Glide to centerCrop high quality images naturally
+        // Glide options
         RequestOptions options = new RequestOptions()
                 .centerCrop()
                 .placeholder(R.drawable.bg)
