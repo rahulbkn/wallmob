@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -14,6 +15,7 @@ import android.os.Looper;
 import android.os.Process;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDexApplication;
 
 import com.google.firebase.FirebaseApp;
@@ -88,6 +90,20 @@ public class SketchApplication extends MultiDexApplication implements Applicatio
     @Override
     public void onCreate() {
         super.onCreate();
+
+        SharedPreferences prefs = getSharedPreferences("settings_prefs", MODE_PRIVATE);
+        String theme = prefs.getString("app_theme", "system");
+        switch (theme) {
+            case "light":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+                break;
+            case "dark":
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+                break;
+            default:
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                break;
+        }
 
         mApplicationContext = getApplicationContext();
 

@@ -5,12 +5,12 @@
     android:id="@+id/swipeRefreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5">
+    android:background="@color/background">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#F5F5F5">
+        android:background="@color/background">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -59,7 +59,7 @@
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.20"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:background="@drawable/pill_black"
                             android:backgroundTint="#4D000000"
                             android:paddingStart="10dp"
@@ -73,7 +73,7 @@
                             android:text="Discover\nMasterpieces"
                             android:textSize="32sp"
                             android:textStyle="bold"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:lineSpacingMultiplier="1.05"
                             android:layout_marginTop="8dp" />
 
@@ -127,7 +127,7 @@
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.18"
-                            android:textColor="#000000"
+                            android:textColor="@color/onSurface"
                             android:background="@drawable/pill_black"
                             android:backgroundTint="#1A000000"
                             android:paddingStart="12dp"
@@ -148,7 +148,7 @@
                             android:textSize="11sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.05"
-                            android:textColor="#FFFFFF"
+                            android:textColor="@color/white"
                             android:background="@drawable/pill_black"
                             android:paddingStart="14dp"
                             android:paddingEnd="14dp"
@@ -168,7 +168,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_trending"
-                            app:tint="#000000"
+                            app:tint="@color/onSurface"
                             android:layout_marginEnd="8dp"/>
 
                         <TextView
@@ -177,7 +177,7 @@
                             android:text="Trending Now"
                             android:textSize="26sp"
                             android:textStyle="bold"
-                            android:textColor="#000000"
+                            android:textColor="@color/onSurface"
                             android:letterSpacing="-0.01" />
                     </LinearLayout>
 
@@ -192,7 +192,7 @@
                     <View
                         android:layout_width="32dp"
                         android:layout_height="2dp"
-                        android:background="#000000"
+                        android:background="@color/onSurface"
                         android:layout_marginTop="14dp" />
 
                 </LinearLayout>
@@ -243,7 +243,7 @@
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.18"
-                            android:textColor="#000000"
+                            android:textColor="@color/onSurface"
                             android:background="@drawable/pill_black"
                             android:backgroundTint="#1A000000"
                             android:paddingStart="12dp"
@@ -264,7 +264,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_color_lens"
-                            app:tint="#000000"
+                            app:tint="@color/onSurface"
                             android:layout_marginEnd="8dp"/>
 
                         <TextView
@@ -273,7 +273,7 @@
                             android:text="Color Palettes"
                             android:textSize="26sp"
                             android:textStyle="bold"
-                            android:textColor="#000000"
+                            android:textColor="@color/onSurface"
                             android:letterSpacing="-0.01" />
                     </LinearLayout>
 
@@ -288,7 +288,7 @@
                     <View
                         android:layout_width="32dp"
                         android:layout_height="2dp"
-                        android:background="#000000"
+                        android:background="@color/onSurface"
                         android:layout_marginTop="14dp" />
 
                 </LinearLayout>
@@ -374,7 +374,7 @@
                         android:text="Premium Collection"
                         android:textSize="26sp"
                         android:textStyle="bold"
-                        android:textColor="#FFFFFF"
+                        android:textColor="@color/white"
                         android:letterSpacing="-0.01"
                         android:layout_marginBottom="5dp" />
 
@@ -441,7 +441,7 @@
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.18"
-                            android:textColor="#000000"
+                            android:textColor="@color/onSurface"
                             android:background="@drawable/pill_black"
                             android:backgroundTint="#1A000000"
                             android:paddingStart="12dp"
@@ -463,7 +463,7 @@
                             android:text="Desktop &amp; Landscape"
                             android:textSize="26sp"
                             android:textStyle="bold"
-                            android:textColor="#000000"
+                            android:textColor="@color/onSurface"
                             android:letterSpacing="-0.01" />
                     </LinearLayout>
 
@@ -478,7 +478,7 @@
                     <View
                         android:layout_width="32dp"
                         android:layout_height="2dp"
-                        android:background="#000000"
+                        android:background="@color/onSurface"
                         android:layout_marginTop="14dp" />
 
                 </LinearLayout>
@@ -529,7 +529,7 @@
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.18"
-                            android:textColor="#000000"
+                            android:textColor="@color/onSurface"
                             android:background="@drawable/pill_black"
                             android:backgroundTint="#1A000000"
                             android:paddingStart="12dp"
@@ -550,7 +550,7 @@
                             android:layout_width="24dp"
                             android:layout_height="24dp"
                             android:src="@drawable/ic_category"
-                            app:tint="#000000"
+                            app:tint="@color/onSurface"
                             android:layout_marginEnd="8dp"/>
 
                         <TextView
@@ -559,7 +559,7 @@
                             android:text="Categories"
                             android:textSize="26sp"
                             android:textStyle="bold"
-                            android:textColor="#000000"
+                            android:textColor="@color/onSurface"
                             android:letterSpacing="-0.01" />
                     </LinearLayout>
 
@@ -574,7 +574,7 @@
                     <View
                         android:layout_width="32dp"
                         android:layout_height="2dp"
-                        android:background="#000000"
+                        android:background="@color/onSurface"
                         android:layout_marginTop="14dp" />
 
                 </LinearLayout>
@@ -595,7 +595,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:indeterminateTint="#000000"
+                android:indeterminateTint="@color/onSurface"
                 android:layout_marginTop="20dp"
                 android:visibility="gone" />
 
@@ -607,7 +607,7 @@
                 android:gravity="center"
                 android:orientation="vertical"
                 android:visibility="gone"
-                android:background="#FFFFFF">
+                android:background="@color/surface">
 
                 <TextView
                     android:id="@+id/error_message"
@@ -616,7 +616,7 @@
                     android:layout_marginBottom="12dp"
                     android:text="Failed to load wallpapers"
                     android:textSize="16sp"
-                    android:textColor="#000000"
+                    android:textColor="@color/onSurface"
                     android:gravity="center" />
 
                 <Button
@@ -625,8 +625,8 @@
                     android:layout_height="wrap_content"
                     android:text="Retry"
                     android:textSize="14sp"
-                    android:textColor="#FFFFFF"
-                    android:backgroundTint="#000000"
+                    android:textColor="@color/white"
+                    android:backgroundTint="@color/colorPrimary"
                     android:paddingStart="32dp"
                     android:paddingEnd="32dp" />
 

@@ -18,7 +18,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="#FFFFFF"
+        android:background="@color/surface"
         android:padding="24dp"
         android:gravity="center">
 
@@ -30,7 +30,7 @@
             android:text="Welcome"
             android:textSize="32sp"
             android:textStyle="bold"
-            android:textColor="#000000" />
+            android:textColor="@color/onSurface" />
 
         <TextView
             android:id="@+id/appSubtitle"
@@ -39,15 +39,15 @@
             android:layout_marginBottom="48dp"
             android:text="Sign in to your account"
             android:textSize="16sp"
-            android:textColor="#666666" />
+            android:textColor="@color/gray_dark" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textinputlayout19"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:boxStrokeColor="#000000"
-            app:hintTextColor="#666666"
+            app:boxStrokeColor="@color/text_input_box_stroke"
+            app:hintTextColor="@color/gray_dark"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -55,9 +55,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:textColor="#000000"
+                android:textColor="@color/onSurface"
                 android:hint="Email"
-                android:textColorHint="#999999"
+                android:textColorHint="@color/gray_medium"
                 android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -66,10 +66,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            app:boxStrokeColor="#000000"
-            app:hintTextColor="#666666"
+            app:boxStrokeColor="@color/text_input_box_stroke"
+            app:hintTextColor="@color/gray_dark"
             app:passwordToggleEnabled="true"
-            app:passwordToggleTint="#666666"
+            app:passwordToggleTint="@color/gray_dark"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -77,9 +77,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
-                android:textColor="#000000"
+                android:textColor="@color/onSurface"
                 android:hint="Password"
-                android:textColorHint="#999999"
+                android:textColorHint="@color/gray_medium"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -92,7 +92,7 @@
             android:background="?android:attr/selectableItemBackground"
             android:text="Forgot Password?"
             android:textSize="14sp"
-            android:textColor="#000000"
+            android:textColor="@color/onSurface"
             android:gravity="end" />
 
         <com.google.android.material.button.MaterialButton
@@ -105,7 +105,7 @@
             android:text="Sign In"
             android:textSize="16sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:elevation="2dp" />
 
         <com.google.android.material.button.MaterialButton
@@ -117,7 +117,7 @@
             android:background="@drawable/button_outline"
             android:text="Continue as Guest"
             android:textSize="16sp"
-            android:textColor="#000000" />
+            android:textColor="@color/onSurface" />
 
         <LinearLayout
             android:id="@+id/linear14"
@@ -131,7 +131,7 @@
                 android:layout_height="wrap_content"
                 android:text="Don't have an account? "
                 android:textSize="14sp"
-                android:textColor="#666666" />
+                android:textColor="@color/gray_dark" />
 
             <TextView
                 android:id="@+id/registerText"
@@ -142,7 +142,7 @@
                 android:text="Sign Up"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="#000000" />
+                android:textColor="@color/onSurface" />
         </LinearLayout>
     </LinearLayout>
 

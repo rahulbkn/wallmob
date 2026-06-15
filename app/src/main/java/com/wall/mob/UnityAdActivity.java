@@ -1,5 +1,7 @@
 package com.wall.mob;
 
+import android.content.Context;
+
 import android.app.Activity;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -24,6 +26,11 @@ import java.util.List;
 import java.util.Locale;
 
 public class UnityAdActivity extends Activity {
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+    }
 
     private static final String TAG = "UnityAdActivity";
     private static final String REWARDED_AD_ID = "Rewarded_Android";

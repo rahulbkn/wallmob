@@ -5,7 +5,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:orientation="vertical"
-	android:background="#FFFFFF"
+	android:background="@color/surface"
 	android:padding="24dp">
 	<LinearLayout
 		android:id="@+id/linear17"
@@ -22,7 +22,7 @@
 			android:background="?android:attr/selectableItemBackgroundBorderless"
 			android:src="@drawable/ic_arrow_back"
 			android:scaleType="center"
-            android:tint="#000000"
+            android:tint="@color/onSurface"
 			android:layout_marginEnd="16dp" />
 		<TextView
 			android:id="@+id/textview18"
@@ -31,7 +31,7 @@
 			android:text="Reset Password"
 			android:textSize="24sp"
 			android:textStyle="bold"
-			android:textColor="#000000"
+			android:textColor="@color/onSurface"
 			android:layout_weight="1" />
 	</LinearLayout>
 	<LinearLayout
@@ -58,7 +58,7 @@
 			android:text="Forgot Password\?"
 			android:textSize="28sp"
 			android:textStyle="bold"
-			android:textColor="#000000" />
+			android:textColor="@color/onSurface" />
 		<TextView
 			android:id="@+id/textview20"
 			android:layout_width="match_parent"
@@ -67,24 +67,24 @@
 			android:gravity="center_horizontal|center_vertical"
 			android:text="Don't worry! It happens. Please enter the email address associated with your account."
 			android:textSize="16sp"
-			android:textColor="#666666"
+			android:textColor="@color/gray_dark"
 			android:lineSpacingExtra="4dp" />
 		<com.google.android.material.textfield.TextInputLayout
 			android:id="@+id/textinputlayout22"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="32dp"
-			app:boxStrokeColor="#000000"
-			app:hintTextColor="#666666"
+			app:boxStrokeColor="@color/text_input_box_stroke"
+			app:hintTextColor="@color/gray_dark"
 			style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 			<com.google.android.material.textfield.TextInputEditText
 				android:id="@+id/emailInput"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 				android:textSize="12sp"
-				android:textColor="#000000"
+				android:textColor="@color/onSurface"
 				android:hint="Email Address"
-				android:textColorHint="#999999"
+				android:textColorHint="@color/gray_medium"
 				android:inputType="textEmailAddress" />
 		</com.google.android.material.textfield.TextInputLayout>
 	<com.google.android.material.button.MaterialButton
@@ -97,7 +97,7 @@ app:backgroundTint="@null"
 			android:text="Send Reset Link"
 			android:textSize="16sp"
 			android:textStyle="bold"
-			android:textColor="#FFFFFF"
+			android:textColor="@color/white"
 			android:elevation="2dp" />
 		<TextView
 			android:id="@+id/backToLoginText"
@@ -108,6 +108,6 @@ app:backgroundTint="@null"
 			android:text="Remember your password\? Sign In"
 			android:textSize="14sp"
 			android:textStyle="bold"
-			android:textColor="#000000" />
+			android:textColor="@color/onSurface" />
 	</LinearLayout>
 </LinearLayout>

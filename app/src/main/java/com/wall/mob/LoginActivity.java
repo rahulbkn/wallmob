@@ -1,5 +1,7 @@
 package com.wall.mob;
 
+import android.content.Context;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -22,6 +24,11 @@ import android.view.WindowManager;
 import androidx.core.content.ContextCompat;
 
 public class LoginActivity extends AppCompatActivity {
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+    }
 
     private EditText emailInput;
     private EditText passwordInput;
