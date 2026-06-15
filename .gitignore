@@ -1,0 +1,12 @@
+# Sensitive files
+google-services.json
+*.keystore
+*.jks
+local.properties
+
+# Build files
+*.apk
+*.aab
+build/
+.gradle/
+keystore.properties

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     xmlns:tools="http://schemas.android.com/tools"
+     android:layout_height="match_parent"
+     android:layout_width="match_parent"
+     android:background="#FFFFFF"
+     android:orientation="vertical"
+     tools:context=".NotificationsActivity">
+
+    <LinearLayout
+         android:layout_height="?attr/actionBarSize"
+         android:layout_width="match_parent"
+         android:background="#FFFFFF"
+         android:gravity="center_vertical"
+         android:elevation="4dp"
+         android:orientation="horizontal"
+         android:paddingHorizontal="16dp"
+         android:id="@+id/linear7">
+
+        <ImageButton
+             android:layout_height="48dp"
+             android:layout_width="48dp"
+             android:src="@drawable/icon_arrow_back_round"
+             android:scaleType="center"
+             android:background="?attr/selectableItemBackgroundBorderless"
+             android:tint="?android:attr/textColorPrimary"
+             android:id="@+id/back_button" />
+
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="0dp"
+             android:textSize="18sp"
+             android:textColor="#000000"
+             android:paddingStart="8dp"
+             android:layout_weight="1"
+             android:id="@+id/textview14"
+             android:text="Notifications"
+             android:textStyle="bold" />
+
+        <Button
+             android:layout_height="36dp"
+             android:layout_width="wrap_content"
+             android:textSize="12sp"
+             android:textColor="#000000"
+             style="@style/Widget.AppCompat.Button.Borderless"
+             android:id="@+id/clear_all_button"
+             android:text="Clear All" />
+
+    </LinearLayout>
+
+    <FrameLayout
+         android:layout_height="match_parent"
+         android:layout_width="match_parent"
+         android:id="@+id/frame_layout8">
+
+        <ProgressBar
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             android:visibility="gone"
+             android:layout_centerInParent="true"
+             android:indeterminate="false"
+             style="?android:progressBarStyle"
+             android:id="@+id/progressBar" />
+
+        <androidx.recyclerview.widget.RecyclerView
+             android:layout_height="match_parent"
+             android:layout_width="match_parent"
+             android:scrollbars="vertical"
+             android:padding="8dp"
+             tools:listitem="@layout/item_notification"
+             android:clipToPadding="false"
+             android:id="@+id/recyclerView" />
+
+        <TextView
+             android:layout_height="match_parent"
+             android:layout_width="match_parent"
+             android:visibility="gone"
+             android:gravity="center_horizontal|center_vertical"
+             android:textSize="16sp"
+             android:id="@+id/empty_view"
+             android:text="No notifications yet" />
+
+    </FrameLayout>
+
+</LinearLayout>

@@ -1,0 +1,35 @@
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res-auto"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:orientation="vertical"
+	android:gravity="center"
+	android:padding="16dp">
+	<ImageView
+		android:id="@+id/imageview2"
+		android:focusable="false"
+		android:layout_width="100dp"
+		android:layout_height="100dp"
+		android:src="@drawable/default_image"
+		android:scaleType="center"
+		android:contentDescription="Error" />
+	<TextView
+		android:id="@+id/error_message"
+		android:focusable="false"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:text="Failed to load wallpapers"
+		android:textSize="16sp"
+		android:textAlignment="center" />
+	<Button
+		android:id="@+id/retry_button"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_marginTop="16dp"
+		android:text="Retry"
+		android:textSize="12sp"
+		style="@style/Widget.AppCompat.Button.Colored" />
+</LinearLayout>

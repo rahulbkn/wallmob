@@ -1,0 +1,5 @@
+<resources>
+    <!-- Tab layout dimensions -->
+    <dimen name="tab_horizontal_padding">15dp</dimen>
+    <dimen name="tab_vertical_padding">4dp</dimen>
+</resources>

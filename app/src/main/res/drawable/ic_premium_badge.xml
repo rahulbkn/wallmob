@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"  
+android:width="24dp"  
+android:height="24dp"  
+android:viewportWidth="24"  
+android:viewportHeight="24">
+<!-- Golden crown background -->
+<path  
+android:fillColor="#FFD700"  
+android:pathData="M12,2L15.09,8.26L22,9L17,14L18.18,21L12,17.77L5.82,21L7,14L2,9L8.91,8.26L12,2Z"/>
+<!-- Inner crown details -->
+<path  
+android:fillColor="#FFA000"  
+android:pathData="M12,6.5L10.5,10.5L6.5,11L9.5,14L8.82,18L12,16.25L15.18,18L14.5,14L17.5,11L13.5,10.5L12,6.5Z"/>
+<!-- White "P" for Premium -->
+<path  
+android:fillColor="#FFFFFF"  
+android:pathData="M10,9L10,15L11.5,15L11.5,12.5L13,12.5C13.83,12.5 14.5,11.83 14.5,11L14.5,10C14.5,9.17 13.83,8.5 13,8.5L10,8.5L10,9ZM11.5,10L13,10L13,11L11.5,11L11.5,10Z"/>
+</vector>
+

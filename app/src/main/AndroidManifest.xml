@@ -1,0 +1,219 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.SET_WALLPAPER" />
+	<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+	<uses-permission android:name="android.permission.WAKE_LOCK" />
+	<uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+<uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+	
+	<application
+		android:allowBackup="true"
+		android:icon="@mipmap/ic_launcher"
+		android:label="@string/app_name"
+		android:name=".SketchApplication"
+		android:usesCleartextTraffic="false"
+		android:theme="@style/AppTheme">
+		
+		<!-- NEW LAUNCHER: Login Screen opens first -->
+		<activity
+			android:name=".LoginActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true"
+			android:screenOrientation="portrait"
+			android:exported="true"> 
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+    
+		<!-- Main Hub (Now internal, opened after successful login) -->
+		<activity
+			android:name=".MainActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true"
+			android:screenOrientation="portrait"
+			android:exported="false" />
+			
+		<activity
+			android:name=".UnityAdActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true"
+			android:exported="false" />
+		
+		<activity
+			android:name=".RegisterActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true"
+			android:exported="false" />
+			
+		<activity
+			android:name=".ProfileActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true"
+			android:exported="false" />
+			
+		<activity
+			android:name=".SearchActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true"
+			android:exported="false" />
+			
+		<activity
+			android:name=".ForgetActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true"
+			android:exported="false" />
+			
+		<activity
+			android:name=".NotificationsActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true"
+			android:exported="false" />
+			
+		<activity
+			android:name=".EditActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true"
+			android:exported="false" />
+			
+		<activity
+			android:name=".CategoryActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true"
+			android:exported="false" />
+			
+					<activity
+			android:name=".SeeAllActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true"
+			android:exported="false" />
+			
+		<activity
+			android:name=".DebugActivity"
+			android:screenOrientation="portrait"
+			android:theme="@style/AppTheme"
+			android:exported="false" />
+			
+		<!-- Wallpaper details with deep links (Must remain exported="true") -->
+		<activity
+			android:name=".WallpaperDetailsActivity"
+			android:exported="true"
+			android:launchMode="singleTop">
+
+			<!-- New format: /w/{id} -->
+			<intent-filter android:autoVerify="true">
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data
+					android:scheme="https"
+					android:host="wallmob.pages.dev"
+					android:pathPrefix="/w" />
+			</intent-filter>
+
+			<!-- Old format: /wallpaper?query=params -->
+			<intent-filter android:autoVerify="true">
+				<action android:name="android.intent.action.VIEW" />
+				<category android:name="android.intent.category.DEFAULT" />
+				<category android:name="android.intent.category.BROWSABLE" />
+				<data
+					android:scheme="https"
+					android:host="wallmob.pages.dev"
+					android:path="/wallpaper" />
+			</intent-filter>
+		</activity>
+		
+		<activity
+			android:name=".NoInternetActivity"
+			android:exported="false"
+			android:excludeFromRecents="true"
+			android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+			
+			
+			<activity android:name=".SettingsActivity" />
+		
+		<!-- Unity Ads SDK Activities -->
+		<activity
+			android:name="com.unity3d.services.ads.adunit.AdUnitActivity"
+			android:configChanges="fontScale|keyboard|keyboardHidden|locale|mnc|mcc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|uiMode|touchscreen"
+			android:exported="false"
+			android:hardwareAccelerated="true"
+			android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+
+		<activity
+			android:name="com.unity3d.services.ads.adunit.AdUnitSoftwareActivity"
+			android:configChanges="fontScale|keyboard|keyboardHidden|locale|mnc|mcc|navigation|orientation|screenLayout|screenSize|smallestScreenSize|uiMode|touchscreen"
+			android:exported="false"
+			android:hardwareAccelerated="false"
+			android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+			
+		<!-- Jetpack Startup Provider -->
+		<provider
+			android:name="androidx.startup.InitializationProvider"
+			android:authorities="com.wall.mob.androidx-startup"
+			android:exported="false">
+			<meta-data
+				android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+				android:value="androidx.startup" />
+			<meta-data
+				android:name="androidx.emoji2.text.EmojiCompatInitializer"
+				android:value="androidx.startup" />
+		</provider>
+		
+		<!-- File Provider for sharing/saving paths -->
+		<provider
+			android:name="androidx.core.content.FileProvider"
+			android:authorities="com.wall.mob.provider"
+			android:exported="false"
+			android:grantUriPermissions="true">
+			<meta-data
+				android:name="android.support.FILE_PROVIDER_PATHS"
+				android:resource="@xml/file_paths" />
+		</provider>
+		
+		<!-- Firebase Init Provider -->
+		<provider
+			android:name="com.google.firebase.provider.FirebaseInitProvider"
+			android:authorities="com.wall.mob.firebaseinitprovider"
+			android:exported="false"
+			android:initOrder="100" />
+			
+		<!-- SDK Meta Data Configuration -->
+		<meta-data
+			android:name="com.google.android.gms.version"
+			android:value="@integer/google_play_services_version" />
+			
+		<meta-data
+			android:name="com.google.firebase.messaging.default_notification_channel_id"
+			android:value="wallmob_notifications" />
+			
+		<meta-data
+			android:name="com.google.firebase.messaging.default_notification_icon"
+			android:resource="@drawable/ic_notification" />
+			
+		<meta-data
+			android:name="com.google.firebase.messaging.default_notification_color"
+			android:resource="@color/notification_default" />
+			
+		<meta-data
+			android:name="firebase_analytics_collection_deactivated"
+			android:value="false" />
+
+	</application>
+</manifest>

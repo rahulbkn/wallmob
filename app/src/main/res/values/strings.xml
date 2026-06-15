@@ -1,0 +1,55 @@
+<resources>
+    <string name="app_name">WallMob</string>
+    <string name="default_web_client_id">346741807438-je3e636phe7ap03t3h82clj858m6mp1q.apps.googleusercontent.com</string>
+    <string name="version_json_url">https://api.github.com/repos/rahulbkn/Wallmob_wallpaperApp/releases/latest</string>
+    <string name="current_version">2.1.0</string>
+    <string name="wallpaper">Wallpaper</string>
+    <string name="no_premium_wallpapers">No premium wallpapers available</string>
+    <string name="wallpaper_image_description">Wallpaper image</string>
+    <string name="wallpaper_title">Wallpaper Title</string>
+    <!-- For test.xml -->
+    <string name="photo">Photo</string>
+    <string name="back">Back</string>
+    <string name="favorite">Favorite</string>
+    <string name="gallery">Gallery</string>
+    <string name="loading">Loading</string>
+    <string name="confirm">Confirm</string>
+    <string name="welcome">Welcome</string>
+    <string name="sign_in_to_account">Sign in to your account</string>
+    <string name="continue_as_guest">Continue as Guest</string>
+    <string name="dont_have_account">Don\'t have an account\? </string>
+    <string name="sign_up">Sign Up</string>
+    <string name="welcome_exclaim">Welcome!</string>
+    <string name="user_info_placeholder">User information will appear here</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="app_status">App Status</string>
+    <string name="auth_system_working">✓ Authentication system working</string>
+    <string name="user_session_active">✓ User session active</string>
+    <string name="all_features_available">✓ All features available</string>
+    <string name="logout">Logout</string>
+
+    <string name="search_wallpapers">Search Wallpapers</string>
+    <string name="search_hint">Search 10M+ wallpapers...</string>
+    <string name="search_start_typing">Start typing to search wallpapers</string>
+    <string name="notifications">Notifications</string>
+    <string name="clear_all">Clear All</string>
+    <string name="no_notifications_yet">No notifications yet</string>
+
+    <string name="zero_wallpapers">0 wallpapers</string>
+    <string name="nothing_here_yet">Nothing here yet</string>
+    <string name="check_back_later">Check back later for new updates.</string>
+    <string name="no_internet_title">No Internet Connection</string>
+    <string name="no_internet_desc">It looks like you\'re not connected to the internet. Please check your connection and try again.</string>
+    <string name="retry">Retry</string>
+    <string name="open_wifi_settings">Open Wi‑Fi Settings</string>
+
+    <string name="official_website">Official Website</string>
+    <string name="check_updates">Check for Updates</string>
+    <string name="telegram_channel">Telegram Channel</string>
+    <string name="contact_us">Contact Us</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="slide_to_set">Slide to set wallpaper</string>
+    <string name="edit">Edit</string>
+    <string name="share">Share</string>
+    <string name="download">Download</string>
+</resources>

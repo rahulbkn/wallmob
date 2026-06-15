@@ -1,0 +1,41 @@
+<resources>
+<string name="welcome">स्वागत है</string>
+    <string name="sign_in_to_account">अपने खाते में साइन इन करें</string>
+    <string name="continue_as_guest">अतिथि के रूप में जारी रखें</string>
+    <string name="dont_have_account">क्या आपके पास खाता नहीं है\? </string>
+    <string name="sign_up">साइन अप करें</string>
+    <string name="welcome_exclaim">स्वागत है!</string>
+    <string name="user_info_placeholder">उपयोगकर्ता की जानकारी यहाँ दिखाई देगी</string>
+    <string name="dashboard">डैशबोर्ड</string>
+    <string name="app_status">ऐप की स्थिति</string>
+    <string name="auth_system_working">✓ प्रमाणीकरण प्रणाली काम कर रही है</string>
+    <string name="user_session_active">✓ उपयोगकर्ता सत्र सक्रिय है</string>
+    <string name="all_features_available">✓ सभी सुविधाएँ उपलब्ध हैं</string>
+    <string name="logout">लॉग आउट</string>
+
+    <string name="search_wallpapers">वॉलपेपर खोजें</string>
+    <string name="search_hint">10M+ वॉलपेपर खोजें...</string>
+    <string name="search_start_typing">वॉलपेपर खोजने के लिए टाइप करना शुरू करें</string>
+    <string name="notifications">सूचनाएं</string>
+    <string name="clear_all">सभी साफ़ करें</string>
+    <string name="no_notifications_yet">अभी तक कोई सूचना नहीं</string>
+
+    <string name="zero_wallpapers">0 वॉलपेपर</string>
+    <string name="nothing_here_yet">यहाँ अभी कुछ नहीं है</string>
+    <string name="check_back_later">नए अपडेट के लिए बाद में वापस आएं।</string>
+    <string name="no_internet_title">कोई इंटरनेट कनेक्शन नहीं</string>
+    <string name="no_internet_desc">ऐसा लगता है कि आप इंटरनेट से कनेक्ट नहीं हैं। कृपया अपना कनेक्शन जांचें और पुनः प्रयास करें।</string>
+    <string name="retry">पुनः प्रयास करें</string>
+    <string name="open_wifi_settings">वाई-फाई सेटिंग्स खोलें</string>
+
+    <string name="official_website">आधिकारिक वेबसाइट</string>
+    <string name="check_updates">अपडेट के लिए जांचें</string>
+    <string name="telegram_channel">टेलीग्राम चैनल</string>
+    <string name="contact_us">हमसे संपर्क करें</string>
+    <string name="terms_of_service">सेवा की शर्तें</string>
+    <string name="slide_to_set">वॉलपेपर सेट करने के लिए स्लाइड करें</string>
+    <string name="edit">संपादित करें</string>
+    <string name="share">शेयर करें</string>
+    <string name="download">डाउनलोड</string>
+    
+   </resources>
