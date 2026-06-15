@@ -47,9 +47,11 @@ public class CategoryGridAdapter extends RecyclerView.Adapter<CategoryGridAdapte
         CategoryItem category = categories.get(position);
 
         holder.categoryName.setText(category.getName());
-        holder.categoryName.setTextColor(context.getResources().getColor(android.R.color.white));
+        // Use theme attribute for text color so it adapts to day/night
+        int textColor = ThemeUtils.getColorFromAttr(context, R.attr.colorOnSurface);
+        holder.categoryName.setTextColor(textColor);
 
-        // 🔥 FIXED: Removed heavy overrides, allowing Glide to centerCrop high quality images naturally
+        // Glide options
         RequestOptions options = new RequestOptions()
                 .centerCrop()
                 .placeholder(R.drawable.bg)
