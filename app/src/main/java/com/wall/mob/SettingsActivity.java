@@ -41,6 +41,9 @@ public class SettingsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        // Apply theme BEFORE setContentView
+        applyThemeFromPreference();
+        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
@@ -52,7 +55,6 @@ public class SettingsActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(androidx.appcompat.R.drawable.abc_ic_ab_back_material);
-            // Tint icon to black for normal theme, adjust if using Dark Mode
             toolbar.getNavigationIcon().setTint(getResources().getColor(android.R.color.black));
         }
 
@@ -78,6 +80,13 @@ public class SettingsActivity extends AppCompatActivity {
             Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://your-privacy-policy-url.com"));
             startActivity(browserIntent);
         });
+    }
+
+    // Apply theme before UI initialization
+    private void applyThemeFromPreference() {
+        SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+        String theme = prefs.getString(KEY_THEME, "system");
+        applyTheme(theme);
     }
 
     private void updateUI() {
@@ -108,8 +117,17 @@ public class SettingsActivity extends AppCompatActivity {
                 .setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
                     String selectedValue = values[which];
                     sharedPreferences.edit().putString(KEY_THEME, selectedValue).apply();
+                    updateUI();
                     applyTheme(selectedValue);
                     dialog.dismiss();
+                    
+                    // Restart app to apply theme globally
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        Intent intent = new Intent(this, MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intent);
+                        finish();
+                    }, 300);
                 })
                 .show();
     }
@@ -126,7 +144,6 @@ public class SettingsActivity extends AppCompatActivity {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
                 break;
         }
-        recreate(); // Reload activity to apply changes
     }
 
     // --- LANGUAGE LOGIC ---
@@ -142,20 +159,22 @@ public class SettingsActivity extends AppCompatActivity {
                 .setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
                     String selectedCode = codes[which];
                     
-                    // Save and set the new language using our helper
+                    // Save and set the new language
                     LocaleHelper.setNewLocale(this, selectedCode);
                     
                     dialog.dismiss();
-
-                    // Restart the app entirely to cleanly apply the new language everywhere
-                    Intent restartIntent = new Intent(this, MainActivity.class);
-                    restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(restartIntent);
-                    finish();
+                    updateUI();
+                    
+                    // Restart app to apply language globally
+                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
+                        Intent restartIntent = new Intent(this, MainActivity.class);
+                        restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(restartIntent);
+                        finish();
+                    }, 300);
                 })
                 .show();
     }
-
 
     // --- CACHE LOGIC ---
     private void calculateCacheSize() {
@@ -164,7 +183,6 @@ public class SettingsActivity extends AppCompatActivity {
             size += getDirSize(getCacheDir());
             size += getDirSize(getExternalCacheDir());
             
-            // Format size
             String sizeStr;
             if (size > 1024 * 1024) {
                 sizeStr = String.format(Locale.getDefault(), "%.2f MB", (float) size / (1024 * 1024));
@@ -196,11 +214,8 @@ public class SettingsActivity extends AppCompatActivity {
     private void clearAppCache() {
         tvCacheSize.setText("Clearing...");
         new Thread(() -> {
-            // Clear standard caches
             deleteDir(getCacheDir());
             deleteDir(getExternalCacheDir());
-            
-            // Clear Glide image cache specifically
             Glide.get(this).clearDiskCache();
 
             new Handler(Looper.getMainLooper()).post(() -> {
