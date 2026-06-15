@@ -23,6 +23,11 @@
     <color name="gray_dark">#CCCCCC</color>
     <color name="green_success">#4CAF50</color>
 
+    <!-- Premium-specific colors (same in night) -->
+    <color name="premium_background">#121212</color>
+    <color name="premium_gold">#C9A84C</color>
+    <color name="search_premium_bg">#2A2A2A</color>
+
     <!-- TextInputLayout stroke colors -->
     <color name="text_input_box_stroke">#FFFFFF</color>
     <color name="text_input_box_stroke_focused">#FFFFFF</color>
