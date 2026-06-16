@@ -31,6 +31,11 @@ import java.util.Map;
 
 public class SeeAllActivity extends AppCompatActivity implements WallpaperAdapter.OnWallpaperClickListener {
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+    }
+
     public static final String EXTRA_TITLE = "extra_title";
     public static final String EXTRA_TYPE = "extra_type";
 
@@ -90,32 +95,8 @@ public class SeeAllActivity extends AppCompatActivity implements WallpaperAdapte
     }
 
         private void setupStatusBar() {
-    Window window = getWindow();
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-        // Black background
-        window.setStatusBarColor(ContextCompat.getColor(this, android.R.color.black));
-        window.setNavigationBarColor(ContextCompat.getColor(this, android.R.color.black));
-
-        View decorView = window.getDecorView();
-
-        // White icons (clear light-icon flags)
-        int flags = decorView.getSystemUiVisibility();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-        }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-        }
-
-        decorView.setSystemUiVisibility(flags);
-    }
-    }
+    ThemeUtils.applySystemBars(this);
+ }
 
     private void setupRecyclerView() {
         // Automatically adjust grid columns based on screen width

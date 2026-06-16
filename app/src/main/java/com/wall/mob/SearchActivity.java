@@ -35,6 +35,11 @@ import java.util.Locale;
 
 public class SearchActivity extends AppCompatActivity implements WallpaperAdapter.OnWallpaperClickListener {
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+    }
+
     private RecyclerView searchResultsRecyclerView;
     private TextView noResultsText;
     private ProgressBar loadingProgressBar;

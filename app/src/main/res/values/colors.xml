@@ -1,23 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Your existing colors -->
+    <!-- Light palette -->
     <color name="colorAccent">#000000</color>
     <color name="colorPrimary">#000000</color>
-    <color name="colorPrimaryDark">#FFFFFF</color>
+    <color name="colorPrimaryDark">#222222</color>
     <color name="colorControlHighlight">#212121</color>
     <color name="colorControlNormal">#000000</color>
+
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="transparent">#00000000</color>
-    <color name="notification_wallpaper">#4CAF50</color>
-    <color name="notification_offer">#FF9800</color>
-    <color name="notification_favorites">#E91E63</color>
-    <color name="notification_default">#2196F3</color>
-    
-    <!-- Additional colors for Material Components -->
+
+    <!-- Semantic colors -->
+    <color name="background">#FFFFFF</color>
+    <color name="onBackground">#000000</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="onSurface">#000000</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+
     <color name="gray_light">#F5F5F5</color>
     <color name="gray_medium">#999999</color>
     <color name="gray_dark">#666666</color>
     <color name="green_success">#4CAF50</color>
+
+    <!-- Notification type indicators -->
+    <color name="notification_wallpaper">#4CAF50</color>
+    <color name="notification_offer">#FF9800</color>
+    <color name="notification_favorites">#E91E63</color>
+    <color name="notification_default">#2196F3</color>
+
+    <!-- Premium-specific colors -->
+    <color name="premium_background">#121212</color>
+    <color name="premium_gold">#C9A84C</color>
+    <color name="search_premium_bg">#2A2A2A</color>
 
     <!-- TextInputLayout stroke colors -->
     <color name="text_input_box_stroke">#000000</color>

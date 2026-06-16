@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_height="match_parent"
     android:layout_width="match_parent"
-    android:background="#F5F5F5">
+    android:background="@color/background">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_height="wrap_content"
@@ -16,7 +16,7 @@
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:layout_height="280dp"
             android:layout_width="match_parent"
-            app:contentScrim="#FFFFFF"
+            app:contentScrim="@color/surface"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:expandedTitleMarginStart="20dp"
             app:expandedTitleMarginBottom="20dp"
@@ -30,7 +30,7 @@
                 android:contentDescription="Category Header"
                 app:layout_collapseMode="parallax"
                 android:id="@+id/category_header_image"
-                android:background="#E0E0E0" />
+                android:background="@color/gray_light" />
 
             <View
                 android:layout_height="match_parent"
@@ -55,8 +55,8 @@
     android:gravity="center_vertical"
     app:layout_collapseMode="pin"
     app:navigationIcon="@drawable/ic_arrow_back"
-    app:navigationIconTint="#FFFFFF"
-    app:titleTextColor="#FFFFFF" />
+    app:navigationIconTint="@color/white"
+    app:titleTextColor="@color/white" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
@@ -68,7 +68,7 @@
         android:layout_width="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:fillViewport="true"
-        android:background="#F5F5F5">
+        android:background="@color/background">
 
         <LinearLayout
             android:layout_height="match_parent"
@@ -104,7 +104,7 @@
                             android:layout_height="wrap_content"
                             android:layout_width="wrap_content"
                             android:textSize="26sp"
-                            android:textColor="#000000"
+                            android:textColor="@color/onSurface"
                             android:id="@+id/category_name"
                             android:text="Category Name"
                             android:letterSpacing="-0.01"
@@ -128,7 +128,7 @@
                         android:contentDescription="Filter"
                         android:background="@drawable/pill_black"
                         android:backgroundTint="#0D000000"
-                        app:tint="#000000"
+                        app:tint="@color/onSurface"
                         android:padding="8dp"
                         android:id="@+id/filter_button" />
 
@@ -145,7 +145,7 @@
                     android:layout_width="24dp"
                     android:layout_height="24dp"
                     android:layout_gravity="center"
-                    android:indeterminateTint="#000000"
+                    android:indeterminateTint="@color/onSurface"
                     android:layout_marginTop="16dp"
                     android:layout_marginBottom="24dp"
                     android:visibility="gone" />
@@ -155,7 +155,7 @@
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:visibility="gone"
-                    android:indeterminateTint="#000000"
+                    android:indeterminateTint="@color/onSurface"
                     android:layout_marginTop="32dp"
                     android:layout_gravity="center" />
 
@@ -180,7 +180,7 @@
                         android:layout_height="wrap_content"
                         android:layout_width="wrap_content"
                         android:textSize="18sp"
-                        android:textColor="#000000"
+                        android:textColor="@color/onSurface"
                         android:textStyle="bold"
                         android:layout_marginTop="16dp"
                         android:text="Nothing here yet" />
@@ -210,7 +210,7 @@
         android:layout_gravity="bottom|end"
         android:visibility="gone"
         app:fabSize="mini"
-        app:backgroundTint="#000000"
-        app:tint="#FFFFFF" />
+        app:backgroundTint="@color/colorPrimary"
+        app:tint="@color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,5 +1,7 @@
 package com.wall.mob;
 
+import android.content.Context;
+
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -32,6 +34,11 @@ import java.util.Locale;
 import android.graphics.Color;
 
 public class EditActivity extends AppCompatActivity {
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+    }
 
     private ImageView imageView, backButton;
     private SeekBar blurSeekBar;

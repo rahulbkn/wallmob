@@ -55,7 +55,8 @@ public class SettingsActivity extends AppCompatActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(androidx.appcompat.R.drawable.abc_ic_ab_back_material);
-            toolbar.getNavigationIcon().setTint(getResources().getColor(android.R.color.black));
+            // Tint navigation icon to theme-aware onSurface color
+            toolbar.getNavigationIcon().setTint(getResources().getColor(R.color.onSurface));
         }
 
         // Initialize Views
@@ -133,6 +134,8 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void applyTheme(String themeValue) {
+        // Persist the selection so SketchApplication can restore it on cold start
+        getSharedPreferences(PREF_NAME, MODE_PRIVATE).edit().putString(KEY_THEME, themeValue).apply();
         switch (themeValue) {
             case "light":
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -248,4 +251,5 @@ public class SettingsActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
 }

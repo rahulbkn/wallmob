@@ -592,9 +592,9 @@ switch (theme) {
     }
     
     private void enablePremiumTheme() {
-        int darkColor = Color.parseColor("#121212"); 
-        int goldColor = Color.parseColor("#C9A84C"); 
-        int whiteColor = Color.WHITE;
+        int darkColor = ContextCompat.getColor(this, R.color.premium_background);
+        int goldColor = ContextCompat.getColor(this, R.color.premium_gold);
+        int whiteColor = ContextCompat.getColor(this, R.color.white);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -620,12 +620,12 @@ switch (theme) {
         if (textview1 != null) textview1.setTextColor(whiteColor);
 
         if (searchLayout != null) {
-            searchLayout.setBackgroundTintList(android.content.res.ColorStateList.valueOf(Color.parseColor("#2A2A2A")));
+            searchLayout.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ContextCompat.getColor(this, R.color.search_premium_bg)));
             if (searchLayout.getChildAt(0) instanceof ImageView) {
                 ((ImageView) searchLayout.getChildAt(0)).setColorFilter(goldColor);
             }
             if (searchLayout.getChildAt(1) instanceof TextView) {
-                ((TextView) searchLayout.getChildAt(1)).setTextColor(Color.LTGRAY);
+                ((TextView) searchLayout.getChildAt(1)).setTextColor(ContextCompat.getColor(this, R.color.gray_medium));
             }
             // Tint the new filter icon in premium mode
             ImageView btnFilter = findViewById(R.id.btn_filter);
@@ -649,36 +649,48 @@ switch (theme) {
     }
 
     private void enableNormalTheme() {
-        int whiteColor = Color.WHITE;
-        int blackColor = Color.BLACK;
-        int grayColor = Color.parseColor("#666666");
+        int surfaceColor = ContextCompat.getColor(this, R.color.surface);
+        int onSurfaceColor = ContextCompat.getColor(this, R.color.onSurface);
+        int grayColor = ContextCompat.getColor(this, R.color.gray_dark);
+
+        boolean isNight = (getResources().getConfiguration().uiMode
+                & android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES;
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
-            window.setStatusBarColor(whiteColor);
-            window.setNavigationBarColor(whiteColor);
-            
+            window.setStatusBarColor(surfaceColor);
+            window.setNavigationBarColor(surfaceColor);
+
             int flags = window.getDecorView().getSystemUiVisibility();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+            if (!isNight) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+                }
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+                }
             }
             window.getDecorView().setSystemUiVisibility(flags);
         }
 
-        if (toolbar != null) toolbar.setBackgroundColor(whiteColor);
+        if (toolbar != null) toolbar.setBackgroundColor(surfaceColor);
         if (appBarLayout != null) appBarLayout.setBackgroundColor(Color.TRANSPARENT);
 
-        if (btn_menu != null) btn_menu.setColorFilter(blackColor);
-        if (notificationButton != null) notificationButton.setColorFilter(blackColor);
-        if (profileButton != null) profileButton.setColorFilter(blackColor);
-        if (textview1 != null) textview1.setTextColor(blackColor);
+        if (btn_menu != null) btn_menu.setColorFilter(onSurfaceColor);
+        if (notificationButton != null) notificationButton.setColorFilter(onSurfaceColor);
+        if (profileButton != null) profileButton.setColorFilter(onSurfaceColor);
+        if (textview1 != null) textview1.setTextColor(onSurfaceColor);
 
         if (searchLayout != null) {
-            searchLayout.setBackgroundTintList(null); 
-            searchLayout.setBackgroundResource(R.drawable.bg_search); 
+            searchLayout.setBackgroundTintList(null);
+            searchLayout.setBackgroundResource(R.drawable.bg_search);
             if (searchLayout.getChildAt(0) instanceof ImageView) {
                 ((ImageView) searchLayout.getChildAt(0)).setColorFilter(grayColor);
             }
@@ -693,14 +705,14 @@ switch (theme) {
         }
 
         if (bottomNavigationView != null) {
-            bottomNavigationView.setBackgroundColor(whiteColor);
+            bottomNavigationView.setBackgroundColor(surfaceColor);
             int[][] states = new int[][] {
                 new int[] { android.R.attr.state_checked },
                 new int[] { -android.R.attr.state_checked }
             };
-            int[] colors = new int[] { blackColor, grayColor };
+            int[] colors = new int[] { onSurfaceColor, grayColor };
             android.content.res.ColorStateList colorStateList = new android.content.res.ColorStateList(states, colors);
-            
+
             bottomNavigationView.setItemIconTintList(colorStateList);
             bottomNavigationView.setItemTextColor(colorStateList);
         }

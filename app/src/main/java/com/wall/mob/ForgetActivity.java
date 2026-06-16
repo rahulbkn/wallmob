@@ -1,5 +1,7 @@
 package com.wall.mob;
 
+import android.content.Context;
+
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -23,6 +25,11 @@ import androidx.core.content.ContextCompat;
 
 public class ForgetActivity extends AppCompatActivity {
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+    }
+
     private EditText emailInput;
     private Button sendResetButton;
     private TextView backToLoginText;
@@ -35,21 +42,7 @@ public class ForgetActivity extends AppCompatActivity {
         setContentView(R.layout.forget);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(this, android.R.color.white));
-            window.setNavigationBarColor(ContextCompat.getColor(this, android.R.color.white));
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                int flags = window.getDecorView().getSystemUiVisibility();
-                flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-                window.getDecorView().setSystemUiVisibility(flags);
-            }
+            ThemeUtils.applySystemBars(this);
         }
 
         mAuth = FirebaseAuth.getInstance();
@@ -92,32 +85,32 @@ public class ForgetActivity extends AppCompatActivity {
         String email = emailInput.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
-            emailInput.setError("Email is required");
+            emailInput.setError(getString(R.string.email_required));
             emailInput.requestFocus();
             return;
         }
 
         if (!isValidEmail(email)) {
-            emailInput.setError("Please enter a valid email");
+            emailInput.setError(getString(R.string.email_invalid));
             emailInput.requestFocus();
             return;
         }
 
         sendResetButton.setEnabled(false);
-        sendResetButton.setText("Sending...");
+        sendResetButton.setText(getString(R.string.sending));
 
         mAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(ForgetActivity.this, "Password reset link sent to " + email, Toast.LENGTH_LONG).show();
+                            Toast.makeText(ForgetActivity.this, getString(R.string.password_reset_sent, email), Toast.LENGTH_LONG).show();
                             simulateEmailSent(email);
                         } else {
-                            emailInput.setError("Email not found in our records");
+                            emailInput.setError(getString(R.string.email_not_found));
                             emailInput.requestFocus();
                             sendResetButton.setEnabled(true);
-                            sendResetButton.setText("Send Reset Link");
+                            sendResetButton.setText(getString(R.string.send_reset_link));
                         }
                     }
                 });
@@ -128,7 +121,7 @@ public class ForgetActivity extends AppCompatActivity {
             @Override
             public void run() {
                 sendResetButton.setEnabled(true);
-                sendResetButton.setText("Send Reset Link");
+                sendResetButton.setText(getString(R.string.send_reset_link));
                 emailInput.setText("");
             }
         }, 3000);

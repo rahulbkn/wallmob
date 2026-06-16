@@ -52,4 +52,12 @@
     <string name="edit">Edit</string>
     <string name="share">Share</string>
     <string name="download">Download</string>
+
+    <!-- ForgetActivity strings -->
+    <string name="email_required">Email is required</string>
+    <string name="email_invalid">Please enter a valid email</string>
+    <string name="sending">Sending...</string>
+    <string name="password_reset_sent">Password reset link sent to %1$s</string>
+    <string name="email_not_found">Email not found in our records</string>
+    <string name="send_reset_link">Send Reset Link</string>
 </resources>

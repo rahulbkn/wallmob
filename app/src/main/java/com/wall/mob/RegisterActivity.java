@@ -1,5 +1,7 @@
 package com.wall.mob;
 
+import android.content.Context;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -28,6 +30,11 @@ import androidx.core.content.ContextCompat;
 import com.wall.mob.User;
 
 public class RegisterActivity extends AppCompatActivity {
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+    }
 
     private EditText fullNameInput;
     private EditText emailInput;

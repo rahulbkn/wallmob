@@ -33,6 +33,11 @@ import java.util.List;
 
 public class CategoryActivity extends AppCompatActivity implements WallpaperAdapter.OnWallpaperClickListener {
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+    }
+
     private static final String TAG = "CategoryActivity";
     private static final String EXTRA_CATEGORY_NAME = "category_name";
     private static final String EXTRA_CATEGORY_IMAGE = "category_image";
@@ -154,11 +159,11 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
             appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
                 if (toolbar.getNavigationIcon() != null) {
                     if (Math.abs(verticalOffset) - appBarLayout.getTotalScrollRange() == 0) {
-                        // Collapsed (White background) -> Black Icon
-                        toolbar.getNavigationIcon().setTint(Color.BLACK);
+                        // Collapsed (surface/background) -> onSurface icon color
+                        toolbar.getNavigationIcon().setTint(ContextCompat.getColor(CategoryActivity.this, R.color.onSurface));
                     } else {
                         // Expanded (Image background) -> White Icon
-                        toolbar.getNavigationIcon().setTint(Color.WHITE);
+                        toolbar.getNavigationIcon().setTint(ContextCompat.getColor(CategoryActivity.this, R.color.white));
                     }
                 }
             });
@@ -166,29 +171,10 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
     }
 
     private void setupStatusBar() {
-    Window window = getWindow();
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-
-        window.setStatusBarColor(Color.WHITE);
-        window.setNavigationBarColor(Color.WHITE);
-
-        View decorView = window.getDecorView();
-        int flags = decorView.getSystemUiVisibility();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR; // black status bar icons
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            ThemeUtils.applySystemBars(this);
         }
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR; // black nav icons
-        }
-
-        decorView.setSystemUiVisibility(flags);
     }
-}
 
     private void setupColorFilterUI() {
         if (isColorFilter && colorHex != null && !colorHex.isEmpty()) {
@@ -202,7 +188,7 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
                     indicatorDrawable.setShape(GradientDrawable.OVAL);
                     indicatorDrawable.setColor(parsedColor);
                     int strokePx = dpToPx(3);
-                    indicatorDrawable.setStroke(strokePx, Color.WHITE);
+                    indicatorDrawable.setStroke(strokePx, ContextCompat.getColor(CategoryActivity.this, R.color.onSurface));
                     int sizePx = dpToPx(40);
                     indicatorDrawable.setSize(sizePx, sizePx);
 
@@ -213,7 +199,7 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
 
             } catch (IllegalArgumentException e) {
                 Log.e(TAG, "Invalid color hex code: " + colorHex, e);
-                categoryHeaderImage.setBackgroundColor(Color.parseColor("#F5F5F5"));
+                categoryHeaderImage.setBackgroundColor(ContextCompat.getColor(this, R.color.gray_light));
                 if (colorIndicator != null) colorIndicator.setVisibility(View.GONE);
                 categoryNameText.setText(categoryName + " Wallpapers");
             }
