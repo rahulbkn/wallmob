@@ -140,7 +140,7 @@ public class WallpaperActionsHandler {
     }
 
     private void updateFavoriteButton() {
-        int color = activity.getResources().getColor(isFavorite ? android.R.color.holo_red_dark : android.R.color.white);
+        int color = androidx.core.content.ContextCompat.getColor(activity, isFavorite ? android.R.color.holo_red_dark : R.color.white);
         favButton.setColorFilter(color, PorterDuff.Mode.SRC_IN);
     }
 

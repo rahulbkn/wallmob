@@ -2,6 +2,7 @@ package com.wall.mob;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -9,6 +10,8 @@ import android.os.Bundle;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.FrameLayout;
+
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 
@@ -27,7 +30,7 @@ public class MenuBottomSheetDialog extends BottomSheetDialog {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && getWindow() != null) {
-            getWindow().setNavigationBarColor(Color.WHITE);
+            getWindow().setNavigationBarColor(ContextCompat.getColor(context, R.color.surface));
         }
 
         // --- THE MAGIC FIX: Wait until the dialog shows, then force the width! ---
@@ -131,22 +134,30 @@ public class MenuBottomSheetDialog extends BottomSheetDialog {
     @Override
 protected void onStart() {
     super.onStart();
-  if (getWindow() != null) {
-    getWindow().setLayout(
-        android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-        android.view.ViewGroup.LayoutParams.MATCH_PARENT
-    );
-    getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT));
-    
-    // White nav bar with black icons
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        getWindow().setNavigationBarColor(Color.WHITE);
-    }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        android.view.View decorView = getWindow().getDecorView();
-        decorView.setSystemUiVisibility(
-            decorView.getSystemUiVisibility() | android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+    if (getWindow() != null) {
+        getWindow().setLayout(
+            android.view.ViewGroup.LayoutParams.MATCH_PARENT,
+            android.view.ViewGroup.LayoutParams.MATCH_PARENT
         );
-    }}
+        getWindow().setBackgroundDrawable(new android.graphics.drawable.ColorDrawable(Color.TRANSPARENT));
+
+        boolean isNight = (context.getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+
+        // Nav bar color matches surface (light/dark via colors.xml)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setNavigationBarColor(ContextCompat.getColor(context, R.color.surface));
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            android.view.View decorView = getWindow().getDecorView();
+            int flags = decorView.getSystemUiVisibility();
+            if (!isNight) {
+                flags |= android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+            } else {
+                flags &= ~android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+            }
+            decorView.setSystemUiVisibility(flags);
+        }
+    }
 }
 }
