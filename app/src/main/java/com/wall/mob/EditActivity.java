@@ -132,7 +132,7 @@ getWindow().setStatusBarColor(Color.TRANSPARENT);
             String imagePath = intent.getStringExtra("image_path");
             loadImageFromPath(imagePath);
         } else {
-            Toast.makeText(this, "No image provided", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.no_image_provided), Toast.LENGTH_SHORT).show();
             finish();
         }
     }
@@ -142,7 +142,7 @@ getWindow().setStatusBarColor(Color.TRANSPARENT);
         if (bitmap != null) {
             setOriginalBitmap(bitmap);
         } else {
-            Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.failed_load_image), Toast.LENGTH_SHORT).show();
             finish();
         }
     }
@@ -294,7 +294,7 @@ getWindow().setStatusBarColor(Color.TRANSPARENT);
 
     private void saveAndReturnToDetails() {
         if (currentBitmap == null) {
-            Toast.makeText(this, "No image to save", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.no_image_to_save), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -325,10 +325,10 @@ getWindow().setStatusBarColor(Color.TRANSPARENT);
             setResult(RESULT_OK, resultIntent);
             finish();
             
-            Toast.makeText(this, "Changes applied successfully!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.changes_applied), Toast.LENGTH_SHORT).show();
             
         } catch (IOException e) {
-            Toast.makeText(this, "Failed to save changes", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.failed_save_changes), Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }
@@ -347,3 +347,4 @@ getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
     }
 }
+// test

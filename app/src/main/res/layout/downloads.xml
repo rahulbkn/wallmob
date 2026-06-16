@@ -43,7 +43,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="LOCAL"
+                        android:text="@string/local"
                         android:textSize="10sp"
                         android:textStyle="bold"
                         android:letterSpacing="0.18"
@@ -73,7 +73,7 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Your Downloads"
+                        android:text="@string/your_downloads"
                         android:textSize="26sp"
                         android:textStyle="bold"
                         android:textColor="@color/onSurface"
@@ -83,9 +83,9 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Wallpapers you have saved to your device"
+                    android:text="@string/downloads_desc"
                     android:textSize="13sp"
-                    android:textColor="#80000000"
+                    android:textColor="@color/subtle_on_surface"
                     android:letterSpacing="0.01" />
 
                 <View
@@ -124,13 +124,13 @@
                         android:layout_height="80dp"
                         android:src="@drawable/ic_download"
                         app:tint="#1A000000"
-                        android:contentDescription="No downloads" />
+                        android:contentDescription="@string/no_downloads" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="20dp"
-                        android:text="No downloads yet"
+                        android:text="@string/no_downloads_yet"
                         android:textSize="18sp"
                         android:textColor="@color/onSurface"
                         android:textStyle="bold"
@@ -140,9 +140,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:text="Wallpapers you download to your device will appear right here."
+                        android:text="@string/no_downloads_desc"
                         android:textSize="14sp"
-                        android:textColor="#80000000"
+                        android:textColor="@color/subtle_on_surface"
                         android:textAlignment="center"
                         android:lineSpacingMultiplier="1.2" />
 
@@ -162,3 +162,7 @@
 
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>
+
+
+
+

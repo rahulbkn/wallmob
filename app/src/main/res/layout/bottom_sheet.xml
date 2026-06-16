@@ -11,7 +11,7 @@
 	android:background="@drawable/rounded_top"
 	android:paddingBottom="24dp"
 	android:minWidth="300dp">
-	
+
 	<View
     android:layout_width="40dp"
     android:layout_height="4dp"
@@ -39,7 +39,7 @@
 			android:id="@+id/textview18"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Official Website"
+			android:text="@string/official_website"
 			android:textSize="12sp"
 			android:focusable="false" />
 	</LinearLayout>
@@ -64,7 +64,7 @@
 			android:id="@+id/textview22"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Check for Updates"
+			android:text="@string/check_updates"
 			android:textSize="12sp"
 			android:focusable="false" />
 	</LinearLayout>
@@ -89,7 +89,7 @@
 			android:id="@+id/textview19"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Telegram Channel"
+			android:text="@string/telegram_channel"
 			android:textSize="12sp"
 			android:focusable="false" />
 	</LinearLayout>
@@ -114,7 +114,7 @@
 			android:id="@+id/textview20"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Contact Us"
+			android:text="@string/contact_us"
 			android:textSize="12sp"
 			android:focusable="false" />
 	</LinearLayout>
@@ -139,7 +139,7 @@
 			android:id="@+id/textview21"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Privacy Policy"
+			android:text="@string/privacy_policy"
 			android:textSize="12sp"
 			android:focusable="false" />
 	</LinearLayout>
@@ -163,8 +163,11 @@
 			android:id="@+id/textview2"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:text="Terms of Service"
+			android:text="@string/terms_of_service"
 			android:textSize="12sp"
 			android:focusable="false" />
 	</LinearLayout>
 </LinearLayout>
+
+
+

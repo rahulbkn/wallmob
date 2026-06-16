@@ -169,7 +169,7 @@ public class PremiumFragment extends Fragment implements WallpaperAdapter.OnWall
 
     @Override
     public void onWallpaperLongClick(Wallpaper wallpaper, int position) {
-        Toast.makeText(requireContext(), "Long clicked: " + wallpaper.getTitle(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), getString(R.string.long_clicked, wallpaper.getTitle()), Toast.LENGTH_SHORT).show();
     }
 
     public void refreshData() {
@@ -180,3 +180,5 @@ public class PremiumFragment extends Fragment implements WallpaperAdapter.OnWall
         return isLoading;
     }
 }
+
+// test

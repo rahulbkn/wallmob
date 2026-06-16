@@ -186,7 +186,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/section_trending_desc"
                         android:textSize="13sp"
-                        android:textColor="#80000000"
+                        android:textColor="@color/subtle_on_surface"
                         android:letterSpacing="0.01" />
 
                     <View
@@ -282,7 +282,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/section_color_palettes_desc"
                         android:textSize="13sp"
-                        android:textColor="#80000000"
+                        android:textColor="@color/subtle_on_surface"
                         android:letterSpacing="0.01" />
 
                     <View
@@ -338,7 +338,7 @@
                             android:textSize="10sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.18"
-                            android:textColor="#C9A84C"
+                            android:textColor="@color/premium_gold"
                             android:background="@drawable/premium_badge_bg"
                             android:paddingStart="12dp"
                             android:paddingEnd="12dp"
@@ -358,7 +358,7 @@
                             android:textSize="11sp"
                             android:textStyle="bold"
                             android:letterSpacing="0.05"
-                            android:textColor="#C9A84C"
+                            android:textColor="@color/premium_gold"
                             android:background="@drawable/premium_cta_bg"
                             android:paddingStart="14dp"
                             android:paddingEnd="14dp"
@@ -383,13 +383,13 @@
                         android:layout_height="wrap_content"
                         android:text="@string/section_premium_desc"
                         android:textSize="13sp"
-                        android:textColor="#80FFFFFF"
+                        android:textColor="@color/onImageTertiary"
                         android:letterSpacing="0.01" />
 
                     <View
                         android:layout_width="32dp"
                         android:layout_height="1dp"
-                        android:background="#C9A84C"
+                        android:background="@color/premium_gold"
                         android:layout_marginTop="14dp" />
 
                 </LinearLayout>
@@ -472,7 +472,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/section_landscape_desc"
                         android:textSize="13sp"
-                        android:textColor="#80000000"
+                        android:textColor="@color/subtle_on_surface"
                         android:letterSpacing="0.01" />
 
                     <View
@@ -568,7 +568,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/section_categories_desc"
                         android:textSize="13sp"
-                        android:textColor="#80000000"
+                        android:textColor="@color/subtle_on_surface"
                         android:letterSpacing="0.01" />
 
                     <View
@@ -637,3 +637,6 @@
     </androidx.core.widget.NestedScrollView>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
+

@@ -117,3 +117,5 @@ public class WallpaperImageLoader {
         }
     }
 }
+
+// test

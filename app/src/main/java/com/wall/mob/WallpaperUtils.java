@@ -140,7 +140,7 @@ public class WallpaperUtils {
                     mainHandler.post(() -> {
                         dismissProgressDialog(activity);
                         if (!activity.isDestroyedOrFinishing()) {
-                            Toast.makeText(activity, "Failed to set wallpaper: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, activity.getString(R.string.failed_set_wallpaper, e.getMessage()), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -166,7 +166,7 @@ public class WallpaperUtils {
                     mainHandler.post(() -> {
                         dismissProgressDialog(activity);
                         if (!activity.isDestroyedOrFinishing()) {
-                            Toast.makeText(activity, "Failed to set wallpaper: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, activity.getString(R.string.failed_set_wallpaper, e.getMessage()), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -237,7 +237,7 @@ public class WallpaperUtils {
                     Log.e("WallpaperUtils", "Share failed", e);
                     mainHandler.post(() -> {
                         dismissProgressDialog(activity);
-                        Toast.makeText(activity, "Failed to share preview", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, activity.getString(R.string.failed_share_preview), Toast.LENGTH_SHORT).show();
                     });
                 }
             });
@@ -310,7 +310,7 @@ public class WallpaperUtils {
                     Log.e("WallpaperUtils", "Share failed", e);
                     mainHandler.post(() -> {
                         dismissProgressDialog(activity);
-                        Toast.makeText(activity, "Failed to share preview", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, activity.getString(R.string.failed_share_preview), Toast.LENGTH_SHORT).show();
                     });
                 }
             });
@@ -345,11 +345,11 @@ shortenUrlWithBitly(originalUrl, shortUrl -> {
             if (shareIntent.resolveActivity(activity.getPackageManager()) != null) {
                 activity.startActivity(Intent.createChooser(shareIntent, "Share Wallpaper via WallMob"));
             } else {
-                Toast.makeText(activity, "No apps available to share", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, activity.getString(R.string.no_share_apps), Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
             Log.e("WallpaperUtils", "Failed to start share intent: " + e.getMessage(), e);
-            Toast.makeText(activity, "Failed to share: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, activity.getString(R.string.failed_share, e.getMessage()), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -439,7 +439,7 @@ shortenUrlWithBitly(originalUrl, shortUrl -> {
                     mainHandler.post(() -> {
                         dismissProgressDialog(activity);
                         if (!activity.isDestroyedOrFinishing()) {
-                            Toast.makeText(activity, "Wallpaper saved to gallery!", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, activity.getString(R.string.wallpaper_saved_gallery), Toast.LENGTH_SHORT).show();
                         }
                     });
                 } catch (Exception e) {
@@ -447,7 +447,7 @@ shortenUrlWithBitly(originalUrl, shortUrl -> {
                     mainHandler.post(() -> {
                         dismissProgressDialog(activity);
                         if (!activity.isDestroyedOrFinishing()) {
-                            Toast.makeText(activity, "Failed to download wallpaper", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, activity.getString(R.string.failed_download_wallpaper), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -473,7 +473,7 @@ shortenUrlWithBitly(originalUrl, shortUrl -> {
                     mainHandler.post(() -> {
                         dismissProgressDialog(activity);
                         if (!activity.isDestroyedOrFinishing()) {
-                            Toast.makeText(activity, "Failed to download wallpaper", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, activity.getString(R.string.failed_download_wallpaper), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -515,7 +515,7 @@ shortenUrlWithBitly(originalUrl, shortUrl -> {
                     mainHandler.post(() -> {
                         dismissProgressDialog(activity);
                         if (!activity.isDestroyedOrFinishing()) {
-                            Toast.makeText(activity, "Failed to prepare image for editing", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, activity.getString(R.string.failed_prepare_image_editing), Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -579,3 +579,4 @@ shortenUrlWithBitly(originalUrl, shortUrl -> {
     }).start();
 }
 }
+// test

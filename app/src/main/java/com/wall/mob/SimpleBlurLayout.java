@@ -70,3 +70,4 @@ public class SimpleBlurLayout extends LinearLayout {
         canvas.restore();
     }
 }
+// test

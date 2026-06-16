@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#FFFFFF"
+    android:background="@color/background"
     android:padding="24dp"
     android:gravity="center">
 
@@ -11,9 +11,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Watch Ads &amp; Earn Coins"
+        android:text="@string/watch_ads_earn_coins"
         android:textSize="24sp"
-        android:textColor="#000000"
+        android:textColor="@color/onBackground"
         android:textStyle="bold"
         android:layout_marginBottom="32dp"
         android:gravity="center" />
@@ -39,9 +39,9 @@
             android:id="@+id/coinsTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Coins: 0"
+            android:text="@string/coins_count"
             android:textSize="20sp"
-            android:textColor="#000000"
+            android:textColor="@color/onBackground"
             android:textStyle="bold" />
 
     </LinearLayout>
@@ -50,9 +50,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Watch a complete ad to earn 1 coin!"
+        android:text="@string/watch_ad_reward_desc"
         android:textSize="16sp"
-        android:textColor="#000000"
+        android:textColor="@color/onBackground"
         android:layout_marginBottom="12dp"
         android:gravity="center"
         android:textStyle="italic" />
@@ -62,9 +62,9 @@
         android:id="@+id/showAdButton"
         android:layout_width="200dp"
         android:layout_height="60dp"
-        android:text="Watch Ad"
+        android:text="@string/watch_ad"
         android:textSize="18sp"
-        android:textColor="#000000"
+        android:textColor="@color/onBackground"
         android:background="@drawable/button_background"
         android:layout_marginBottom="12dp"
         android:enabled="false" />
@@ -74,9 +74,9 @@
         android:id="@+id/statusTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Loading..."
+        android:text="@string/loading"
         android:textSize="14sp"
-        android:textColor="#666666"
+        android:textColor="@color/gray_dark"
         android:gravity="center"
         android:layout_marginTop="8dp" />
 
@@ -103,49 +103,49 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="How it works:"
+            android:text="@string/how_it_works"
             android:textSize="16sp"
-            android:textColor="#000000"
+            android:textColor="@color/onBackground"
             android:textStyle="bold"
             android:layout_marginBottom="8dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="• Tap 'Watch Ad' button"
+            android:text="@string/how_watch_ad_step_tap"
             android:textSize="14sp"
-            android:textColor="#000000"
+            android:textColor="@color/onBackground"
             android:layout_marginBottom="4dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="• Watch the complete ad"
+            android:text="@string/how_watch_ad_step_watch"
             android:textSize="14sp"
-            android:textColor="#000000"
+            android:textColor="@color/onBackground"
             android:layout_marginBottom="4dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="• Earn 1 coin automatically"
+            android:text="@string/how_watch_ad_step_earn"
             android:textSize="14sp"
-            android:textColor="#000000"
+            android:textColor="@color/onBackground"
             android:layout_marginBottom="4dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="• Repeat to earn more coins!"
+            android:text="@string/how_watch_ad_step_repeat"
             android:textSize="14sp"
-            android:textColor="#000000" />
+            android:textColor="@color/onBackground" />
 
     </LinearLayout>
     
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Transaction History"
+        android:text="@string/transaction_history"
         android:textSize="18sp"
         android:textStyle="bold"
         android:layout_marginBottom="8dp" />
@@ -159,3 +159,6 @@
         android:dividerHeight="1dp" />
 
 </LinearLayout>
+
+
+

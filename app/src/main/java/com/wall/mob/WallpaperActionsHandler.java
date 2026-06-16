@@ -95,7 +95,7 @@ public class WallpaperActionsHandler {
         Button btnEarnCoins = (Button) dialogView.findViewById(R.id.btnEarnCoins);
         Button btnCancel = (Button) dialogView.findViewById(R.id.btnCancel);
 
-        tvMessage.setText("You need " + requiredCoins + " coins to perform this action. Would you like to earn more coins?");
+        tvMessage.setText(activity.getString(R.string.coins_required_message, requiredCoins));
 
         final AlertDialog dialog = new AlertDialog.Builder(activity)
                 .setView(dialogView)
@@ -130,11 +130,11 @@ public class WallpaperActionsHandler {
         if (isFavorite) {
             FavoriteManager.removeFromFavorites(activity, wallpaper);
             isFavorite = false;
-            Toast.makeText(activity, "Removed from favorites", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, activity.getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
         } else {
             FavoriteManager.addToFavorites(activity, wallpaper);
             isFavorite = true;
-            Toast.makeText(activity, "Added to favorites", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, activity.getString(R.string.added_to_favorites), Toast.LENGTH_SHORT).show();
         }
         updateFavoriteButton();
     }
@@ -189,7 +189,7 @@ public class WallpaperActionsHandler {
                         public void onLoadFailed(@Nullable Drawable errorDrawable) {
                             WallpaperUtils.dismissProgressDialog(activity);
                             if (!activity.isDestroyedOrFinishing()) {
-                                Toast.makeText(activity, "Failed to load image for sharing", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, activity.getString(R.string.failed_load_image_sharing), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -211,7 +211,7 @@ public class WallpaperActionsHandler {
             if (activity.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) 
                     != android.content.pm.PackageManager.PERMISSION_GRANTED) {
                 activity.requestPermissions(new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, 200);
-                Toast.makeText(activity, "Storage permission required to download wallpapers.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, activity.getString(R.string.storage_permission_download), Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -238,7 +238,7 @@ public class WallpaperActionsHandler {
                             if (!activity.isDestroyedOrFinishing()) {
                                 FileUtil.saveBitmapToPublicGallery(activity, bitmap, wallpaper.getTitle());
                                 WallpaperUtils.dismissProgressDialog(activity);
-                                Toast.makeText(activity, "Wallpaper saved to Gallery!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, activity.getString(R.string.wallpaper_saved_gallery), Toast.LENGTH_SHORT).show();
                                 deductCoins(coinsRequired, "Downloaded " + (wallpaper.isPremium() ? "Premium" : "Normal") + " Wallpaper");
                             } else {
                                 WallpaperUtils.dismissProgressDialog(activity);
@@ -254,7 +254,7 @@ public class WallpaperActionsHandler {
                         public void onLoadFailed(@Nullable Drawable errorDrawable) {
                             WallpaperUtils.dismissProgressDialog(activity);
                             if (!activity.isDestroyedOrFinishing()) {
-                                Toast.makeText(activity, "Failed to load image for download", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, activity.getString(R.string.failed_load_image_download), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
@@ -293,7 +293,7 @@ public class WallpaperActionsHandler {
                     public void onLoadFailed(@Nullable Drawable errorDrawable) {
                         WallpaperUtils.dismissProgressDialog(activity);
                         if (!activity.isDestroyedOrFinishing()) {
-                            Toast.makeText(activity, "Failed to load image for editing", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(activity, activity.getString(R.string.failed_load_image_editing), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -329,3 +329,4 @@ public class WallpaperActionsHandler {
         return prefs.getBoolean(PREMIUM_USER_KEY, false);
     }
 }
+// test

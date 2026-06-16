@@ -30,3 +30,4 @@ public class Transaction implements Serializable {
         return action + ": " + (coinAmount > 0 ? "+" : "") + coinAmount + " coins";
     }
 }
+// test

@@ -36,7 +36,7 @@
              android:paddingStart="8dp"
              android:layout_weight="1"
              android:id="@+id/textview14"
-             android:text="Notifications"
+             android:text="@string/notifications"
              android:textStyle="bold" />
 
         <Button
@@ -46,7 +46,7 @@
              android:textColor="@color/onSurface"
              style="@style/Widget.AppCompat.Button.Borderless"
              android:id="@+id/clear_all_button"
-             android:text="Clear All" />
+             android:text="@string/clear_all" />
 
     </LinearLayout>
 
@@ -80,8 +80,11 @@
              android:gravity="center_horizontal|center_vertical"
              android:textSize="16sp"
              android:id="@+id/empty_view"
-             android:text="No notifications yet" />
+             android:text="@string/no_notifications_yet" />
 
     </FrameLayout>
 
 </LinearLayout>
+
+
+

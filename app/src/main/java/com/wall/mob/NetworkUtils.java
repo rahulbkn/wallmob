@@ -57,3 +57,4 @@ public class NetworkUtils {
         return getConnectionSpeed(context) == ConnectionSpeed.SLOW;
     }
 }
+// test

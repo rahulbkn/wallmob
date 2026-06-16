@@ -68,7 +68,7 @@ public class MenuBottomSheetDialog extends BottomSheetDialog {
 
         if (updateItem != null) {
             updateItem.setOnClickListener(v -> {
-                Toast.makeText(context, "Already using latest version", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, context.getString(R.string.already_latest_version), Toast.LENGTH_SHORT).show();
                 dismiss();
             });
         }
@@ -107,7 +107,7 @@ public class MenuBottomSheetDialog extends BottomSheetDialog {
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
             context.startActivity(intent);
         } catch (Exception e) {
-            Toast.makeText(context, "Cannot open link", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.cannot_open_link), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -128,7 +128,7 @@ public class MenuBottomSheetDialog extends BottomSheetDialog {
             intent.putExtra(Intent.EXTRA_SUBJECT, "App Support");
             context.startActivity(Intent.createChooser(intent, "Contact Us"));
         } catch (Exception e) {
-            Toast.makeText(context, "No email app found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, context.getString(R.string.no_email_app), Toast.LENGTH_SHORT).show();
         }
     }
     @Override
@@ -161,3 +161,4 @@ protected void onStart() {
     }
 }
 }
+// test

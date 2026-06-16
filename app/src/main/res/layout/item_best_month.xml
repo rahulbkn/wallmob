@@ -30,8 +30,8 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             android:padding="20dp"
-            android:text="Wallpaper Title"
-            android:textColor="@android:color/white"
+            android:text="@string/wallpaper_title"
+            android:textColor="@color/onImage"
             android:textSize="17sp"
             android:textStyle="bold"
             android:maxLines="2"
@@ -39,3 +39,6 @@
             android:layout_alignParentBottom="true" />
     </RelativeLayout>
 </androidx.cardview.widget.CardView>
+
+
+

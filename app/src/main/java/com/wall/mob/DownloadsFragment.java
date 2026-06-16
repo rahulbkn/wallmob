@@ -134,12 +134,14 @@ public class DownloadsFragment extends Fragment implements WallpaperAdapter.OnWa
                     emptyStateView.setVisibility(View.VISIBLE);
                 }
 
-                Toast.makeText(requireContext(), "Deleted successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.deleted_successfully), Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(requireContext(), "Failed to delete file", Toast.LENGTH_SHORT).show();
+                Toast.makeText(requireContext(), getString(R.string.failed_delete_file), Toast.LENGTH_SHORT).show();
             }
         } catch (Exception e) {
-            Toast.makeText(requireContext(), "Error deleting file", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), getString(R.string.error_deleting_file), Toast.LENGTH_SHORT).show();
         }
     }
 }
+
+// test

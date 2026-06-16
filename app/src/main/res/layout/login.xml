@@ -10,7 +10,7 @@
         android:id="@+id/loadingOverlay"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#80000000"
+        android:background="@color/scrim"
         android:visibility="gone" />
 
     <!-- Your original content preserved below -->
@@ -27,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="Welcome"
+            android:text="@string/welcome"
             android:textSize="32sp"
             android:textStyle="bold"
             android:textColor="@color/onSurface" />
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="48dp"
-            android:text="Sign in to your account"
+            android:text="@string/sign_in_to_account"
             android:textSize="16sp"
             android:textColor="@color/gray_dark" />
 
@@ -56,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:textColor="@color/onSurface"
-                android:hint="Email"
+                android:hint="@string/email"
                 android:textColorHint="@color/gray_medium"
                 android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="12sp"
                 android:textColor="@color/onSurface"
-                android:hint="Password"
+                android:hint="@string/password"
                 android:textColorHint="@color/gray_medium"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
@@ -90,7 +90,7 @@
             android:layout_marginBottom="32dp"
             android:padding="8dp"
             android:background="?android:attr/selectableItemBackground"
-            android:text="Forgot Password?"
+            android:text="@string/forgot_password"
             android:textSize="14sp"
             android:textColor="@color/onSurface"
             android:gravity="end" />
@@ -102,7 +102,7 @@
             android:layout_marginBottom="16dp"
             android:background="@drawable/button_primary"
             app:backgroundTint="@null"
-            android:text="Sign In"
+            android:text="@string/sign_in"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/white"
@@ -115,7 +115,7 @@
             android:layout_height="56dp"
             android:layout_marginBottom="32dp"
             android:background="@drawable/button_outline"
-            android:text="Continue as Guest"
+            android:text="@string/continue_as_guest"
             android:textSize="16sp"
             android:textColor="@color/onSurface" />
 
@@ -129,7 +129,7 @@
                 android:id="@+id/textview14"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Don't have an account? "
+                android:text="@string/dont_have_account"
                 android:textSize="14sp"
                 android:textColor="@color/gray_dark" />
 
@@ -139,7 +139,7 @@
                 android:layout_height="wrap_content"
                 android:padding="4dp"
                 android:background="?android:attr/selectableItemBackground"
-                android:text="Sign Up"
+                android:text="@string/sign_up"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:textColor="@color/onSurface" />
@@ -158,3 +158,6 @@
         android:contentDescription="@string/loading" />
 
 </FrameLayout>
+
+
+

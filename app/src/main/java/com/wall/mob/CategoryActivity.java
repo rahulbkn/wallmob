@@ -219,7 +219,7 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
 
         if (filterButton != null) {
             filterButton.setOnClickListener(v ->
-                    Toast.makeText(this, "Filter options coming soon", Toast.LENGTH_SHORT).show());
+                    Toast.makeText(this, getString(R.string.filter_options_coming_soon), Toast.LENGTH_SHORT).show());
         }
 
         if (fabScrollTop != null) {
@@ -352,7 +352,7 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
         isLoading = false;
         showLoading(false);
         showEmptyState(wallpapers.isEmpty());
-        Toast.makeText(CategoryActivity.this, "Error: " + message, Toast.LENGTH_LONG).show();
+        Toast.makeText(CategoryActivity.this, getString(R.string.error_message, message), Toast.LENGTH_LONG).show();
     }
 
     private void loadNextPage() {
@@ -468,3 +468,4 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
         return Math.round(dp * density);
     }
 }
+// test

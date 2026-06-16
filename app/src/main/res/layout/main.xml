@@ -1,165 +1,166 @@
-<androidx.coordinatorlayout.widget.CoordinatorLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android" 
-    xmlns:app="http://schemas.android.com/apk/res-auto" 
-    xmlns:tools="http://schemas.android.com/tools" 
-    android:layout_width="match_parent" 
-    android:layout_height="match_parent" >
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+     android:background="@color/background" >
 
-    <com.google.android.material.appbar.AppBarLayout 
-        android:id="@+id/appBarLayout" 
-        android:layout_width="match_parent" 
-        android:layout_height="wrap_content" 
-        android:background="@android:color/transparent" 
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
         app:elevation="0dp">
 
-        <com.google.android.material.appbar.CollapsingToolbarLayout 
-            android:id="@+id/collapsingToolbar" 
-            android:layout_width="match_parent" 
-            android:layout_height="wrap_content" 
-            app:layout_scrollFlags="scroll|enterAlways|snap" 
-            app:contentScrim="@color/surface" 
-            app:expandedTitleMarginStart="64dp" 
-            app:expandedTitleMarginEnd="64dp" 
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsingToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:contentScrim="@color/surface"
+            app:expandedTitleMarginStart="64dp"
+            app:expandedTitleMarginEnd="64dp"
             app:titleEnabled="false">
 
-            <LinearLayout 
-                android:id="@+id/linear42" 
-                android:layout_width="match_parent" 
-                android:layout_height="wrap_content" 
-                android:orientation="vertical" 
+            <LinearLayout
+                android:id="@+id/linear42"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
                 app:layout_collapseMode="pin">
 
-                <androidx.appcompat.widget.Toolbar 
-                    android:id="@+id/toolbar" 
-                    android:layout_width="match_parent" 
-                    android:layout_height="?attr/actionBarSize" 
-                    android:background="@color/surface" 
-                    android:elevation="4dp" 
-                    android:paddingStart="12dp" 
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@color/surface"
+                    android:elevation="4dp"
+                    android:paddingStart="12dp"
                     android:paddingEnd="12dp">
 
-                    <LinearLayout 
-                        android:layout_width="match_parent" 
-                        android:layout_height="match_parent" 
-                        android:orientation="horizontal" 
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
                         android:gravity="center_vertical">
 
-                        <ImageView 
-                            android:id="@+id/btn_menu" 
-                            android:layout_width="24dp" 
-                            android:layout_height="24dp" 
-                            android:src="@drawable/ic_menu" 
-                            android:scaleType="centerInside" 
-                            app:tint="@color/onSurface" 
-                            android:background="?attr/selectableItemBackgroundBorderless"
-                            android:clickable="true"
-                            android:focusable="true"/>
-
-                        <TextView 
-                            android:id="@+id/textview1" 
-                            android:layout_width="wrap_content" 
-                            android:layout_height="wrap_content" 
-                            android:text=" WallMob " 
-                            android:textSize="20sp" 
-                            android:visibility="gone" 
-                            android:textStyle="bold" 
-                            android:layout_marginStart="8dp"
-                            android:textColor="@color/onSurface"/>
-
-                        <LinearLayout 
-                            android:id="@+id/searchLayout" 
-                            android:layout_width="0dp" 
-                            android:layout_height="36dp" 
-                            android:layout_weight="1" 
-                            android:layout_marginStart="16dp" 
-                            android:layout_marginEnd="16dp"
-                            android:background="@drawable/bg_search" 
-                            android:gravity="center_vertical" 
-                            android:orientation="horizontal" 
-                            android:paddingStart="12dp" 
-                            android:paddingEnd="8dp"> <ImageView 
-                                android:id="@+id/imageview1" 
-                                android:layout_width="20dp" 
-                                android:layout_height="20dp" 
-                                android:src="@drawable/ic_search" 
-                                app:tint="@color/gray_dark"/>
-
-                            <TextView 
-                                android:layout_width="0dp" 
-                                android:layout_height="wrap_content" 
-                                android:layout_weight="1"
-                                android:layout_marginStart="8dp"
-                                android:text="@string/search"
-                                android:textColor="@color/gray_dark" 
-                                android:textSize="14sp"/>
-                                
-                            <ImageView 
-                                android:id="@+id/btn_filter" 
-                                android:layout_width="24dp" 
-                                android:layout_height="24dp" 
-                                android:padding="2dp"
-                                android:background="?attr/selectableItemBackgroundBorderless"
-                                android:src="@drawable/ic_filter" 
-                                app:tint="@color/gray_dark"/>
-                        </LinearLayout>
-
-                        <LinearLayout 
-                            android:id="@+id/coinDisplayLayout" 
-                            android:layout_width="wrap_content" 
-                            android:layout_height="wrap_content" 
-                            android:orientation="horizontal" 
-                            android:gravity="center_vertical" 
-                            android:visibility="gone" 
-                            android:background="@drawable/coin_background" 
-                            android:paddingStart="10dp" 
-                            android:paddingEnd="10dp" 
-                            android:paddingTop="6dp" 
-                            android:paddingBottom="6dp" 
-                            android:layout_marginEnd="12dp">
-
-                            <ImageView 
-                                android:layout_width="16dp" 
-                                android:layout_height="16dp" 
-                                android:src="@drawable/ic_coin" 
-                                android:scaleType="centerInside" 
-                                android:layout_marginEnd="4dp"/>
-
-                            <TextView 
-                                android:id="@+id/toolbarCoinsTextView" 
-                                android:layout_width="wrap_content" 
-                                android:layout_height="wrap_content" 
-                                android:text="0" 
-                                android:textColor="@color/onSurface" 
-                                android:textSize="14sp" 
-                                android:textStyle="bold"/>
-                        </LinearLayout>
-
-                        <ImageView 
-                            android:id="@+id/imageview3" 
-                            android:layout_width="24dp" 
-                            android:layout_height="24dp" 
-                            android:src="@drawable/ic_notification" 
-                            android:layout_marginEnd="16dp"
-                            android:scaleType="centerInside" 
+                        <ImageView
+                            android:id="@+id/btn_menu"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_menu"
+                            android:scaleType="centerInside"
                             app:tint="@color/onSurface"
                             android:background="?attr/selectableItemBackgroundBorderless"
                             android:clickable="true"
                             android:focusable="true"/>
 
-                        <androidx.cardview.widget.CardView 
-                            android:id="@+id/cardview1" 
-                            android:layout_width="24dp" 
-                            android:layout_height="24dp" 
+                        <TextView
+                            android:id="@+id/textview1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/wallmob_brand"
+                            android:textSize="20sp"
+                            android:visibility="gone"
+                            android:textStyle="bold"
+                            android:layout_marginStart="8dp"
+                            android:textColor="@color/onSurface"/>
+
+                        <LinearLayout
+                            android:id="@+id/searchLayout"
+                            android:layout_width="0dp"
+                            android:layout_height="36dp"
+                            android:layout_weight="1"
+                            android:layout_marginStart="16dp"
+                            android:layout_marginEnd="16dp"
+                            android:background="@drawable/bg_search"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="8dp"> <ImageView
+                                android:id="@+id/imageview1"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
+                                android:src="@drawable/ic_search"
+                                app:tint="@color/gray_dark"/>
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="8dp"
+                                android:text="@string/search"
+                                android:textColor="@color/gray_dark"
+                                android:textSize="14sp"/>
+
+                            <ImageView
+                                android:id="@+id/btn_filter"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:padding="2dp"
+                                android:background="?attr/selectableItemBackgroundBorderless"
+                                android:src="@drawable/ic_filter"
+                                app:tint="@color/gray_dark"/>
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/coinDisplayLayout"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:visibility="gone"
+                            android:background="@drawable/coin_background"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:paddingTop="6dp"
+                            android:paddingBottom="6dp"
+                            android:layout_marginEnd="12dp">
+
+                            <ImageView
+                                android:layout_width="16dp"
+                                android:layout_height="16dp"
+                                android:src="@drawable/ic_coin"
+                                android:scaleType="centerInside"
+                                android:layout_marginEnd="4dp"/>
+
+                            <TextView
+                                android:id="@+id/toolbarCoinsTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="@color/onSurface"
+                                android:textSize="14sp"
+                                android:textStyle="bold"/>
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/imageview3"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:src="@drawable/ic_notification"
+                            android:layout_marginEnd="16dp"
+                            android:scaleType="centerInside"
+                            app:tint="@color/onSurface"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true"
+                            android:focusable="true"/>
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardview1"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
                             app:cardBackgroundColor="@android:color/transparent"
-                            app:cardCornerRadius="12dp" 
+                            app:cardCornerRadius="12dp"
                             android:layout_marginEnd="16dp"
                             app:cardElevation="0dp">
 
-                            <ImageView 
-                                android:id="@+id/imageview4" 
-                                android:layout_width="match_parent" 
-                                android:layout_height="match_parent" 
-                                android:src="@drawable/ic_profile" 
+                            <ImageView
+                                android:id="@+id/imageview4"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/ic_profile"
                                 android:scaleType="centerCrop"
                                 app:tint="@color/onSurface"/>
                         </androidx.cardview.widget.CardView>
@@ -170,26 +171,26 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout 
-        android:id="@+id/swipeRefreshLayout" 
-        android:layout_width="match_parent" 
-        android:layout_height="match_parent" 
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <FrameLayout 
-            android:id="@+id/content_frame" 
-            android:layout_width="match_parent" 
+        <FrameLayout
+            android:id="@+id/content_frame"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"/>
-            
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView 
-        android:id="@+id/bottomNavigationView" 
-        android:layout_width="match_parent" 
-        android:layout_height="wrap_content" 
-        android:layout_gravity="bottom" 
-        android:background="@color/surface" 
-        app:elevation="16dp" 
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNavigationView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/surface"
+        app:elevation="16dp"
         app:itemTextAppearanceActive="@style/BottomNavActiveText"
         app:itemTextAppearanceInactive="@style/BottomNavInactiveText"
         app:labelVisibilityMode="labeled"
@@ -198,4 +199,8 @@
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+
+
 

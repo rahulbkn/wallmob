@@ -28,7 +28,7 @@
 			android:id="@+id/textview18"
 			android:layout_width="0dp"
 			android:layout_height="wrap_content"
-			android:text="Reset Password"
+			android:text="@string/reset_password"
 			android:textSize="24sp"
 			android:textStyle="bold"
 			android:textColor="@color/onSurface"
@@ -55,7 +55,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="16dp"
-			android:text="Forgot Password\?"
+			android:text="@string/forgot_password_title"
 			android:textSize="28sp"
 			android:textStyle="bold"
 			android:textColor="@color/onSurface" />
@@ -65,7 +65,7 @@
 			android:layout_height="wrap_content"
 			android:layout_marginBottom="40dp"
 			android:gravity="center_horizontal|center_vertical"
-			android:text="Don't worry! It happens. Please enter the email address associated with your account."
+			android:text="@string/forgot_password_desc"
 			android:textSize="16sp"
 			android:textColor="@color/gray_dark"
 			android:lineSpacingExtra="4dp" />
@@ -83,7 +83,7 @@
 				android:layout_height="wrap_content"
 				android:textSize="12sp"
 				android:textColor="@color/onSurface"
-				android:hint="Email Address"
+				android:hint="@string/email_address"
 				android:textColorHint="@color/gray_medium"
 				android:inputType="textEmailAddress" />
 		</com.google.android.material.textfield.TextInputLayout>
@@ -94,7 +94,7 @@ app:backgroundTint="@null"
 			android:layout_height="56dp"
 			android:layout_marginBottom="24dp"
 			android:background="@drawable/button_primary"
-			android:text="Send Reset Link"
+			android:text="@string/send_reset_link"
 			android:textSize="16sp"
 			android:textStyle="bold"
 			android:textColor="@color/white"
@@ -105,9 +105,13 @@ app:backgroundTint="@null"
 			android:layout_height="wrap_content"
 			android:padding="8dp"
 			android:background="?android:attr/selectableItemBackground"
-			android:text="Remember your password\? Sign In"
+			android:text="@string/remember_password_sign_in"
 			android:textSize="14sp"
 			android:textStyle="bold"
 			android:textColor="@color/onSurface" />
 	</LinearLayout>
 </LinearLayout>
+
+
+
+

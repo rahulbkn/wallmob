@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
@@ -46,6 +45,7 @@ public class SettingsActivity extends AppCompatActivity {
         
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        ThemeUtils.applySystemBars(this);
 
         sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
 
@@ -87,7 +87,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void applyThemeFromPreference() {
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         String theme = prefs.getString(KEY_THEME, "system");
-        applyTheme(theme);
+        ThemeUtils.applyTheme(theme);
     }
 
     private void updateUI() {
@@ -121,14 +121,7 @@ public class SettingsActivity extends AppCompatActivity {
                     updateUI();
                     applyTheme(selectedValue);
                     dialog.dismiss();
-                    
-                    // Restart app to apply theme globally
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        Intent intent = new Intent(this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
-                    }, 300);
+                    recreate();
                 })
                 .show();
     }
@@ -136,17 +129,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void applyTheme(String themeValue) {
         // Persist the selection so SketchApplication can restore it on cold start
         getSharedPreferences(PREF_NAME, MODE_PRIVATE).edit().putString(KEY_THEME, themeValue).apply();
-        switch (themeValue) {
-            case "light":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                break;
-            case "dark":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                break;
-            default:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                break;
-        }
+        ThemeUtils.applyTheme(themeValue);
     }
 
     // --- LANGUAGE LOGIC ---
@@ -167,14 +150,7 @@ public class SettingsActivity extends AppCompatActivity {
                     
                     dialog.dismiss();
                     updateUI();
-                    
-                    // Restart app to apply language globally
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        Intent restartIntent = new Intent(this, MainActivity.class);
-                        restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(restartIntent);
-                        finish();
-                    }, 300);
+                    recreate();
                 })
                 .show();
     }
@@ -223,7 +199,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             new Handler(Looper.getMainLooper()).post(() -> {
                 Toast.makeText(this, getString(R.string.cache_cleared), Toast.LENGTH_SHORT).show();
-                tvCacheSize.setText("0.00 MB");
+                tvCacheSize.setText(R.string.cache_zero_mb);
             });
         }).start();
     }
@@ -253,3 +229,5 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
 }
+
+// test

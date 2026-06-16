@@ -80,7 +80,7 @@ public class UnityAdActivity extends Activity {
 
         // Update UI
         updateCoinsDisplay();
-        statusTextView.setText("Initializing Unity Ads...");
+        statusTextView.setText(R.string.ad_initializing);
 
         // Initialize Unity Ads Manager
         adsManager = UnityAdsManager.getInstance(this);
@@ -120,11 +120,11 @@ public class UnityAdActivity extends Activity {
                 } else {
                     if (retryCount < 10) {
                         Log.w(TAG, "Unity Ads not initialized yet, retrying in 2 seconds...");
-                        statusTextView.setText("Waiting for ads initialization... (" + retryCount + "/10)");
+                        statusTextView.setText(getString(R.string.ad_waiting_initialization, retryCount));
                         showAdButton.postDelayed(this, 2000);
                     } else {
                         Log.e(TAG, "✗ Unity Ads failed to initialize after 10 attempts");
-                        statusTextView.setText("Failed to initialize ads. Please restart app.");
+                        statusTextView.setText(R.string.ad_failed_initialize);
                     }
                 }
             }
@@ -133,7 +133,7 @@ public class UnityAdActivity extends Activity {
 
     private void loadRewardedAd() {
         Log.d(TAG, "loadRewardedAd: Loading rewarded ad...");
-        statusTextView.setText("Loading rewarded ad...");
+        statusTextView.setText(R.string.ad_loading_rewarded);
 
         UnityAds.load(REWARDED_AD_ID, new IUnityAdsLoadListener() {
             @Override
@@ -142,7 +142,7 @@ public class UnityAdActivity extends Activity {
                 runOnUiThread(() -> {
                     isRewardedAdLoaded = true;
                     showAdButton.setEnabled(true);
-                    statusTextView.setText("Rewarded ad loaded! Ready to earn coins.");
+                    statusTextView.setText(R.string.ad_loaded_ready);
                 });
             }
 
@@ -151,8 +151,8 @@ public class UnityAdActivity extends Activity {
                 Log.e(TAG, "✗ Failed to load rewarded ad: " + error + " - " + message);
                 runOnUiThread(() -> {
                     isRewardedAdLoaded = false;
-                    statusTextView.setText("Failed to load ad: " + error);
-                    Toast.makeText(UnityAdActivity.this, "Ad load failed", Toast.LENGTH_LONG).show();
+                    statusTextView.setText(getString(R.string.ad_failed_load, error));
+                    Toast.makeText(UnityAdActivity.this, getString(R.string.ad_load_failed), Toast.LENGTH_LONG).show();
 
                     // Retry after 5 seconds
                     showAdButton.postDelayed(() -> {
@@ -167,20 +167,20 @@ public class UnityAdActivity extends Activity {
     private void showRewardedAd() {
         if (!isRewardedAdLoaded) {
             Log.w(TAG, "showRewardedAd: Ad not ready");
-            Toast.makeText(this, "Ad not ready yet!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.ad_not_ready), Toast.LENGTH_SHORT).show();
             loadRewardedAd();
             return;
         }
 
         showAdButton.setEnabled(false);
-        statusTextView.setText("Showing rewarded ad...");
+        statusTextView.setText(R.string.ad_showing_rewarded);
         Log.d(TAG, "Showing rewarded ad...");
 
         UnityAds.show(this, REWARDED_AD_ID, new IUnityAdsShowListener() {
             @Override
             public void onUnityAdsShowStart(String adUnitId) {
                 Log.d(TAG, "Ad show started: " + adUnitId);
-                runOnUiThread(() -> statusTextView.setText("Ad started..."));
+                runOnUiThread(() -> statusTextView.setText(R.string.ad_started));
             }
 
             @Override
@@ -196,10 +196,10 @@ public class UnityAdActivity extends Activity {
 
                     if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
                         rewardUser();
-                        statusTextView.setText("Ad completed! You earned 1 coin!");
+                        statusTextView.setText(R.string.ad_completed_reward);
                         Log.d(TAG, "✓ User rewarded with 1 coin, total = " + currentCoins);
                     } else if (state == UnityAds.UnityAdsShowCompletionState.SKIPPED) {
-                        statusTextView.setText("Ad skipped. No reward.");
+                        statusTextView.setText(R.string.ad_skipped_no_reward);
                         Log.w(TAG, "Ad skipped, no reward");
                     }
 
@@ -216,8 +216,8 @@ public class UnityAdActivity extends Activity {
                 Log.e(TAG, "✗ Ad show failed: " + error + " - " + message);
                 runOnUiThread(() -> {
                     isRewardedAdLoaded = false;
-                    statusTextView.setText("Show failed: " + error);
-                    Toast.makeText(UnityAdActivity.this, "Ad failed to show", Toast.LENGTH_SHORT).show();
+                    statusTextView.setText(getString(R.string.ad_show_failed, error));
+                    Toast.makeText(UnityAdActivity.this, getString(R.string.ad_failed_show), Toast.LENGTH_SHORT).show();
                     showAdButton.setEnabled(true);
                     loadRewardedAd();
                 });
@@ -265,7 +265,7 @@ public class UnityAdActivity extends Activity {
 
     private void updateCoinsDisplay() {
         Log.d(TAG, "updateCoinsDisplay: Coins = " + currentCoins);
-        coinsTextView.setText("Coins: " + currentCoins);
+        coinsTextView.setText(getString(R.string.coins_count, currentCoins));
     }
 
     private void updateTransactionList() {
@@ -297,3 +297,4 @@ public class UnityAdActivity extends Activity {
         }
     }
 }
+// test

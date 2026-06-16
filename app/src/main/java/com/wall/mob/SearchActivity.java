@@ -92,7 +92,7 @@ private void initializeViews() {
     setSupportActionBar(toolbar);
     if (getSupportActionBar() != null) {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle("Search Wallpapers");
+        getSupportActionBar().setTitle(R.string.search_wallpapers);
     }
 
     // Fixed: Don't show keyboard immediately, wait for activity to be ready
@@ -194,7 +194,7 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
     private void setupProgressDialog() {
         searchProgressDialog = new ProgressDialog(this);
-        searchProgressDialog.setMessage("Searching online...");
+        searchProgressDialog.setMessage(getString(R.string.searching_online));
         searchProgressDialog.setCancelable(false);
     }
 
@@ -223,7 +223,7 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             public void onCancelled(DatabaseError databaseError) {
                 runOnUiThread(() -> {
                     loadingProgressBar.setVisibility(View.GONE);
-                    Toast.makeText(SearchActivity.this, "Failed to load premium wallpapers", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SearchActivity.this, getString(R.string.failed_load_premium_wallpapers_period), Toast.LENGTH_SHORT).show();
                     showInitialState();
                 });
             }
@@ -288,7 +288,7 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 runOnUiThread(() -> {
                     searchProgressDialog.dismiss();
                     isSearchingApi = false;
-                    Toast.makeText(SearchActivity.this, "Search failed: " + message, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(SearchActivity.this, getString(R.string.search_failed, message), Toast.LENGTH_SHORT).show();
                     updateNoResultsView(currentSearchQuery, searchResults.isEmpty());
                 });
             }
@@ -339,7 +339,7 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
     private void updateNoResultsView(String query, boolean noResults) {
         if (noResults) {
             noResultsText.setVisibility(View.VISIBLE);
-            noResultsText.setText("No results found for \"" + query + "\"");
+            noResultsText.setText(getString(R.string.no_results_for, query));
             searchResultsRecyclerView.setVisibility(View.GONE);
         } else {
             noResultsText.setVisibility(View.GONE);
@@ -349,7 +349,7 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
     private void showInitialState() {
         noResultsText.setVisibility(View.VISIBLE);
-        noResultsText.setText("Start typing to search wallpapers");
+        noResultsText.setText(R.string.search_start_typing);
         searchResultsRecyclerView.setVisibility(View.GONE);
         wallpaperAdapter.updateData(new ArrayList<>());
     }
@@ -395,7 +395,7 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
     @Override
     public void onWallpaperLongClick(Wallpaper wallpaper, int position) {
-        Toast.makeText(this, "Long-clicked: " + wallpaper.getTitle(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.long_clicked, wallpaper.getTitle()), Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -412,3 +412,4 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         }
     }
 }
+// test

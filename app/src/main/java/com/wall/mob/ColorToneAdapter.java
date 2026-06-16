@@ -76,3 +76,4 @@ public class ColorToneAdapter extends RecyclerView.Adapter<ColorToneAdapter.View
         }
     }
 }
+// test
