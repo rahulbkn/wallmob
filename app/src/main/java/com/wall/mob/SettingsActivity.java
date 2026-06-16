@@ -56,7 +56,7 @@ public class SettingsActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(androidx.appcompat.R.drawable.abc_ic_ab_back_material);
             // Tint navigation icon to theme-aware onSurface color
-            toolbar.getNavigationIcon().setTint(getResources().getColor(R.color.onSurface));
+            toolbar.getNavigationIcon().setTint(androidx.core.content.ContextCompat.getColor(this, R.color.onSurface));
         }
 
         // Initialize Views
@@ -114,7 +114,7 @@ public class SettingsActivity extends AppCompatActivity {
         int checkedItem = Arrays.asList(values).indexOf(currentTheme);
 
         new AlertDialog.Builder(this)
-                .setTitle("Select Theme")
+                .setTitle(getString(R.string.select_theme))
                 .setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
                     String selectedValue = values[which];
                     sharedPreferences.edit().putString(KEY_THEME, selectedValue).apply();
@@ -158,7 +158,7 @@ public class SettingsActivity extends AppCompatActivity {
         int checkedItem = java.util.Arrays.asList(codes).indexOf(currentLang);
 
         new androidx.appcompat.app.AlertDialog.Builder(this)
-                .setTitle("Select Language")
+                .setTitle(getString(R.string.select_language))
                 .setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
                     String selectedCode = codes[which];
                     
@@ -215,14 +215,14 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void clearAppCache() {
-        tvCacheSize.setText("Clearing...");
+        tvCacheSize.setText(getString(R.string.clearing_cache));
         new Thread(() -> {
             deleteDir(getCacheDir());
             deleteDir(getExternalCacheDir());
             Glide.get(this).clearDiskCache();
 
             new Handler(Looper.getMainLooper()).post(() -> {
-                Toast.makeText(this, "Cache cleared", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.cache_cleared), Toast.LENGTH_SHORT).show();
                 tvCacheSize.setText("0.00 MB");
             });
         }).start();

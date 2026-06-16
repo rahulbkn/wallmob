@@ -144,8 +144,8 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
         // Update the collapsing toolbar text colors to match the new White/Light theme
         if (collapsingToolbar != null) {
             collapsingToolbar.setTitle(categoryName);
-            collapsingToolbar.setCollapsedTitleTextColor(Color.BLACK);
-            collapsingToolbar.setExpandedTitleColor(Color.WHITE);
+            collapsingToolbar.setCollapsedTitleTextColor(ContextCompat.getColor(this, R.color.onSurface));
+            collapsingToolbar.setExpandedTitleColor(ContextCompat.getColor(this, R.color.white));
         }
         
         if (categoryNameText != null) {

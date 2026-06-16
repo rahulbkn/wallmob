@@ -4,7 +4,7 @@
      xmlns:app="http://schemas.android.com/apk/res-auto"
      android:layout_height="match_parent"
      android:layout_width="match_parent"
-     android:background="#FFFFFF"
+     android:background="@color/surface"
      android:fitsSystemWindows="true"
      android:id="@+id/no_internet_root">
 
@@ -34,8 +34,8 @@
                  android:layout_height="64dp"
                  android:layout_width="64dp"
                  android:src="@drawable/ic_no_wifi"
-                 android:contentDescription="No Internet"
-                 app:tint="#000000"
+                 android:contentDescription="@string/no_internet_title"
+                 app:tint="@color/onSurface"
                  android:layout_gravity="center" />
 
         </FrameLayout>
@@ -46,9 +46,9 @@
              android:layout_marginBottom="12dp"
              android:textSize="24sp"
              android:fontFamily="sans-serif-medium"
-             android:textColor="#000000"
+             android:textColor="@color/onSurface"
              android:id="@+id/no_internet_title"
-             android:text="No Internet Connection"
+             android:text="@string/no_internet_title"
              android:textStyle="bold" />
 
         <TextView
@@ -57,10 +57,10 @@
              android:layout_marginBottom="32dp"
              android:gravity="center"
              android:textSize="16sp"
-             android:textColor="#666666"
+             android:textColor="@color/gray_dark"
              android:lineSpacingExtra="4dp"
              android:id="@+id/no_internet_message"
-             android:text="It looks like you're not connected to the internet. Please check your connection and try again." />
+             android:text="@string/no_internet_desc" />
 
         <Button
              android:layout_height="56dp"
@@ -71,9 +71,9 @@
              android:textSize="16sp"
              android:textAllCaps="false"
              android:stateListAnimator="@null"
-             android:textColor="#FFFFFF"
+             android:textColor="@color/white"
              android:id="@+id/no_internet_retry"
-             android:text="Retry"
+             android:text="@string/retry"
              android:textStyle="bold" />
 
         <Button
@@ -83,9 +83,9 @@
              android:textSize="16sp"
              android:textAllCaps="false"
              android:stateListAnimator="@null"
-             android:textColor="#000000"
+             android:textColor="@color/onSurface"
              android:id="@+id/no_internet_settings"
-             android:text="Open Wi‑Fi Settings"
+             android:text="@string/open_wifi_settings"
              android:textStyle="bold" />
 
     </LinearLayout>
