@@ -12,7 +12,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/surface"
         android:elevation="4dp"
-        app:title="Settings"
+        app:title="@string/settings"
         app:titleTextColor="@color/onSurface"
         app:navigationIcon="?attr/homeAsUpIndicator" />
 
@@ -34,7 +34,7 @@
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
                 android:paddingBottom="8dp"
-                android:text="Appearance"
+                android:text="@string/appearance"
                 android:textColor="#C9A84C"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -64,7 +64,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Theme"
+                        android:text="@string/theme"
                         android:textColor="@color/onSurface"
                         android:textSize="16sp" />
 
@@ -72,7 +72,7 @@
                         android:id="@+id/tv_theme_desc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="System Default"
+                        android:text="@string/system_default"
                         android:textColor="@color/gray_dark"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -103,7 +103,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Language"
+                        android:text="@string/language"
                         android:textColor="@color/onSurface"
                         android:textSize="16sp" />
 
@@ -111,7 +111,7 @@
                         android:id="@+id/tv_language_desc"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="English"
+                        android:text="@string/english"
                         android:textColor="@color/gray_dark"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -125,7 +125,7 @@
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
                 android:paddingBottom="8dp"
-                android:text="Storage"
+                android:text="@string/storage"
                 android:textColor="#C9A84C"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -155,7 +155,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Clear Cache"
+                        android:text="@string/clear_cache"
                         android:textColor="@color/onSurface"
                         android:textSize="16sp" />
 
@@ -163,7 +163,7 @@
                         android:id="@+id/tv_cache_size"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Calculating..."
+                        android:text="@string/calculating"
                         android:textColor="@color/gray_dark"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -177,7 +177,7 @@
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
                 android:paddingBottom="8dp"
-                android:text="About"
+                android:text="@string/about"
                 android:textColor="#C9A84C"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -202,7 +202,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
-                    android:text="Privacy Policy"
+                    android:text="@string/privacy_policy"
                     android:textColor="@color/onSurface"
                     android:textSize="16sp" />
             </LinearLayout>
