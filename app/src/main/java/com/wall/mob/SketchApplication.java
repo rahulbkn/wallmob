@@ -90,6 +90,7 @@ public class SketchApplication extends MultiDexApplication implements Applicatio
         super.onCreate();
 
         ThemeUtils.applyThemeFromPrefs(this);
+        LocaleHelper.applySavedLocale(this);
 
         mApplicationContext = getApplicationContext();
 

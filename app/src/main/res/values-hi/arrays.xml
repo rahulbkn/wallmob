@@ -1,28 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Theme Options -->
     <string-array name="theme_options">
         <item>@string/system_default</item>
         <item>@string/light</item>
         <item>@string/dark</item>
     </string-array>
 
-    <string-array name="theme_values" translatable="false">
-        <item>system</item>
-        <item>light</item>
-        <item>dark</item>
-    </string-array>
-
-    <!-- Language Options -->
     <string-array name="language_options">
         <item>@string/english</item>
         <item>@string/hindi</item>
         <item>@string/japanese</item>
-    </string-array>
-
-    <string-array name="language_codes" translatable="false">
-        <item>en</item>
-        <item>hi</item>
-        <item>ja</item>
     </string-array>
 </resources>
