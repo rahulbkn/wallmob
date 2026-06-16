@@ -34,6 +34,11 @@ import java.util.concurrent.Executors;
 
 public class WallpaperDetailsActivity extends AppCompatActivity {
 
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+    }
+
     private static final String TAG = "WallpaperDetails";
     private static final String EXTRA_WALLPAPER = "extra_wallpaper";
     private static final int REQUEST_EDIT = 1001;

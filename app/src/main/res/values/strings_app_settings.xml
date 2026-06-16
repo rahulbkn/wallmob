@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WallMob</string>
     <string name="select_theme">Select Theme</string>
     <string name="select_language">Select Language</string>
     <string name="system_default">System Default</string>

@@ -23,6 +23,12 @@
     <color name="gray_dark">#CCCCCC</color>
     <color name="green_success">#4CAF50</color>
 
+    <!-- Notification type indicators (same in night) -->
+    <color name="notification_wallpaper">#4CAF50</color>
+    <color name="notification_offer">#FF9800</color>
+    <color name="notification_favorites">#E91E63</color>
+    <color name="notification_default">#2196F3</color>
+
     <!-- Premium-specific colors (same in night) -->
     <color name="premium_background">#121212</color>
     <color name="premium_gold">#C9A84C</color>
