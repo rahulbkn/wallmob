@@ -625,7 +625,7 @@
                     android:layout_height="wrap_content"
                     android:text="Retry"
                     android:textSize="14sp"
-                    android:textColor="@color/white"
+                    android:textColor="@color/colorOnPrimary"
                     android:backgroundTint="@color/colorPrimary"
                     android:paddingStart="32dp"
                     android:paddingEnd="32dp" />

@@ -99,7 +99,11 @@ public class NoInternetActivity extends AppCompatActivity {
                 }
             }
         };
-        registerReceiver(hideReceiver, new IntentFilter("com.wall.mob.ACTION_HIDE_NO_INTERNET"));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(hideReceiver, new IntentFilter("com.wall.mob.ACTION_HIDE_NO_INTERNET"), Context.RECEIVER_EXPORTED);
+        } else {
+            registerReceiver(hideReceiver, new IntentFilter("com.wall.mob.ACTION_HIDE_NO_INTERNET"));
+        }
     }
 
     /**
