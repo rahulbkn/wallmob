@@ -215,14 +215,14 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void clearAppCache() {
-        tvCacheSize.setText("Clearing...");
+        tvCacheSize.setText(getString(R.string.clearing_cache));
         new Thread(() -> {
             deleteDir(getCacheDir());
             deleteDir(getExternalCacheDir());
             Glide.get(this).clearDiskCache();
 
             new Handler(Looper.getMainLooper()).post(() -> {
-                Toast.makeText(this, "Cache cleared", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.cache_cleared), Toast.LENGTH_SHORT).show();
                 tvCacheSize.setText("0.00 MB");
             });
         }).start();
