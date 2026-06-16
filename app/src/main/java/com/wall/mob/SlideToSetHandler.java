@@ -90,7 +90,7 @@ private static final int UNLIMITED_COINS = Integer.MAX_VALUE;
     Button btnEarnCoins = (Button) dialogView.findViewById(R.id.btnEarnCoins);
     Button btnCancel = (Button) dialogView.findViewById(R.id.btnCancel);
 
-    tvMessage.setText("You need " + requiredCoins + " coins to perform this action. Would you like to earn more coins?");
+    tvMessage.setText(activity.getString(R.string.coins_required_message, requiredCoins));
 
     // Use regular theme instead of translucent
     final AlertDialog dialog = new AlertDialog.Builder(activity)
@@ -259,13 +259,13 @@ private static final int UNLIMITED_COINS = Integer.MAX_VALUE;
                         public void onLoadFailed(@Nullable Drawable errorDrawable) {
                             WallpaperUtils.dismissProgressDialog(activity);
                             if (!activity.isDestroyedOrFinishing()) {
-                                Toast.makeText(activity, "Failed to load image for wallpaper", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, activity.getString(R.string.failed_load_wallpaper_image), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
             } catch (Exception e) {
                 WallpaperUtils.dismissProgressDialog(activity);
-                Toast.makeText(activity, "Failed to start wallpaper loading: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, activity.getString(R.string.failed_start_wallpaper_loading, e.getMessage()), Toast.LENGTH_SHORT).show();
             }
         }
     }

@@ -158,7 +158,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if (!termsCheckbox.isChecked()) {
-            Toast.makeText(this, "Please accept the Terms and Conditions", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.accept_terms_required), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -184,7 +184,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Toast.makeText(RegisterActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, getString(R.string.database_error, databaseError.getMessage()), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -200,14 +200,14 @@ public class RegisterActivity extends AppCompatActivity {
         databaseReference.child(userId).setValue(user)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(RegisterActivity.this, "Registration successful! Please login.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(RegisterActivity.this, getString(R.string.registration_successful), Toast.LENGTH_LONG).show();
                         
                         // Navigate back to LoginActivity
                         Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
                     } else {
-                        Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, getString(R.string.registration_failed, task.getException().getMessage()), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

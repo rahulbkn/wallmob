@@ -5,14 +5,15 @@
 	android:id="@+id/update_section"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
-	android:orientation="vertical">
+	android:orientation="vertical"
+	android:background="@color/background">
 	<androidx.appcompat.widget.Toolbar
 		android:id="@+id/toolbar"
 		android:layout_width="match_parent"
 		android:layout_height="?attr/actionBarSize"
-		android:background="@android:color/white"
-		android:title="Settings"
-		android:titleTextColor="@android:color/black"
+		android:background="@color/surface"
+		android:title="@string/settings"
+		android:titleTextColor="@color/onSurface"
 		app:navigationIcon="?attr/homeAsUpIndicator" />
 	<LinearLayout
 		android:id="@+id/linear1"
@@ -28,22 +29,22 @@
 			android:layout_height="wrap_content"
 			android:layout_marginTop="16dp"
 			android:textSize="16sp"
-			android:textColor="@android:color/black" />
+			android:textColor="@color/onSurface" />
 		<TextView
 			android:id="@+id/tv_update_status"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="8dp"
 			android:textSize="14sp"
-			android:textColor="@android:color/black" />
+			android:textColor="@color/onSurface" />
 		<com.google.android.material.button.MaterialButton
 			android:id="@+id/btn_check_updates"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:text="Update"
+			android:text="@string/update"
 			android:textSize="16sp"
-			android:textColor="@android:color/white"
-			android:backgroundTint="#000000"
+			android:textColor="@color/onImage"
+			android:backgroundTint="@color/colorPrimary"
 			app:backgroundTint="@null"
 			app:cornerRadius="8dp"
 			app:rippleColor="#eeeeee" />

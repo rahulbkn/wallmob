@@ -5,7 +5,7 @@
      xmlns:tools="http://schemas.android.com/tools"
      android:layout_height="match_parent"
      android:layout_width="match_parent"
-     android:background="@android:color/black"
+     android:background="@color/black"
      android:id="@+id/root">
 
     <ImageView
@@ -26,7 +26,7 @@
          android:background="@drawable/back_button_icon"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toStartOf="parent"
-         android:tint="@android:color/white"
+         android:tint="@color/onImage"
          android:layout_marginTop="35dp"
          android:layout_marginStart="16dp"
          android:id="@+id/back_button" />
@@ -77,10 +77,10 @@
                      android:layout_marginBottom="4dp"
                      android:ellipsize="end"
                      android:textSize="18sp"
-                     android:textColor="@android:color/white"
+                     android:textColor="@color/onImage"
                      android:maxLines="1"
                      android:id="@+id/editor_title"
-                     android:text="Image Effects"
+                     android:text="@string/image_effects"
                      android:textStyle="bold" />
 
                 <TextView
@@ -88,10 +88,10 @@
                      android:layout_width="wrap_content"
                      android:ellipsize="end"
                      android:textSize="12sp"
-                     android:textColor="#FFFFFF"
+                     android:textColor="@color/onImage"
                      android:maxLines="1"
                      android:id="@+id/editor_subtitle"
-                     android:text="Apply filters and effects to enhance your image" />
+                     android:text="@string/image_effects_desc" />
 
             </LinearLayout>
 
@@ -107,9 +107,9 @@
                      android:layout_width="wrap_content"
                      android:layout_marginBottom="8dp"
                      android:textSize="16sp"
-                     android:textColor="@android:color/white"
+                     android:textColor="@color/onImage"
                      android:id="@+id/blur_title"
-                     android:text="Blur Effect"
+                     android:text="@string/blur_effect"
                      android:textStyle="bold" />
 
                 <LinearLayout
@@ -125,7 +125,7 @@
                          android:layout_height="wrap_content"
                          android:layout_width="wrap_content"
                          android:textSize="14sp"
-                         android:textColor="@android:color/white"
+                         android:textColor="@color/onImage"
                          android:minWidth="24dp"
                          android:id="@+id/textview50"
                          android:text="0" />
@@ -135,8 +135,8 @@
                          android:layout_width="0dp"
                          android:max="25"
                          android:layout_marginHorizontal="12dp"
-                         android:thumbTint="@android:color/white"
-                         android:progressTint="@android:color/white"
+                         android:thumbTint="@color/onImage"
+                         android:progressTint="@color/onImage"
                          android:layout_weight="1"
                          android:id="@+id/blurSeekBar" />
 
@@ -144,7 +144,7 @@
                          android:layout_height="wrap_content"
                          android:layout_width="wrap_content"
                          android:textSize="14sp"
-                         android:textColor="@android:color/white"
+                         android:textColor="@color/onImage"
                          android:minWidth="24dp"
                          android:id="@+id/textview51"
                          android:text="25" />
@@ -165,9 +165,9 @@
                      android:layout_width="wrap_content"
                      android:layout_marginBottom="12dp"
                      android:textSize="16sp"
-                     android:textColor="@android:color/white"
+                     android:textColor="@color/onImage"
                      android:id="@+id/textview52"
-                     android:text="Color Filters"
+                     android:text="@string/color_filters"
                      android:textStyle="bold" />
 
                 <LinearLayout
@@ -185,10 +185,10 @@
                          android:background="@drawable/black_transparent_round"
                          android:textSize="8sp"
                          android:stateListAnimator="@null"
-                         android:textColor="@android:color/white"
+                         android:textColor="@color/onImage"
                          android:layout_weight="1"
                          android:id="@+id/btnOriginal"
-                         android:text="Original" />
+                         android:text="@string/original" />
 
                     <Button
                          android:layout_height="42dp"
@@ -197,10 +197,10 @@
                          android:layout_marginHorizontal="2dp"
                          android:textSize="8sp"
                          android:stateListAnimator="@null"
-                         android:textColor="@android:color/white"
+                         android:textColor="@color/onImage"
                          android:layout_weight="1"
                          android:id="@+id/btnSepia"
-                         android:text="Sepia" />
+                         android:text="@string/sepia" />
 
                     <Button
                          android:layout_height="42dp"
@@ -209,10 +209,10 @@
                          android:layout_marginHorizontal="2dp"
                          android:textSize="8sp"
                          android:stateListAnimator="@null"
-                         android:textColor="@android:color/white"
+                         android:textColor="@color/onImage"
                          android:layout_weight="1"
                          android:id="@+id/btnGrayscale"
-                         android:text="BW" />
+                         android:text="@string/bw" />
 
                     <Button
                          android:layout_height="42dp"
@@ -220,11 +220,11 @@
                          android:background="@drawable/black_transparent_round"
                          android:textSize="8sp"
                          android:stateListAnimator="@null"
-                         android:textColor="@android:color/white"
+                         android:textColor="@color/onImage"
                          android:layout_marginStart="4dp"
                          android:layout_weight="1"
                          android:id="@+id/btnVintage"
-                         android:text="Vintage" />
+                         android:text="@string/vintage" />
 
                 </LinearLayout>
 
@@ -245,10 +245,10 @@
                      android:background="@drawable/black_transparent_round"
                      android:textSize="14sp"
                      android:stateListAnimator="@null"
-                     android:textColor="@android:color/white"
+                     android:textColor="@color/onImage"
                      android:layout_weight="1"
                      android:id="@+id/btnReset"
-                     android:text="Reset" />
+                     android:text="@string/reset" />
 
                 <Button
                      android:layout_height="48dp"
@@ -256,11 +256,11 @@
                      android:background="@drawable/black_transparent_round"
                      android:textSize="14sp"
                      android:stateListAnimator="@null"
-                     android:textColor="@android:color/white"
+                     android:textColor="@color/onImage"
                      android:layout_marginStart="8dp"
                      android:layout_weight="1"
                      android:id="@+id/btnApply"
-                     android:text="Save" />
+                     android:text="@string/save" />
 
             </LinearLayout>
 

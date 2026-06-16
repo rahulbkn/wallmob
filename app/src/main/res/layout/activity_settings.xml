@@ -35,7 +35,7 @@
                 android:paddingEnd="20dp"
                 android:paddingBottom="8dp"
                 android:text="@string/appearance"
-                android:textColor="#C9A84C"
+                android:textColor="@color/premium_gold"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -126,7 +126,7 @@
                 android:paddingEnd="20dp"
                 android:paddingBottom="8dp"
                 android:text="@string/storage"
-                android:textColor="#C9A84C"
+                android:textColor="@color/premium_gold"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -178,7 +178,7 @@
                 android:paddingEnd="20dp"
                 android:paddingBottom="8dp"
                 android:text="@string/about"
-                android:textColor="#C9A84C"
+                android:textColor="@color/premium_gold"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 

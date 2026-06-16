@@ -167,7 +167,7 @@ public class SeeAllActivity extends AppCompatActivity implements WallpaperAdapte
             public void onCancelled(@NonNull DatabaseError error) {
                 progressBar.setVisibility(View.GONE);
                 emptyText.setVisibility(View.VISIBLE);
-                emptyText.setText("Failed to load premium wallpapers.");
+                emptyText.setText(R.string.failed_load_premium_wallpapers_period);
             }
         });
     }

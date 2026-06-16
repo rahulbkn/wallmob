@@ -22,11 +22,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="✦  EXCLUSIVE"
+            android:text="@string/exclusive"
             android:textSize="10sp"
             android:textStyle="bold"
             android:letterSpacing="0.18"
-            android:textColor="#C9A84C"
+            android:textColor="@color/premium_gold"
             android:background="@drawable/premium_badge_bg"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
@@ -37,25 +37,25 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Premium Collection"
+            android:text="@string/premium_collection"
             android:textSize="28sp"
             android:textStyle="bold"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/onImage"
             android:letterSpacing="-0.01"
             android:layout_marginBottom="6dp" />
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Unrestricted access to our finest wallpapers"
+            android:text="@string/premium_desc"
             android:textSize="14sp"
-            android:textColor="#B3FFFFFF"
+            android:textColor="@color/onImageTertiary"
             android:letterSpacing="0.01" />
 
         <View
             android:layout_width="40dp"
             android:layout_height="2dp"
-            android:background="#C9A84C"
+            android:background="@color/premium_gold"
             android:layout_marginTop="16dp" />
 
     </LinearLayout>
@@ -119,9 +119,9 @@
             android:id="@+id/error_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Failed to load collection"
+            android:text="@string/failed_to_load_collection"
             android:textAlignment="center"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/onImage"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -129,9 +129,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:text="Please check your connection"
+            android:text="@string/check_connection"
             android:textAlignment="center"
-            android:textColor="#B3FFFFFF"
+            android:textColor="@color/onImageTertiary"
             android:textSize="13sp" />
 
         <Button
@@ -143,11 +143,11 @@
             android:letterSpacing="0.05"
             android:paddingStart="32dp"
             android:paddingEnd="32dp"
-            android:text="Retry"
-            android:textColor="#000000"
+            android:text="@string/retry"
+            android:textColor="@color/black"
             android:textSize="13sp"
             android:textStyle="bold" />
-            
+
     </LinearLayout>
 
 </RelativeLayout>

@@ -121,14 +121,7 @@ public class SettingsActivity extends AppCompatActivity {
                     updateUI();
                     applyTheme(selectedValue);
                     dialog.dismiss();
-                    
-                    // Restart app to apply theme globally
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        Intent intent = new Intent(this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
-                    }, 300);
+                    recreate();
                 })
                 .show();
     }
@@ -157,14 +150,7 @@ public class SettingsActivity extends AppCompatActivity {
                     
                     dialog.dismiss();
                     updateUI();
-                    
-                    // Restart app to apply language globally
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        Intent restartIntent = new Intent(this, MainActivity.class);
-                        restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(restartIntent);
-                        finish();
-                    }, 300);
+                    recreate();
                 })
                 .show();
     }
@@ -213,7 +199,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             new Handler(Looper.getMainLooper()).post(() -> {
                 Toast.makeText(this, getString(R.string.cache_cleared), Toast.LENGTH_SHORT).show();
-                tvCacheSize.setText("0.00 MB");
+                tvCacheSize.setText(R.string.cache_zero_mb);
             });
         }).start();
     }

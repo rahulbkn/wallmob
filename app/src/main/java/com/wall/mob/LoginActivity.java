@@ -160,7 +160,7 @@ public class LoginActivity extends AppCompatActivity {
                                 User user = userSnapshot.getValue(User.class);
                                 if (user != null && user.getPassword().equals(password)) {
                                     // Login successful
-                                    Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
 
                                     // Create login session
                                     sessionManager.createLoginSession(user.getEmail(), user.getFullName(), false);
@@ -171,10 +171,10 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             }
                             // Password doesn't match
-                            Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, getString(R.string.invalid_email_password), Toast.LENGTH_SHORT).show();
                         } else {
                             // Email not found
-                            Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, getString(R.string.invalid_email_password), Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -182,7 +182,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onCancelled(DatabaseError databaseError) {
                         // Hide progress and re-enable UI
                         showLoading(false);
-                        Toast.makeText(LoginActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, getString(R.string.database_error, databaseError.getMessage()), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -190,7 +190,7 @@ public class LoginActivity extends AppCompatActivity {
     private void loginAsGuest() {
         // Show a brief loading state for guest login
         showLoading(true);
-        Toast.makeText(this, "Welcome, Guest!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.welcome_guest), Toast.LENGTH_SHORT).show();
 
         // Create guest session
         sessionManager.createLoginSession("", "Guest", true);

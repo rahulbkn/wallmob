@@ -43,7 +43,7 @@
     </style>
 
     <style name="ToolbarPopup.Black" parent="ThemeOverlay.AppCompat.Light">
-        <item name="android:textColorPrimary">@android:color/black</item>
+        <item name="android:textColorPrimary">@color/onSurface</item>
     </style>
 
     <style name="Toolbar.Title.Small" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">

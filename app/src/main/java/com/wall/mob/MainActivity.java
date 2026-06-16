@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "✓ Firebase initialized: " + app.getName());
         } catch (Exception e) {
             Log.e(TAG, "✗ Firebase NOT initialized!", e);
-            Toast.makeText(this, "Firebase initialization failed!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.firebase_init_failed), Toast.LENGTH_LONG).show();
             return;
         }
         
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                     testTopicSubscription();
                 } else {
                     Log.e(TAG, "✗ Failed to get FCM token", task.getException());
-                    Toast.makeText(this, "Failed to get FCM token!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.failed_get_fcm_token), Toast.LENGTH_LONG).show();
                 }
             });
         
@@ -359,7 +359,7 @@ public class MainActivity extends AppCompatActivity {
         if (btnFilter != null) {
             btnFilter.setOnClickListener(v -> {
                 // Prevent the parent searchLayout click from firing simultaneously
-                Toast.makeText(MainActivity.this, "Open Filters", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, getString(R.string.open_filters), Toast.LENGTH_SHORT).show();
                 // TODO: Initialize your bottom sheet filter dialog here
             });
         }
@@ -774,9 +774,9 @@ public class MainActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == NOTIFICATION_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Notifications enabled!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.notifications_enabled), Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Notifications disabled. Enable in Settings.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.notifications_disabled_settings), Toast.LENGTH_LONG).show();
             }
         }
     }

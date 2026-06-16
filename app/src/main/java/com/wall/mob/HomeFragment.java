@@ -318,11 +318,11 @@ public class HomeFragment extends Fragment {
                             if (swipeRefreshLayout != null) swipeRefreshLayout.setRefreshing(false);
                             if (errorView != null) {
                                 errorView.setVisibility(View.VISIBLE);
-                                if (errorMessage != null) errorMessage.setText("Failed to load trending:\n" + message);
+                                if (errorMessage != null) errorMessage.setText(getString(R.string.failed_load_trending, message));
                             }
                         } else {
                             // If we already have data, just show a toast and stop refreshing
-                            Toast.makeText(mContext, "Could not refresh trending list.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, getString(R.string.could_not_refresh_trending), Toast.LENGTH_SHORT).show();
                             if (swipeRefreshLayout != null) swipeRefreshLayout.setRefreshing(false);
                         }
                     });
