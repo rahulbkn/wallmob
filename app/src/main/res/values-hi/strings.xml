@@ -149,7 +149,8 @@
     <string name="watch_ad_reward_desc">1 सिक्का कमाने के लिए पूरा विज्ञापन देखें!</string>
     <string name="watch_ad">विज्ञापन देखें</string>
     <string name="how_it_works">यह कैसे काम करता है:</string>
-    <string name="how_watch_ad_step_tap">• &apos;विज्ञापन देखें&apos; बटन दबाएं</string>
+    <string name="how_watch_ad_step_tap">"• 'विज्ञापन देखें' बटन दबाएं"</string>
+    
     <string name="how_watch_ad_step_watch">• पूरा विज्ञापन देखें</string>
     <string name="how_watch_ad_step_earn">• अपने आप 1 सिक्का कमाएं</string>
     <string name="how_watch_ad_step_repeat">• अधिक सिक्कों के लिए दोहराएं!</string>
