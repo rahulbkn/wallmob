@@ -95,3 +95,4 @@ public class FavoriteManager {
         saveFavorites(context, new ArrayList<>());
     }
 }
+// test

@@ -159,3 +159,5 @@ public class CategoryWallpaperAdapter extends RecyclerView.Adapter<CategoryWallp
         return Math.round(dp * density);
     }
 }
+
+// test

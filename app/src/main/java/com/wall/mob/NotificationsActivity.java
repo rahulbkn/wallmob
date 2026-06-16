@@ -177,3 +177,4 @@ public class NotificationsActivity extends AppCompatActivity {
         new LoadNotificationsTask().execute();
     }
 }
+// test

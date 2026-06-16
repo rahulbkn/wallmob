@@ -329,3 +329,4 @@ public class WallpaperActionsHandler {
         return prefs.getBoolean(PREMIUM_USER_KEY, false);
     }
 }
+// test

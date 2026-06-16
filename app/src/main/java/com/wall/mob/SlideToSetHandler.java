@@ -280,3 +280,4 @@ private static final int UNLIMITED_COINS = Integer.MAX_VALUE;
         }
     }
 }
+// test

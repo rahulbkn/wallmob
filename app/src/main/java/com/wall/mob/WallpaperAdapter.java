@@ -260,3 +260,4 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
         FavoriteManager.saveFavorites(context, new ArrayList<>());
     }
 }
+// test

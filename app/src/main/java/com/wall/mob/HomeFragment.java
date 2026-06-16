@@ -569,3 +569,5 @@ public class HomeFragment extends Fragment {
     @Override public void onPause() { super.onPause(); autoScrollHandler.removeCallbacks(autoScrollRunnable); }
     @Override public void onResume() { super.onResume(); if (heroCarouselAdapter != null && heroCarouselAdapter.getItemCount() > 0) autoScrollHandler.postDelayed(autoScrollRunnable, AUTO_SCROLL_INTERVAL_MS); }
 }
+
+// test

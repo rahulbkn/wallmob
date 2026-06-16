@@ -87,3 +87,5 @@ public class LandscapeAdapter extends RecyclerView.Adapter<LandscapeAdapter.View
         }
     }
 }
+
+// test

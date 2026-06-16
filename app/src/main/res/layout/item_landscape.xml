@@ -30,3 +30,6 @@
         android:ellipsize="end" />
 
 </androidx.cardview.widget.CardView>
+
+
+

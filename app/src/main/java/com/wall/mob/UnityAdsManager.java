@@ -346,3 +346,4 @@ public class UnityAdsManager {
     public boolean isInterstitialLoaded() { return isInterstitialLoaded; }
     public boolean isRewardedLoaded() { return isRewardedLoaded; }
 }
+// test

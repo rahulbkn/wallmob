@@ -180,3 +180,5 @@ public class PremiumFragment extends Fragment implements WallpaperAdapter.OnWall
         return isLoading;
     }
 }
+
+// test

@@ -347,3 +347,4 @@ getWindow().setStatusBarColor(Color.TRANSPARENT);
         }
     }
 }
+// test

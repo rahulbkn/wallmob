@@ -468,3 +468,4 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
         return Math.round(dp * density);
     }
 }
+// test

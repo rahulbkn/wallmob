@@ -87,3 +87,4 @@ public class FavoriteFragment extends Fragment implements WallpaperAdapter.OnWal
         Toast.makeText(requireContext(), "Removed from favorites", Toast.LENGTH_SHORT).show();
     }
 }
+// test

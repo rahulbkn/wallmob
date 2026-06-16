@@ -68,3 +68,5 @@ public class ThemeUtils {
         window.getDecorView().setSystemUiVisibility(flags);  
     }  
 }
+
+// test
