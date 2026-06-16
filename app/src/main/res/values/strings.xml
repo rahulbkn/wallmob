@@ -60,4 +60,9 @@
     <string name="password_reset_sent">Password reset link sent to %1$s</string>
     <string name="email_not_found">Email not found in our records</string>
     <string name="send_reset_link">Send Reset Link</string>
+
+    <string name="system_default">System Default</string>
+<string name="english">English</string>
+<string name="select_theme">Select Theme</string>
+<string name="select_language">Select Language</string>
 </resources>
