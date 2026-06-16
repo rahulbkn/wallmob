@@ -83,7 +83,7 @@
              android:textSize="16sp"
              android:textAllCaps="false"
              android:stateListAnimator="@null"
-             android:textColor="@color/onSurface"
+             android:textColor="@color/white"
              android:id="@+id/no_internet_settings"
              android:text="@string/open_wifi_settings"
              android:textStyle="bold" />
