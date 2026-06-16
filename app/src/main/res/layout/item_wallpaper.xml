@@ -10,7 +10,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="280dp"
-        android:background="@android:color/white">
+        android:background="@color/surface">
 
         <ImageView
             android:id="@+id/wallpaper_image"
@@ -26,7 +26,7 @@
     android:layout_margin="12dp"
     android:src="@drawable/ic_premium"
     android:tint="#C9A84C"
-    android:contentDescription="Premium wallpaper"
+    android:contentDescription="@string/premium_wallpaper"
     android:visibility="gone"
     android:elevation="8dp"
     android:layout_alignParentTop="true"
@@ -39,7 +39,7 @@
     android:layout_height="36dp"
     android:layout_margin="12dp"
     android:src="@android:drawable/btn_star_big_on"
-    android:contentDescription="Add to favorites"
+    android:contentDescription="@string/add_to_favorites"
     android:background="?android:attr/selectableItemBackgroundBorderless"
     android:clickable="true"
     android:focusable="true"
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/gradient_overlay_bottom"
             android:padding="16dp"
-            android:textColor="@android:color/white"
+            android:textColor="@color/onImage"
             android:visibility="gone"
             android:textSize="16sp"
             android:textStyle="bold"

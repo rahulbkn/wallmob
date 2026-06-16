@@ -117,7 +117,7 @@ public class SketchwareUtil {
             _intent.putExtra("return-data", false);
             _activity.startActivityForResult(_intent, _requestCode);
         } catch (ActivityNotFoundException _e) {
-            Toast.makeText(_activity, "Your device doesn't support the crop action!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(_activity, _activity.getString(R.string.crop_not_supported), Toast.LENGTH_SHORT).show();
         }
     }
 

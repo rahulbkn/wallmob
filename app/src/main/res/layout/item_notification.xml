@@ -11,7 +11,7 @@
 		android:id="@+id/type_indicator"
 		android:layout_width="4dp"
 		android:layout_height="match_parent"
-		android:background="#FFFFFF"
+		android:background="@color/surface"
 		android:layout_marginEnd="16dp" />
 	<LinearLayout
 		android:id="@+id/linear11"
@@ -28,7 +28,7 @@
 				android:id="@+id/notification_title"
 				android:layout_width="0dp"
 				android:layout_height="wrap_content"
-				android:text="Notification Title"
+				android:text="@string/notification_title"
 				android:textSize="16sp"
 				android:textStyle="bold"
 				android:layout_weight="1"
@@ -37,7 +37,7 @@
 				android:id="@+id/notification_type"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:text="Type"
+				android:text="@string/notification_type"
 				android:textSize="12sp"
 				android:textColor="@android:color/darker_gray"
 				android:focusable="false" />
@@ -47,7 +47,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="4dp"
-			android:text="Notification message content"
+			android:text="@string/notification_message_content"
 			android:textSize="14sp"
 			android:textColor="@android:color/darker_gray"
 			android:focusable="false" />
@@ -56,7 +56,7 @@
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
 			android:layout_marginTop="8dp"
-			android:text="Just now"
+			android:text="@string/just_now"
 			android:textSize="12sp"
 			android:textColor="@android:color/darker_gray"
 			android:focusable="false" />

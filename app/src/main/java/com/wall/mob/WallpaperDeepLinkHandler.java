@@ -130,18 +130,18 @@ public class WallpaperDeepLinkHandler {
 
         // Author / Category
         if (wallpaper.getPhotographer() != null && !wallpaper.getPhotographer().isEmpty()) {
-            wallpaperAuthor.setText("By: " + wallpaper.getPhotographer());
+            wallpaperAuthor.setText(activity.getString(R.string.by_author, wallpaper.getPhotographer()));
         } else if (wallpaper.getCategory() != null && !wallpaper.getCategory().isEmpty()) {
-            wallpaperAuthor.setText("Category: " + wallpaper.getCategory());
+            wallpaperAuthor.setText(activity.getString(R.string.category_value, wallpaper.getCategory()));
         } else {
-            wallpaperAuthor.setText("Unknown Author");
+            wallpaperAuthor.setText(R.string.unknown_author);
         }
 
         // Source
         if (wallpaper.getSource() != null && !wallpaper.getSource().isEmpty()) {
-            wallpaperSource.setText("Source: " + wallpaper.getSource());
+            wallpaperSource.setText(activity.getString(R.string.source_value, wallpaper.getSource()));
         } else {
-            wallpaperSource.setText("Unknown Source");
+            wallpaperSource.setText(R.string.unknown_source);
         }
 
         // Custom font (safe)
@@ -157,7 +157,7 @@ public class WallpaperDeepLinkHandler {
         if (wallpaper.getImageUrl() != null) {
             imageLoader.loadImage(wallpaper.getImageUrl());
         } else {
-            Toast.makeText(activity, "Image not available", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, activity.getString(R.string.image_not_available), Toast.LENGTH_SHORT).show();
         }
     }
 }

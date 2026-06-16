@@ -18,7 +18,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:contentDescription="Category image" />
+            android:contentDescription="@string/category_image" />
 
         <View
             android:layout_width="match_parent"
@@ -36,8 +36,8 @@
                 android:id="@+id/category_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Abstract"
-                android:textColor="#FFFFFF"
+                android:text="@string/abstract_category"
+                android:textColor="@color/onImage"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:letterSpacing="0.02" />

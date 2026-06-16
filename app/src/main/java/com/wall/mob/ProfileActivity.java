@@ -87,8 +87,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void setUserInfo() {
         if (isGuest) {
-            welcomeText.setText("Welcome, Guest!");
-            userInfoText.setText("You are browsing as a guest user.\nSome features may be limited.");
+            welcomeText.setText(R.string.welcome_guest);
+            userInfoText.setText(R.string.guest_user_info);
         } else {
             // Fetch user details from Firebase
             databaseReference.orderByChild("email").equalTo(currentEmail)
@@ -99,10 +99,8 @@ public class ProfileActivity extends AppCompatActivity {
                                 for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                                     User user = userSnapshot.getValue(User.class);
                                     if (user != null) {
-                                        welcomeText.setText("Welcome back, " + user.getFullName() + "!");
-                                        userInfoText.setText("Email: " + user.getEmail() + 
-                                                           "\nPhone: " + user.getPhone() +
-                                                           "\nYou have full access to all features.");
+                                        welcomeText.setText(getString(R.string.welcome_back_name, user.getFullName()));
+                                        userInfoText.setText(getString(R.string.profile_full_access, user.getEmail(), user.getPhone()));
                                     }
                                 }
                             }
@@ -110,8 +108,8 @@ public class ProfileActivity extends AppCompatActivity {
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-                            welcomeText.setText("Welcome back!");
-                            userInfoText.setText("Email: " + currentEmail + "\nCould not load full profile details.");
+                            welcomeText.setText(R.string.welcome_back);
+                            userInfoText.setText(getString(R.string.profile_email_failed, currentEmail));
                         }
                     });
         }
@@ -145,7 +143,7 @@ public class ProfileActivity extends AppCompatActivity {
 }
     private void logout() {
         sessionManager.logoutUser();
-        Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.logged_out_successfully), Toast.LENGTH_SHORT).show();
         
         redirectToLogin();
     }

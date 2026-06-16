@@ -84,7 +84,7 @@ public class FavoriteFragment extends Fragment implements WallpaperAdapter.OnWal
             emptyStateView.setVisibility(View.VISIBLE);
         }
 
-        Toast.makeText(requireContext(), "Removed from favorites", Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), getString(R.string.removed_from_favorites), Toast.LENGTH_SHORT).show();
     }
 }
 // test
