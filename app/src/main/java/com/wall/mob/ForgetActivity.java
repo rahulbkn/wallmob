@@ -85,32 +85,32 @@ public class ForgetActivity extends AppCompatActivity {
         String email = emailInput.getText().toString().trim();
 
         if (TextUtils.isEmpty(email)) {
-            emailInput.setError("Email is required");
+            emailInput.setError(getString(R.string.email_required));
             emailInput.requestFocus();
             return;
         }
 
         if (!isValidEmail(email)) {
-            emailInput.setError("Please enter a valid email");
+            emailInput.setError(getString(R.string.email_invalid));
             emailInput.requestFocus();
             return;
         }
 
         sendResetButton.setEnabled(false);
-        sendResetButton.setText("Sending...");
+        sendResetButton.setText(getString(R.string.sending));
 
         mAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            Toast.makeText(ForgetActivity.this, "Password reset link sent to " + email, Toast.LENGTH_LONG).show();
+                            Toast.makeText(ForgetActivity.this, getString(R.string.password_reset_sent, email), Toast.LENGTH_LONG).show();
                             simulateEmailSent(email);
                         } else {
-                            emailInput.setError("Email not found in our records");
+                            emailInput.setError(getString(R.string.email_not_found));
                             emailInput.requestFocus();
                             sendResetButton.setEnabled(true);
-                            sendResetButton.setText("Send Reset Link");
+                            sendResetButton.setText(getString(R.string.send_reset_link));
                         }
                     }
                 });
@@ -121,7 +121,7 @@ public class ForgetActivity extends AppCompatActivity {
             @Override
             public void run() {
                 sendResetButton.setEnabled(true);
-                sendResetButton.setText("Send Reset Link");
+                sendResetButton.setText(getString(R.string.send_reset_link));
                 emailInput.setText("");
             }
         }, 3000);
