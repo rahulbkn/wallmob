@@ -306,7 +306,7 @@ public class WallpaperDetailsActivity extends AppCompatActivity {
     }
 
     private void showLoadErrorAndFinish() {
-        Toast.makeText(this, "Failed to load wallpaper details", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.failed_load_wallpaper_details), Toast.LENGTH_SHORT).show();
         finish();
     }
 

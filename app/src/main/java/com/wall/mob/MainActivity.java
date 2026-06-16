@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
 
     private LinearLayout searchLayout;
     private FrameLayout contentFrame;
-    private ImageView notificationButton, profileButton, btn_menu;
+    private ImageView notificationButton, profileButton, btn_menu, settingsButton;
     private Toolbar toolbar;
     private AppBarLayout appBarLayout;
     private CollapsingToolbarLayout collapsingToolbar;
@@ -110,30 +110,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-    
-    SharedPreferences prefs =
-        getSharedPreferences("settings_prefs", MODE_PRIVATE);
+        ThemeUtils.applyThemeFromPrefs(this);
 
-String theme = prefs.getString("app_theme", "system");
-
-switch (theme) {
-    case "light":
-        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
-                androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
-        break;
-
-    case "dark":
-        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
-                androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
-        break;
-
-    default:
-        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
-                androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        break;
-}
-    
-    
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         Log.d(TAG, "========== MainActivity Created ==========");
@@ -197,7 +175,7 @@ switch (theme) {
             Log.d(TAG, "✓ Firebase initialized: " + app.getName());
         } catch (Exception e) {
             Log.e(TAG, "✗ Firebase NOT initialized!", e);
-            Toast.makeText(this, "Firebase initialization failed!", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.firebase_init_failed), Toast.LENGTH_LONG).show();
             return;
         }
         
@@ -209,7 +187,7 @@ switch (theme) {
                     testTopicSubscription();
                 } else {
                     Log.e(TAG, "✗ Failed to get FCM token", task.getException());
-                    Toast.makeText(this, "Failed to get FCM token!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, getString(R.string.failed_get_fcm_token), Toast.LENGTH_LONG).show();
                 }
             });
         
@@ -318,6 +296,7 @@ switch (theme) {
         contentFrame = findViewById(R.id.content_frame);
         searchLayout = findViewById(R.id.searchLayout);
         profileButton = findViewById(R.id.imageview4);
+        settingsButton= findViewById(R.id.btn_settings);
         btn_menu = findViewById(R.id.btn_menu);
         textview1 = findViewById(R.id.textview1);
 
@@ -375,16 +354,12 @@ switch (theme) {
             Intent intent = new Intent(MainActivity.this, SearchActivity.class);
             startActivity(intent);
         });
+        
+        settingsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        });
 
-        // NEW: Filter Button Click Listener
-        ImageView btnFilter = findViewById(R.id.btn_filter);
-        if (btnFilter != null) {
-            btnFilter.setOnClickListener(v -> {
-                // Prevent the parent searchLayout click from firing simultaneously
-                Toast.makeText(MainActivity.this, "Open Filters", Toast.LENGTH_SHORT).show();
-                // TODO: Initialize your bottom sheet filter dialog here
-            });
-        }
     }
 
     private void setupSwipeRefresh() {
@@ -628,9 +603,9 @@ switch (theme) {
                 ((TextView) searchLayout.getChildAt(1)).setTextColor(ContextCompat.getColor(this, R.color.gray_medium));
             }
             // Tint the new filter icon in premium mode
-            ImageView btnFilter = findViewById(R.id.btn_filter);
-            if (btnFilter != null) {
-                btnFilter.setColorFilter(goldColor);
+            ImageView settingsButton= findViewById(R.id.btn_settings);
+            if (settingsButton != null) {
+                settingsButton.setColorFilter(goldColor);
             }
         }
 
@@ -698,9 +673,9 @@ switch (theme) {
                 ((TextView) searchLayout.getChildAt(1)).setTextColor(grayColor);
             }
             // Revert the new filter icon in normal mode
-            ImageView btnFilter = findViewById(R.id.btn_filter);
-            if (btnFilter != null) {
-                btnFilter.setColorFilter(grayColor);
+            ImageView settingsButton = findViewById(R.id.btn_settings);
+            if (settingsButton != null) {
+                settingsButton.setColorFilter(onSurfaceColor);
             }
         }
 
@@ -796,9 +771,9 @@ switch (theme) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == NOTIFICATION_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Notifications enabled!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getString(R.string.notifications_enabled), Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Notifications disabled. Enable in Settings.", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, getString(R.string.notifications_disabled_settings), Toast.LENGTH_LONG).show();
             }
         }
     }

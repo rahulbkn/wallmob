@@ -14,7 +14,7 @@
     <!-- Semantic colors -->
     <color name="background">#121212</color>
     <color name="onBackground">#FFFFFF</color>
-    <color name="surface">#121212</color>
+    <color name="surface">#212121</color>
     <color name="onSurface">#FFFFFF</color>
     <color name="colorOnPrimary">#000000</color>
 

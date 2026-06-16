@@ -14,11 +14,10 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
-
+import android.widget.ImageView;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Locale;
@@ -29,7 +28,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(LocaleHelper.setLocale(newBase));
     }
-    
+    private ImageView ivThemeIcon;
 
     private TextView tvThemeDesc, tvLanguageDesc, tvCacheSize;
     private LinearLayout btnTheme, btnLanguage, btnClearCache, btnPrivacy;
@@ -46,6 +45,7 @@ public class SettingsActivity extends AppCompatActivity {
         
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        ThemeUtils.applySystemBars(this);
 
         sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
 
@@ -68,6 +68,7 @@ public class SettingsActivity extends AppCompatActivity {
         btnLanguage = findViewById(R.id.btn_language);
         btnClearCache = findViewById(R.id.btn_clear_cache);
         btnPrivacy = findViewById(R.id.btn_privacy);
+        ivThemeIcon = findViewById(R.id.iv_theme_icon);
 
         // Load Initial Data
         updateUI();
@@ -82,71 +83,91 @@ public class SettingsActivity extends AppCompatActivity {
             startActivity(browserIntent);
         });
     }
+    
+    private void updateThemeIcon(String theme) {
+    switch (theme) {
+        case "light":
+            ivThemeIcon.setImageResource(R.drawable.ic_light);
+            break;
+
+        case "dark":
+            ivThemeIcon.setImageResource(R.drawable.ic_dark);
+            break;
+
+        default: // system
+            ivThemeIcon.setImageResource(R.drawable.ic_system);
+            break;
+    }
+}
 
     // Apply theme before UI initialization
     private void applyThemeFromPreference() {
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         String theme = prefs.getString(KEY_THEME, "system");
-        applyTheme(theme);
+        ThemeUtils.applyTheme(theme);
     }
 
     private void updateUI() {
-        // Setup Theme Text
-        String currentTheme = sharedPreferences.getString(KEY_THEME, "system");
-        String[] themeValues = getResources().getStringArray(R.array.theme_values);
-        String[] themeOptions = getResources().getStringArray(R.array.theme_options);
-        int themeIndex = Arrays.asList(themeValues).indexOf(currentTheme);
-        if (themeIndex >= 0) tvThemeDesc.setText(themeOptions[themeIndex]);
+    String currentTheme = sharedPreferences.getString(KEY_THEME, "system");
 
-        // Setup Language Text
-        String currentLang = sharedPreferences.getString(KEY_LANG, "en");
-        String[] langCodes = getResources().getStringArray(R.array.language_codes);
-        String[] langOptions = getResources().getStringArray(R.array.language_options);
-        int langIndex = Arrays.asList(langCodes).indexOf(currentLang);
-        if (langIndex >= 0) tvLanguageDesc.setText(langOptions[langIndex]);
+    updateThemeIcon(currentTheme);
+
+    String[] themeValues = getResources().getStringArray(R.array.theme_values);
+    String[] themeOptions = getResources().getStringArray(R.array.theme_options);
+
+    int themeIndex = Arrays.asList(themeValues).indexOf(currentTheme);
+    if (themeIndex >= 0) {
+        tvThemeDesc.setText(themeOptions[themeIndex]);
     }
+
+    String currentLang = sharedPreferences.getString(KEY_LANG, "en");
+    String[] langCodes = getResources().getStringArray(R.array.language_codes);
+    String[] langOptions = getResources().getStringArray(R.array.language_options);
+
+    int langIndex = Arrays.asList(langCodes).indexOf(currentLang);
+    if (langIndex >= 0) {
+        tvLanguageDesc.setText(langOptions[langIndex]);
+    }
+}
 
     // --- THEME LOGIC ---
     private void showThemeDialog() {
-        String[] options = getResources().getStringArray(R.array.theme_options);
-        String[] values = getResources().getStringArray(R.array.theme_values);
-        String currentTheme = sharedPreferences.getString(KEY_THEME, "system");
-        int checkedItem = Arrays.asList(values).indexOf(currentTheme);
+    String[] options = getResources().getStringArray(R.array.theme_options);
+    String[] values = getResources().getStringArray(R.array.theme_values);
 
-        new AlertDialog.Builder(this)
-                .setTitle(getString(R.string.select_theme))
-                .setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
-                    String selectedValue = values[which];
-                    sharedPreferences.edit().putString(KEY_THEME, selectedValue).apply();
-                    updateUI();
-                    applyTheme(selectedValue);
-                    dialog.dismiss();
-                    
-                    // Restart app to apply theme globally
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        Intent intent = new Intent(this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                        finish();
-                    }, 300);
-                })
-                .show();
-    }
+    String currentTheme = sharedPreferences.getString(KEY_THEME, "system");
+    int checkedItem = Arrays.asList(values).indexOf(currentTheme);
+
+    new AlertDialog.Builder(this)
+            .setTitle(getString(R.string.select_theme))
+            .setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
+
+                String selectedValue = values[which];
+
+                sharedPreferences.edit()
+                        .putString(KEY_THEME, selectedValue)
+                        .apply();
+
+                // Update icon immediately
+                updateThemeIcon(selectedValue);
+
+                // Update theme description if updateUI() handles it
+                updateUI();
+
+                // Apply theme
+                applyTheme(selectedValue);
+
+                dialog.dismiss();
+
+                recreate();
+            })
+            .show();
+}
 
     private void applyTheme(String themeValue) {
         // Persist the selection so SketchApplication can restore it on cold start
         getSharedPreferences(PREF_NAME, MODE_PRIVATE).edit().putString(KEY_THEME, themeValue).apply();
-        switch (themeValue) {
-            case "light":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                break;
-            case "dark":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                break;
-            default:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                break;
-        }
+        ThemeUtils.applyTheme(themeValue);
     }
 
     // --- LANGUAGE LOGIC ---
@@ -167,14 +188,7 @@ public class SettingsActivity extends AppCompatActivity {
                     
                     dialog.dismiss();
                     updateUI();
-                    
-                    // Restart app to apply language globally
-                    new Handler(Looper.getMainLooper()).postDelayed(() -> {
-                        Intent restartIntent = new Intent(this, MainActivity.class);
-                        restartIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(restartIntent);
-                        finish();
-                    }, 300);
+                    recreate();
                 })
                 .show();
     }
@@ -223,7 +237,7 @@ public class SettingsActivity extends AppCompatActivity {
 
             new Handler(Looper.getMainLooper()).post(() -> {
                 Toast.makeText(this, getString(R.string.cache_cleared), Toast.LENGTH_SHORT).show();
-                tvCacheSize.setText("0.00 MB");
+                tvCacheSize.setText(R.string.cache_zero_mb);
             });
         }).start();
     }

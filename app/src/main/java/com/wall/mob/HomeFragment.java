@@ -150,7 +150,9 @@ public class HomeFragment extends Fragment {
         TextView tvUnlockAll = view.findViewById(R.id.tv_unlock_all_premium);
         
         if (tvUnlockAll != null) tvUnlockAll.setOnClickListener(v -> { if (getActivity() instanceof MainActivity) ((MainActivity) getActivity()).navigateToPremium(); });
-        if (tvSeeAllTrending != null) tvSeeAllTrending.setOnClickListener(v -> SeeAllActivity.start(requireContext(), "Trending Now", SeeAllActivity.TYPE_TRENDING));
+        
+        // ADDED R.string.trending_now HERE
+        if (tvSeeAllTrending != null) tvSeeAllTrending.setOnClickListener(v -> SeeAllActivity.start(requireContext(), getString(R.string.trending_now), SeeAllActivity.TYPE_TRENDING));
         
         apiManager = new ApiManager(requireContext());
         retryButton.setOnClickListener(v -> { 
@@ -290,7 +292,6 @@ public class HomeFragment extends Fragment {
         loadPremiumWallpapersFromFirebase();
     }
 
-    // FIXED: API Error handling so trending section doesn't wipe out existing data
     private void loadApiWallpapers() {
         isLoadingApiData = true;
         AtomicInteger loadingTasks = new AtomicInteger(1);
@@ -312,17 +313,15 @@ public class HomeFragment extends Fragment {
                 
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
-                        // If we have NO data, show the error view
                         if (allWallpapers.isEmpty()) {
                             showLoading(false);
                             if (swipeRefreshLayout != null) swipeRefreshLayout.setRefreshing(false);
                             if (errorView != null) {
                                 errorView.setVisibility(View.VISIBLE);
-                                if (errorMessage != null) errorMessage.setText("Failed to load trending:\n" + message);
+                                if (errorMessage != null) errorMessage.setText(getString(R.string.failed_load_trending, message));
                             }
                         } else {
-                            // If we already have data, just show a toast and stop refreshing
-                            Toast.makeText(mContext, "Could not refresh trending list.", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(mContext, getString(R.string.could_not_refresh_trending), Toast.LENGTH_SHORT).show();
                             if (swipeRefreshLayout != null) swipeRefreshLayout.setRefreshing(false);
                         }
                     });
@@ -378,11 +377,18 @@ public class HomeFragment extends Fragment {
                 String source = (String) map.get("source");
                 String photographer = (String) map.get("photographer");
 
-                if (title == null) title = "Premium Wallpaper";
+                // UPDATED: Using strings.xml 
+                if (title == null && isAdded()) title = getString(R.string.premium_wallpaper);
+                else if (title == null) title = "Premium Wallpaper"; // Fallback if fragment not attached
+                
                 if (imageUrl == null) imageUrl = "";
                 if (thumbnailUrl == null || thumbnailUrl.isEmpty()) thumbnailUrl = imageUrl;
-                if (category == null) category = "Premium";
-                if (source == null) source = "Firebase";
+                
+                if (category == null && isAdded()) category = getString(R.string.premium);
+                else if (category == null) category = "Premium";
+                
+                if (source == null && isAdded()) source = getString(R.string.firebase_source);
+                else if (source == null) source = "Firebase";
 
                 return new Wallpaper(id, imageUrl, thumbnailUrl, title, category, source, photographer, true);
             }
@@ -402,9 +408,8 @@ public class HomeFragment extends Fragment {
     private void onAllWallpapersLoaded(List<Wallpaper> loadedWallpapers) {
         if (getActivity() == null) return;
         getActivity().runOnUiThread(() -> {
-            // Only overwrite if we actually got data back
             if (loadedWallpapers != null && !loadedWallpapers.isEmpty()) {
-                allWallpapers.clear(); // Clear existing to prevent duplicates on refresh
+                allWallpapers.clear();
                 allWallpapers.addAll(loadedWallpapers);
                 organizeWallpapersByCategory(allWallpapers);
             }
@@ -417,21 +422,39 @@ public class HomeFragment extends Fragment {
         categoryWallpapers.clear();
         for (Wallpaper wallpaper : wallpapers) {
             String category = wallpaper.getCategory();
+            // Keep "Premium" in English as an internal API identifier
             if (category != null && !category.trim().isEmpty() && !category.equalsIgnoreCase("Premium")) {
                 categoryWallpapers.computeIfAbsent(category, k -> new ArrayList<>()).add(wallpaper);
             }
         }
     }
 
-    // FIXED: Permanent categories to ensure the grid is never empty
+    // HELPER METHOD to map API names to Localized strings
+    private String getLocalizedCategoryName(String apiName) {
+        if (apiName == null || !isAdded()) return apiName;
+        switch (apiName.toLowerCase()) {
+            case "abstract": return getString(R.string.category_abstract);
+            case "amoled": return getString(R.string.category_amoled);
+            case "nature": return getString(R.string.category_nature);
+            case "space": return getString(R.string.category_space);
+            case "cities": return getString(R.string.category_cities);
+            case "animals": return getString(R.string.category_animals);
+            case "cars": return getString(R.string.category_cars);
+            case "anime": return getString(R.string.category_anime);
+            case "landscape": return getString(R.string.category_landscape);
+            case "premium": return getString(R.string.premium);
+            default: return apiName.substring(0, 1).toUpperCase() + apiName.substring(1).toLowerCase();
+        }
+    }
+
     private void updateCategoriesSection() {
         List<CategoryItem> categories = new ArrayList<>();
         
-        if (!premiumWallpapers.isEmpty()) {
-            categories.add(new CategoryItem("Premium", premiumWallpapers.get(0).getImageUrl()));
+        if (!premiumWallpapers.isEmpty() && isAdded()) {
+            categories.add(new CategoryItem(getString(R.string.premium), premiumWallpapers.get(0).getImageUrl()));
         }
 
-        // 1. Define master list of permanent categories with high-quality fallback images
+        // 1. Define master list of permanent categories using English names as internal keys
         Map<String, String> masterCategories = new LinkedHashMap<>();
         masterCategories.put("Abstract", "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=800&fit=crop");
         masterCategories.put("Amoled", "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=800&fit=crop");
@@ -450,22 +473,19 @@ public class HomeFragment extends Fragment {
             if (rawName.equalsIgnoreCase("Landscape") || rawName.equalsIgnoreCase("Premium")) continue;
             
             if (!walls.isEmpty()) {
-                // Standardize casing (e.g. "nature" -> "Nature")
                 String displayName = rawName.substring(0, 1).toUpperCase() + rawName.substring(1).toLowerCase();
                 
                 if (masterCategories.containsKey(displayName)) {
-                    // Update master category with the fresh API image
                     masterCategories.put(displayName, walls.get(0).getImageUrl());
                 } else {
-                    // It's a brand new category from the API, add it
-                    categories.add(new CategoryItem(displayName, walls.get(0).getImageUrl()));
+                    categories.add(new CategoryItem(getLocalizedCategoryName(displayName), walls.get(0).getImageUrl()));
                 }
             }
         }
 
-        // 3. Add all the master categories (they now contain updated API images if available)
+        // 3. Add all the master categories localized for the UI
         for (Map.Entry<String, String> entry : masterCategories.entrySet()) {
-            categories.add(new CategoryItem(entry.getKey(), entry.getValue()));
+            categories.add(new CategoryItem(getLocalizedCategoryName(entry.getKey()), entry.getValue()));
         }
 
         if (categoryGridAdapter != null) {
@@ -493,22 +513,18 @@ public class HomeFragment extends Fragment {
     private void onColorClick(String color) { CategoryActivity.startWithColorFilter(requireContext(), color, color); }
     private void onCategoryClick(CategoryItem category) { if (category != null) CategoryActivity.start(mContext, category.getName(), category.getImageUrl()); }
 
-    // FIXED: Prevent UI flickering/hiding if data is already loaded
     private void showLoading(boolean loading) {
         boolean hasExistingData = !allWallpapers.isEmpty() || !premiumWallpapers.isEmpty();
         
         if (progressBar != null) {
-            // Only show main progress bar if we have no data at all
             progressBar.setVisibility(loading && !hasExistingData ? View.VISIBLE : View.GONE);
         }
         
         if (loading && !hasExistingData) {
-            // Initial load - hide recyclers
             if (recyclerBestMonth != null) recyclerBestMonth.setVisibility(View.INVISIBLE);
             if (recyclerColorTone != null) recyclerColorTone.setVisibility(View.INVISIBLE);
             if (recyclerCategories != null) recyclerCategories.setVisibility(View.INVISIBLE);
         } else {
-            // Data exists - ensure they are visible
             if (recyclerBestMonth != null) recyclerBestMonth.setVisibility(View.VISIBLE);
             if (recyclerColorTone != null) recyclerColorTone.setVisibility(View.VISIBLE);
             if (recyclerCategories != null) recyclerCategories.setVisibility(View.VISIBLE);
@@ -518,7 +534,6 @@ public class HomeFragment extends Fragment {
     }
 
     public void refreshData() { 
-        // Force clear to allow fresh reload
         allWallpapers.clear(); 
         loadedWallpaperIds.clear();
         loadAllWallpapers(); 
@@ -569,5 +584,3 @@ public class HomeFragment extends Fragment {
     @Override public void onPause() { super.onPause(); autoScrollHandler.removeCallbacks(autoScrollRunnable); }
     @Override public void onResume() { super.onResume(); if (heroCarouselAdapter != null && heroCarouselAdapter.getItemCount() > 0) autoScrollHandler.postDelayed(autoScrollRunnable, AUTO_SCROLL_INTERVAL_MS); }
 }
-
-// test

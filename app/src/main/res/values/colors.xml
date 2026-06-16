@@ -23,6 +23,13 @@
     <color name="gray_dark">#666666</color>
     <color name="green_success">#4CAF50</color>
 
+
+    <color name="onImage">#FFFFFF</color>
+    <color name="onImageSecondary">#CCFFFFFF</color>
+    <color name="onImageTertiary">#B3FFFFFF</color>
+    <color name="scrim">#80000000</color>
+    <color name="subtle_on_surface">#777777</color>
+
     <!-- Notification type indicators -->
     <color name="notification_wallpaper">#4CAF50</color>
     <color name="notification_offer">#FF9800</color>

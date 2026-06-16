@@ -1,7 +1,6 @@
 package com.wall.mob;
 
 import android.content.Context;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,16 +11,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.splashscreen.SplashScreen;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import android.os.Build;
-import android.view.Window;
-import android.view.WindowManager;
-import androidx.core.content.ContextCompat;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -45,36 +41,28 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.login);
+        // 1. Install the Splash Screen MUST be called before super.onCreate()
+        SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
 
-        // Initialize SessionManager
+        super.onCreate(savedInstanceState);
+
+        // 2. Initialize SessionManager early
         sessionManager = new SessionManager(this);
 
-        // Check if user is already logged in
+        // 3. Check if user is already logged in BEFORE setting the content view
         if (sessionManager.isLoggedIn()) {
+            // Keep the splash screen frozen on the screen while we transition to MainActivity
+            splashScreen.setKeepOnScreenCondition(() -> true); 
+            
             redirectToMainActivity();
-            finish();
-            return;
+            return; // Exit onCreate early so the Login UI never renders
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(this, android.R.color.white));
-            window.setNavigationBarColor(ContextCompat.getColor(this, android.R.color.white));
+        // 4. If the user is NOT logged in, set the content view to show the login screen
+        // The splash screen will automatically fade away revealing this layout
+        setContentView(R.layout.login);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                int flags = window.getDecorView().getSystemUiVisibility();
-                flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-                window.getDecorView().setSystemUiVisibility(flags);
-            }
-        }
+        ThemeUtils.applySystemBars(this);
 
         // Initialize Firebase Database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -82,7 +70,6 @@ public class LoginActivity extends AppCompatActivity {
 
         initViews();
         setClickListeners();
-        checkLoginStatus();
     }
 
     private void initViews() {
@@ -180,7 +167,7 @@ public class LoginActivity extends AppCompatActivity {
                                 User user = userSnapshot.getValue(User.class);
                                 if (user != null && user.getPassword().equals(password)) {
                                     // Login successful
-                                    Toast.makeText(LoginActivity.this, "Login successful!", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
 
                                     // Create login session
                                     sessionManager.createLoginSession(user.getEmail(), user.getFullName(), false);
@@ -191,10 +178,10 @@ public class LoginActivity extends AppCompatActivity {
                                 }
                             }
                             // Password doesn't match
-                            Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, getString(R.string.invalid_email_password), Toast.LENGTH_SHORT).show();
                         } else {
                             // Email not found
-                            Toast.makeText(LoginActivity.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(LoginActivity.this, getString(R.string.invalid_email_password), Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -202,7 +189,7 @@ public class LoginActivity extends AppCompatActivity {
                     public void onCancelled(DatabaseError databaseError) {
                         // Hide progress and re-enable UI
                         showLoading(false);
-                        Toast.makeText(LoginActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(LoginActivity.this, getString(R.string.database_error, databaseError.getMessage()), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -210,7 +197,7 @@ public class LoginActivity extends AppCompatActivity {
     private void loginAsGuest() {
         // Show a brief loading state for guest login
         showLoading(true);
-        Toast.makeText(this, "Welcome, Guest!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, getString(R.string.welcome_guest), Toast.LENGTH_SHORT).show();
 
         // Create guest session
         sessionManager.createLoginSession("", "Guest", true);
@@ -261,4 +248,3 @@ public class LoginActivity extends AppCompatActivity {
         finish();
     }
 }
-// test

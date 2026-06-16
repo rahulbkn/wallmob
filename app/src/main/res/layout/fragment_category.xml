@@ -22,7 +22,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="No wallpapers found"
+        android:text="@string/no_wallpapers_found"
         android:visibility="gone"
         android:textSize="16sp" />
 

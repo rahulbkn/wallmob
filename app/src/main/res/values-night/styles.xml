@@ -1,9 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Night overrides for theme behaviour -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- In night mode we want dark system bars (light icons) -->
-        <item name="android:windowLightStatusBar">false</item>
-        <item name="android:windowLightNavigationBar">false</item>
+<resources>
+<style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <item name="fontFamily">@font/appfont</item>
+    <!-- System bars -->
+    <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    <item name="android:windowTranslucentStatus">false</item>
+    <item name="android:windowTranslucentNavigation">false</item>
+
+    <!-- Colors -->
+    <item name="colorPrimary">@color/colorPrimary</item>
+    <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
+    <item name="colorOnPrimary">@color/colorOnPrimary</item>
+
+    <item name="colorSecondary">@color/colorAccent</item>
+    <item name="colorSecondaryVariant">@color/colorAccent</item>
+    <item name="colorOnSecondary">@color/white</item>
+
+    <item name="android:colorBackground">@color/background</item>
+    <item name="colorSurface">@color/surface</item>
+    <item name="colorOnSurface">@color/onSurface</item>
+    <item name="colorOnBackground">@color/onBackground</item>
+
+    <!-- FIX PURPLE HIGHLIGHTS -->
+    <item name="colorControlActivated">@color/colorAccent</item>
+    <item name="android:colorControlActivated">@color/colorAccent</item>
+
+    <item name="colorControlHighlight">@color/colorControlHighlight</item>
+    <item name="android:colorControlHighlight">@color/colorControlHighlight</item>
+
+    <item name="colorControlNormal">@color/colorControlNormal</item>
+    <item name="android:colorControlNormal">@color/colorControlNormal</item>
+
+    <item name="android:textColorPrimary">@color/onBackground</item>
+    <item name="android:textColorSecondary">@color/gray_dark</item>
+
+    <item name="colorAccent">@color/colorAccent</item>
+
+</style>
+
+ <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background</item> 
+        
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/logo</item> 
+        
+        <item name="postSplashScreenTheme">@style/AppTheme</item> 
     </style>
 </resources>

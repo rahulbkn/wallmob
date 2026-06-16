@@ -27,7 +27,6 @@
             android:paddingTop="16dp"
             android:paddingBottom="32dp">
 
-            <!-- APPEARANCE SECTION -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -35,7 +34,7 @@
                 android:paddingEnd="20dp"
                 android:paddingBottom="8dp"
                 android:text="@string/appearance"
-                android:textColor="#C9A84C"
+                android:textColor="@color/onSurface" 
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -48,13 +47,13 @@
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:padding="20dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_gallery"
-                    app:tint="@color/gray_dark" />
-
+<ImageView
+    android:id="@+id/iv_theme_icon"
+    android:layout_width="24dp"
+    android:layout_height="24dp"
+    android:src="@drawable/ic_dark"
+    app:tint="@color/onSurface" />
+    
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -73,7 +72,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/system_default"
-                        android:textColor="@color/gray_dark"
+                        android:textColor="?android:attr/textColorSecondary"
                         android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -91,8 +90,8 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_sort_alphabetically"
-                    app:tint="@color/gray_dark" />
+                    android:src="@drawable/ic_language"
+                    app:tint="@color/onSurface" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -112,12 +111,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/english"
-                        android:textColor="@color/gray_dark"
+                        android:textColor="?android:attr/textColorSecondary"
                         android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- STORAGE SECTION -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -126,7 +124,7 @@
                 android:paddingEnd="20dp"
                 android:paddingBottom="8dp"
                 android:text="@string/storage"
-                android:textColor="#C9A84C"
+                android:textColor="@color/onSurface"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -143,8 +141,8 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_delete"
-                    app:tint="@color/gray_dark" />
+                    android:src="@drawable/ic_delete"
+                    app:tint="@color/onSurface" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -164,12 +162,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/calculating"
-                        android:textColor="@color/gray_dark"
+                        android:textColor="?android:attr/textColorSecondary"
                         android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ABOUT SECTION -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -178,7 +175,7 @@
                 android:paddingEnd="20dp"
                 android:paddingBottom="8dp"
                 android:text="@string/about"
-                android:textColor="#C9A84C"
+                android:textColor="@color/onSurface"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
@@ -195,8 +192,8 @@
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@android:drawable/ic_menu_info_details"
-                    app:tint="@color/gray_dark" />
+                    android:src="@drawable/ic_info"
+                    app:tint="@color/onSurface" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -210,7 +207,3 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </LinearLayout>
-
-
-
-

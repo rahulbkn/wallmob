@@ -23,7 +23,7 @@
             android:src="@drawable/ic_arrow_back"
             android:tint="@color/onSurface"
             android:scaleType="centerInside"
-            android:contentDescription="Backbutton" />
+            android:contentDescription="@string/back_button" />
 
         <LinearLayout
             android:id="@+id/linear25"
@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                android:text="Welcome!"
+                android:text="@string/welcome_exclaim"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 android:textColor="@color/onSurface" />
@@ -58,7 +58,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="User information will appear here"
+                android:text="@string/user_info_placeholder"
                 android:textSize="16sp"
                 android:textColor="@color/gray_dark"
                 android:lineSpacingExtra="4dp" />
@@ -100,7 +100,7 @@
                         android:id="@+id/textview27"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Dashboard"
+                        android:text="@string/dashboard"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/onSurface" />
@@ -129,7 +129,7 @@
                         android:id="@+id/textview28"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Settings"
+                        android:text="@string/settings"
                         android:textSize="14sp"
                         android:textStyle="bold"
                         android:textColor="@color/onSurface" />
@@ -152,7 +152,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="8dp"
-                    android:text="App Status"
+                    android:text="@string/app_status"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/onSurface" />
@@ -162,7 +162,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
-                    android:text="✓ Authentication system working"
+                    android:text="@string/auth_system_working"
                     android:textSize="14sp"
                     android:textColor="@color/green_success" />
 
@@ -171,7 +171,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="4dp"
-                    android:text="✓ User session active"
+                    android:text="@string/user_session_active"
                     android:textSize="14sp"
                     android:textColor="@color/green_success" />
 
@@ -179,7 +179,7 @@
                     android:id="@+id/textview32"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="✓ All features available"
+                    android:text="@string/all_features_available"
                     android:textSize="14sp"
                     android:textColor="@color/green_success" />
 
@@ -193,7 +193,7 @@
             android:layout_height="56dp"
             android:layout_marginTop="8dp"
             android:layout_marginBottom="16dp"
-            android:text="Logout"
+            android:text="@string/logout"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/white"

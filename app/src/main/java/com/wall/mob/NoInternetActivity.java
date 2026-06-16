@@ -76,14 +76,14 @@ public class NoInternetActivity extends AppCompatActivity {
         Button settingsButton = findViewById(R.id.no_internet_settings);
 
         retryButton.setOnClickListener(v -> {
-            retryText.setText("Checking connection...");
+            retryText.setText(R.string.checking_connection);
             performActiveProbe(result -> {
                 if (result) {
                     Log.d(TAG, "Retry probe: online -> attemptFinish()");
                     attemptFinish();
                 } else {
                     Log.d(TAG, "Retry probe: still offline");
-                    retryText.setText("Still offline. Please check your connection.");
+                    retryText.setText(R.string.still_offline);
                 }
             });
         });

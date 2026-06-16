@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
+    android:background="@color/background"
     tools:context=".SearchActivity">
 
     <!-- Toolbar -->
@@ -47,7 +48,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:gravity="center"
-        android:text="Start typing to search wallpapers"
+        android:text="@string/search_start_typing"
         android:textSize="16sp"
         android:visibility="visible" />
 

@@ -5,6 +5,7 @@
      xmlns:tools="http://schemas.android.com/tools"
      android:layout_height="match_parent"
      android:layout_width="match_parent"
+     android:background="@color/background"
      android:id="@+id/root">
 
    <ImageView
@@ -22,7 +23,7 @@
          android:id="@+id/imageProgressBar"
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"
-         android:indeterminateTint="@android:color/white"
+         android:indeterminateTint="@color/onImage"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintBottom_toBottomOf="parent"
          app:layout_constraintStart_toStartOf="parent"
@@ -46,7 +47,7 @@
          android:elevation="4dp"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toStartOf="parent"
-         android:tint="@android:color/white"
+         android:tint="@color/onImage"
          android:layout_marginTop="40dp"
          android:layout_marginStart="20dp"
          android:id="@+id/back_button" />
@@ -74,7 +75,7 @@
              android:background="@drawable/black_transparent_circle"
              android:elevation="2dp"
              android:padding="12dp"
-             android:tint="@android:color/white" />
+             android:tint="@color/onImage" />
 
     </LinearLayout>
 
@@ -82,7 +83,7 @@
     <FrameLayout
          android:layout_height="wrap_content"
          android:layout_width="0dp"
-         android:background="#00000000"
+         android:background="@color/transparent"
          android:elevation="8dp"
          app:layout_constraintStart_toStartOf="parent"
          android:clipToOutline="true"
@@ -144,11 +145,11 @@
                              android:layout_marginBottom="4dp"
                              android:ellipsize="end"
                              android:textSize="22sp"
-                             android:textColor="@android:color/white"
+                             android:textColor="@color/onImage"
                              android:letterSpacing="0.01"
                              android:maxLines="2"
                              android:id="@+id/wallpaperTitle"
-                             android:text="Wallpaper Title"
+                             android:text="@string/wallpaper_title"
                              android:textStyle="bold" />
 
                         <TextView
@@ -157,20 +158,20 @@
                              android:layout_marginBottom="2dp"
                              android:ellipsize="end"
                              android:textSize="14sp"
-                             android:textColor="#E0FFFFFF"
+                             android:textColor="@color/onImage"
                              android:maxLines="1"
                              android:id="@+id/wallpaper_author"
-                             android:text="Author Name" />
+                             android:text="@string/author_name" />
 
                         <TextView
                              android:layout_height="wrap_content"
                              android:layout_width="wrap_content"
                              android:ellipsize="end"
                              android:textSize="12sp"
-                             android:textColor="#B3FFFFFF"
+                             android:textColor="@color/onImageTertiary"
                              android:maxLines="1"
                              android:id="@+id/wallpaper_source"
-                             android:text="Source: Unsplash" />
+                             android:text="@string/source_unsplash" />
 
                     </LinearLayout>
 
@@ -196,10 +197,10 @@
                              android:layout_width="wrap_content"
                              android:layout_centerInParent="true"
                              android:textSize="15sp"
-                             android:textColor="@android:color/white"
+                             android:textColor="@color/onImage"
                              android:letterSpacing="0.02"
                              android:id="@+id/slide_text"
-                             android:text="Slide to set wallpaper"
+                             android:text="@string/slide_to_set"
                              android:textStyle="bold" />
 
                         <View
@@ -241,17 +242,17 @@
                              android:background="@drawable/black_transparent_round"
                              android:elevation="2dp"
                              android:padding="16dp"
-                             android:tint="@android:color/white"
+                             android:tint="@color/onImage"
                              android:id="@+id/edit_btn" />
 
                         <TextView
                              android:layout_height="wrap_content"
                              android:layout_width="wrap_content"
                              android:textSize="13sp"
-                             android:textColor="@android:color/white"
+                             android:textColor="@color/onImage"
                              android:layout_marginTop="8dp"
                              android:id="@+id/textview34"
-                             android:text="Edit"
+                             android:text="@string/edit"
                              android:textStyle="bold" />
 
                     </LinearLayout>
@@ -274,17 +275,17 @@
                              android:background="@drawable/black_transparent_round"
                              android:elevation="2dp"
                              android:padding="16dp"
-                             android:tint="@android:color/white"
+                             android:tint="@color/onImage"
                              android:id="@+id/share_btn" />
 
                         <TextView
                              android:layout_height="wrap_content"
                              android:layout_width="wrap_content"
                              android:textSize="13sp"
-                             android:textColor="@android:color/white"
+                             android:textColor="@color/onImage"
                              android:layout_marginTop="8dp"
                              android:id="@+id/textview35"
-                             android:text="Share"
+                             android:text="@string/share"
                              android:textStyle="bold" />
 
                     </LinearLayout>
@@ -307,17 +308,17 @@
                              android:background="@drawable/black_transparent_round"
                              android:elevation="2dp"
                              android:padding="16dp"
-                             android:tint="@android:color/white"
+                             android:tint="@color/onImage"
                              android:id="@+id/download_btn" />
 
                         <TextView
                              android:layout_height="wrap_content"
                              android:layout_width="wrap_content"
                              android:textSize="13sp"
-                             android:textColor="@android:color/white"
+                             android:textColor="@color/onImage"
                              android:layout_marginTop="8dp"
                              android:id="@+id/textview36"
-                             android:text="Download"
+                             android:text="@string/download"
                              android:textStyle="bold" />
 
                     </LinearLayout>

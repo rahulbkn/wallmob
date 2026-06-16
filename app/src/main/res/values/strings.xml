@@ -1,13 +1,12 @@
 <resources>
     <string name="app_name">WallMob</string>
-    <string name="default_web_client_id">346741807438-je3e636phe7ap03t3h82clj858m6mp1q.apps.googleusercontent.com</string>
-    <string name="version_json_url">https://api.github.com/repos/rahulbkn/Wallmob_wallpaperApp/releases/latest</string>
-    <string name="current_version">2.1.0</string>
+    <string name="default_web_client_id" translatable="false">346741807438-je3e636phe7ap03t3h82clj858m6mp1q.apps.googleusercontent.com</string>
+    <string name="version_json_url" translatable="false">https://api.github.com/repos/rahulbkn/Wallmob_wallpaperApp/releases/latest</string>
+    <string name="current_version" translatable="false">2.1.0</string>
     <string name="wallpaper">Wallpaper</string>
     <string name="no_premium_wallpapers">No premium wallpapers available</string>
     <string name="wallpaper_image_description">Wallpaper image</string>
     <string name="wallpaper_title">Wallpaper Title</string>
-    <!-- For test.xml -->
     <string name="photo">Photo</string>
     <string name="back">Back</string>
     <string name="favorite">Favorite</string>
@@ -53,7 +52,6 @@
     <string name="share">Share</string>
     <string name="download">Download</string>
 
-    <!-- ForgetActivity strings -->
     <string name="email_required">Email is required</string>
     <string name="email_invalid">Please enter a valid email</string>
     <string name="sending">Sending...</string>
@@ -61,7 +59,6 @@
     <string name="email_not_found">Email not found in our records</string>
     <string name="send_reset_link">Send Reset Link</string>
 
-    <!-- Settings screen labels -->
     <string name="settings">Settings</string>
     <string name="appearance">Appearance</string>
     <string name="theme">Theme</string>
@@ -74,7 +71,6 @@
     <string name="about">About</string>
     <string name="privacy_policy">Privacy Policy</string>
 
-    <!-- Home screen section labels -->
     <string name="section_featured">FEATURED</string>
     <string name="section_discover">Discover\nMasterpieces</string>
     <string name="section_hot">HOT</string>
@@ -95,9 +91,194 @@
     <string name="section_premium_collection">Premium Collection</string>
     <string name="section_premium_desc">Curated exclusively for members</string>
 
-    <!-- General UI strings -->
     <string name="search">Search</string>
     <string name="no_wallpapers_found">No wallpapers found</string>
     <string name="failed_to_load_wallpapers">Failed to load wallpapers</string>
     
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="sign_in">Sign In</string>
+    <string name="full_name">Full Name</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="agree_terms">I agree to the Terms and Conditions</string>
+    <string name="create_account">Create Account</string>
+    <string name="already_have_account">Already have an account? </string>
+    <string name="image_effects">Image Effects</string>
+    <string name="image_effects_desc">Apply filters and effects to enhance your image</string>
+    <string name="blur_effect">Blur Effect</string>
+    <string name="color_filters">Color Filters</string>
+    <string name="original">Original</string>
+    <string name="sepia">Sepia</string>
+    <string name="bw">BW</string>
+    <string name="vintage">Vintage</string>
+    <string name="reset">Reset</string>
+    <string name="save">Save</string>
+    <string name="error">Error</string>
+    <string name="category_header">Category Header</string>
+    <string name="category_name">Category Name</string>
+    <string name="filter">Filter</string>
+    <string name="category_image">Category image</string>
+    <string name="abstract_category">Abstract</string>
+    <string name="premium_wallpaper">Premium wallpaper</string>
+    <string name="add_to_favorites">Add to favorites</string>
+    <string name="premium">Premium</string>
+    <string name="author">Author</string>
+    <string name="saved">SAVED</string>
+    <string name="your_favorites">Your Favorites</string>
+    <string name="favorites_desc">Wallpapers you have loved and saved</string>
+    <string name="no_favorites">No favorites</string>
+    <string name="no_favorites_yet">No favorites yet</string>
+    <string name="no_favorites_desc">Wallpapers you mark as a favorite will appear right here.</string>
+    <string name="set_wallpaper">Set Wallpaper</string>
+    <string name="choose_wallpaper_target">Choose where to apply the wallpaper:</string>
+    <string name="home_screen">Home Screen</string>
+    <string name="lock_screen">Lock Screen</string>
+    <string name="both_screens">Both Screens</string>
+    <string name="cancel">Cancel</string>
+    <string name="exit_app">Exit App</string>
+    <string name="exit_confirm">Are you sure you want to exit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="new_version_available">New Version Available!</string>
+    <string name="whats_new">What\'s New:</string>
+    <string name="bug_fixes_improvements">Bug fixes and improvements</string>
+    <string name="later">Later</string>
+    <string name="update">Update</string>
+    <string name="watch_ads_earn_coins">Watch Ads &amp; Earn Coins</string>
+    <string name="coins_count">Coins: %1$d</string>
+    <string name="watch_ad_reward_desc">Watch a complete ad to earn 1 coin!</string>
+    <string name="watch_ad">Watch Ad</string>
+    <string name="how_it_works">How it works:</string>
+    <string name="how_watch_ad_step_tap">• Tap \'Watch Ad\' button</string>
+    <string name="how_watch_ad_step_watch">• Watch the complete ad</string>
+    <string name="how_watch_ad_step_earn">• Earn 1 coin automatically</string>
+    <string name="how_watch_ad_step_repeat">• Repeat to earn more coins!</string>
+    <string name="transaction_history">Transaction History</string>
+    <string name="exclusive">✦  EXCLUSIVE</string>
+    <string name="premium_collection">Premium Collection</string>
+    <string name="premium_desc">Unrestricted access to our finest wallpapers</string>
+    <string name="failed_to_load_collection">Failed to load collection</string>
+    <string name="check_connection">Please check your connection</string>
+    <string name="wallmob_brand"> WallMob </string>
+    <string name="author_name">Author Name</string>
+    <string name="source_unsplash">Source: Unsplash</string>
+    <string name="home">Home</string>
+    <string name="favorites">Favorites</string>
+    <string name="downloads">Downloads</string>
+    <string name="coins_required_message">You need %1$d coins to perform this action. Would you like to earn more coins?</string>
+    <string name="removed_from_favorites">Removed from favorites</string>
+    <string name="added_to_favorites">Added to favorites</string>
+    <string name="failed_load_image_sharing">Failed to load image for sharing</string>
+    <string name="storage_permission_download">Storage permission required to download wallpapers.</string>
+    <string name="wallpaper_saved_gallery">Wallpaper saved to Gallery!</string>
+    <string name="failed_load_image_download">Failed to load image for download</string>
+    <string name="failed_load_image_editing">Failed to load image for editing</string>
+    <string name="deleted_successfully">Deleted successfully</string>
+    <string name="failed_delete_file">Failed to delete file</string>
+    <string name="error_deleting_file">Error deleting file</string>
+    <string name="ad_initializing">Initializing Unity Ads...</string>
+    <string name="ad_waiting_initialization">Waiting for ads initialization... (%1$d/10)</string>
+    <string name="ad_failed_initialize">Failed to initialize ads. Please restart app.</string>
+    <string name="ad_loading_rewarded">Loading rewarded ad...</string>
+    <string name="ad_loaded_ready">Rewarded ad loaded! Ready to earn coins.</string>
+    <string name="ad_failed_load">Failed to load ad: %1$s</string>
+    <string name="ad_load_failed">Ad load failed</string>
+    <string name="ad_not_ready">Ad not ready yet!</string>
+    <string name="ad_showing_rewarded">Showing rewarded ad...</string>
+    <string name="ad_started">Ad started...</string>
+    <string name="ad_completed_reward">Ad completed! You earned 1 coin!</string>
+    <string name="ad_skipped_no_reward">Ad skipped. No reward.</string>
+    <string name="ad_show_failed">Show failed: %1$s</string>
+    <string name="ad_failed_show">Ad failed to show</string>
+    <string name="failed_load_premium_wallpapers_period">Failed to load premium wallpapers.</string>
+    <string name="failed_set_wallpaper">Failed to set wallpaper: %1$s</string>
+    <string name="failed_share_preview">Failed to share preview</string>
+    <string name="no_share_apps">No apps available to share</string>
+    <string name="failed_share">Failed to share: %1$s</string>
+    <string name="failed_download_wallpaper">Failed to download wallpaper</string>
+    <string name="failed_prepare_image_editing">Failed to prepare image for editing</string>
+    <string name="crop_not_supported">Your device doesn\'t support the crop action!</string>
+    <string name="accept_terms_required">Please accept the Terms and Conditions</string>
+    <string name="database_error">Database error: %1$s</string>
+    <string name="registration_successful">Registration successful! Please login.</string>
+    <string name="registration_failed">Registration failed: %1$s</string>
+    <string name="failed_load_trending">Failed to load trending:\n%1$s</string>
+    <string name="could_not_refresh_trending">Could not refresh trending list.</string>
+    <string name="by_author">By: %1$s</string>
+    <string name="category_value">Category: %1$s</string>
+    <string name="unknown_author">Unknown Author</string>
+    <string name="source_value">Source: %1$s</string>
+    <string name="unknown_source">Unknown Source</string>
+    <string name="image_not_available">Image not available</string>
+    <string name="checking_connection">Checking connection...</string>
+    <string name="still_offline">Still offline. Please check your connection.</string>
+    <string name="no_image_provided">No image provided</string>
+    <string name="failed_load_image">Failed to load image</string>
+    <string name="no_image_to_save">No image to save</string>
+    <string name="changes_applied">Changes applied successfully!</string>
+    <string name="failed_save_changes">Failed to save changes</string>
+    <string name="searching_online">Searching online...</string>
+    <string name="search_failed">Search failed: %1$s</string>
+    <string name="no_results_for">No results found for \"%1$s\"</string>
+    <string name="already_latest_version">Already using latest version</string>
+    <string name="cannot_open_link">Cannot open link</string>
+    <string name="no_email_app">No email app found</string>
+    <string name="welcome_guest">Welcome, Guest!</string>
+    <string name="guest_user_info">You are browsing as a guest user.\nSome features may be limited.</string>
+    <string name="welcome_back_name">Welcome back, %1$s!</string>
+    <string name="profile_email_phone">Email: %1$s\nPhone: %2$s</string>
+    <string name="welcome_back">Welcome back!</string>
+    <string name="profile_email_failed">Email: %1$s\nCould not load full profile details.</string>
+    <string name="logged_out_successfully">Logged out successfully</string>
+    <string name="firebase_init_failed">Firebase initialization failed!</string>
+    <string name="failed_get_fcm_token">Failed to get FCM token!</string>
+    <string name="open_filters">Open Filters</string>
+    <string name="notifications_enabled">Notifications enabled!</string>
+    <string name="notifications_disabled_settings">Notifications disabled. Enable in Settings.</string>
+    <string name="login_successful">Login successful!</string>
+    <string name="invalid_email_password">Invalid email or password</string>
+    <string name="filter_options_coming_soon">Filter options coming soon</string>
+    <string name="error_message">Error: %1$s</string>
+    <string name="failed_load_wallpaper_details">Failed to load wallpaper details</string>
+    <string name="failed_load_wallpaper_image">Failed to load image for wallpaper</string>
+    <string name="failed_start_wallpaper_loading">Failed to start wallpaper loading: %1$s</string>
+    <string name="cache_zero_mb">0.00 MB</string>
+    <string name="notification_title">Notification Title</string>
+    <string name="notification_type">Type</string>
+    <string name="notification_message_content">Notification message content</string>
+    <string name="just_now">Just now</string>
+    <string name="insufficient_coins">Insufficient Coins</string>
+    <string name="earn_coins">Earn Coins</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="forgot_password_title">Forgot Password?</string>
+    <string name="forgot_password_desc">Don\'t worry! It happens. Please enter the email address associated with your account.</string>
+    <string name="email_address">Email Address</string>
+    <string name="remember_password_sign_in">Remember your password? Sign In</string>
+    <string name="local">LOCAL</string>
+    <string name="your_downloads">Your Downloads</string>
+    <string name="downloads_desc">Wallpapers you have saved to your device</string>
+    <string name="no_downloads">No downloads</string>
+    <string name="no_downloads_yet">No downloads yet</string>
+    <string name="no_downloads_desc">Wallpapers you download to your device will appear right here.</string>
+    <string name="back_button">Back button</string>
+    <string name="coins_required_static">You need coins to perform this action. Would you like to earn more coins?</string>
+    <string name="long_clicked">Long-clicked: %1$s</string>
+    <string name="profile_full_access">Email: %1$s
+Phone: %2$s
+You have full access to all features.</string>
+
+    <string name="trending_now">Trending Now</string>
+    <string name="firebase_source">Firebase</string>
+    <string name="category_abstract">Abstract</string>
+    <string name="category_amoled">Amoled</string>
+    <string name="category_nature">Nature</string>
+    <string name="category_space">Space</string>
+    <string name="category_cities">Cities</string>
+    <string name="category_animals">Animals</string>
+    <string name="category_cars">Cars</string>
+    <string name="category_anime">Anime</string>
+    <string name="category_landscape">Landscape</string>
+
 </resources>

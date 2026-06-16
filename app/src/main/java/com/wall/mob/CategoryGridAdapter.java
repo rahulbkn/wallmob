@@ -1,7 +1,6 @@
 package com.wall.mob;
 
 import android.content.Context;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,52 +43,31 @@ public class CategoryGridAdapter extends RecyclerView.Adapter<CategoryGridAdapte
         return new ViewHolder(view);
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        CategoryItem category = categories.get(position);
+  @Override
+public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+    CategoryItem category = categories.get(position);
 
-        holder.categoryName.setText(category.getName());
-        // Use theme attribute for text color so it adapts to day/night
-        int textColor;
-        TypedValue tv = new TypedValue();
-        boolean resolved = context.getTheme().resolveAttribute(com.google.android.material.R.attr.colorOnSurface, tv, true);
-        if (resolved) {
-            if (tv.type >= TypedValue.TYPE_FIRST_COLOR_INT && tv.type <= TypedValue.TYPE_LAST_COLOR_INT) {
-                textColor = tv.data;
-            } else {
-                // attribute references a color resource
-                textColor = ContextCompat.getColor(context, tv.resourceId);
-            }
-        } else {
-            // fallback to app-defined color or Android default
-            try {
-                textColor = ContextCompat.getColor(context, R.color.black);
-            } catch (Exception e) {
-                textColor = 0xFF000000; // black
-            }
+    holder.categoryName.setText(category.getName());
+
+    // Glide options
+    RequestOptions options = new RequestOptions()
+            .centerCrop()
+            .placeholder(R.drawable.bg)
+            .error(R.drawable.error_image)
+            .diskCacheStrategy(DiskCacheStrategy.ALL);
+
+    Glide.with(context)
+            .load(category.getImageUrl())
+            .apply(options)
+            .transition(DrawableTransitionOptions.withCrossFade(300))
+            .into(holder.categoryImage);
+
+    holder.container.setOnClickListener(v -> {
+        if (listener != null) {
+            listener.onCategoryClick(category);
         }
-        holder.categoryName.setTextColor(textColor);
-
-        // Glide options
-        RequestOptions options = new RequestOptions()
-                .centerCrop()
-                .placeholder(R.drawable.bg)
-                .error(R.drawable.error_image)
-                .diskCacheStrategy(DiskCacheStrategy.ALL);
-
-        Glide.with(context)
-                .load(category.getImageUrl())
-                .apply(options)
-                .transition(DrawableTransitionOptions.withCrossFade(300))
-                .into(holder.categoryImage);
-
-        holder.container.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onCategoryClick(category);
-            }
-        });
-    }
-
+    });
+}
     @Override
     public int getItemCount() {
         return categories.size();

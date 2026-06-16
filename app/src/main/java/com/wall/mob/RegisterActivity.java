@@ -22,10 +22,6 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-import android.os.Build;
-import android.view.Window;
-import android.view.WindowManager;
-import androidx.core.content.ContextCompat;
 // Remove the inner User class and import the new one
 import com.wall.mob.User;
 
@@ -54,23 +50,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register);
         
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(ContextCompat.getColor(this, android.R.color.white));
-            window.setNavigationBarColor(ContextCompat.getColor(this, android.R.color.white));
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                int flags = window.getDecorView().getSystemUiVisibility();
-                flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-                window.getDecorView().setSystemUiVisibility(flags);
-            }
-        }
+        ThemeUtils.applySystemBars(this);
 
         // Initialize Firebase Database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -178,7 +158,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         if (!termsCheckbox.isChecked()) {
-            Toast.makeText(this, "Please accept the Terms and Conditions", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.accept_terms_required), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -204,7 +184,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Toast.makeText(RegisterActivity.this, "Database error: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, getString(R.string.database_error, databaseError.getMessage()), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -220,14 +200,14 @@ public class RegisterActivity extends AppCompatActivity {
         databaseReference.child(userId).setValue(user)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        Toast.makeText(RegisterActivity.this, "Registration successful! Please login.", Toast.LENGTH_LONG).show();
+                        Toast.makeText(RegisterActivity.this, getString(R.string.registration_successful), Toast.LENGTH_LONG).show();
                         
                         // Navigate back to LoginActivity
                         Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                         startActivity(intent);
                         finish();
                     } else {
-                        Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(RegisterActivity.this, getString(R.string.registration_failed, task.getException().getMessage()), Toast.LENGTH_SHORT).show();
                     }
                 });
     }

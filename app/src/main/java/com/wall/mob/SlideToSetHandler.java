@@ -24,15 +24,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.google.android.material.button.MaterialButton;
 import android.graphics.Color;
 import android.widget.Button;
-import android.widget.TextView;
-import android.view.View;
-import android.view.LayoutInflater;
-import android.app.AlertDialog;
-import android.content.Intent;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.Color;
 import android.view.ViewGroup;
-
 import android.util.Log;
 
 public class SlideToSetHandler {
@@ -48,7 +40,7 @@ public class SlideToSetHandler {
     private SharedPreferences sharedPrefs;
     private static final String PREFS_NAME = "GamePrefs";
     private static final String COINS_KEY = "coins";
-private static final int UNLIMITED_COINS = Integer.MAX_VALUE;
+    private static final int UNLIMITED_COINS = Integer.MAX_VALUE;
 
     public SlideToSetHandler(WallpaperDetailsActivity activity, View slideToSetContainer, View slideThumb, TextView slideText) {
         this.activity = activity;
@@ -59,74 +51,76 @@ private static final int UNLIMITED_COINS = Integer.MAX_VALUE;
     }
 
     private boolean hasEnoughCoins(int requiredCoins) {
-    return true; // Always enough coins
-}
+        return true; // Always enough coins
+    }
 
     private void deductCoins(int coins) {
+        // Force unlimited coins
+        SharedPreferences.Editor editor = sharedPrefs.edit();
+        editor.putInt(COINS_KEY, UNLIMITED_COINS);
+        editor.apply();
 
-    // Force unlimited coins
-    SharedPreferences.Editor editor = sharedPrefs.edit();
-    editor.putInt(COINS_KEY, UNLIMITED_COINS);
-    editor.apply();
+        Log.d("SlideToSetHandler", "Unlimited coins enabled. Deduction ignored: " + coins);
 
-    Log.d("SlideToSetHandler",
-            "Unlimited coins enabled. Deduction ignored: " + coins);
-
-    // Notify UI (important)
-    Intent intent = new Intent("COINS_UPDATED");
-    intent.putExtra("new_coins", UNLIMITED_COINS);
-    LocalBroadcastManager.getInstance(activity).sendBroadcast(intent);
-}
+        // Notify UI (important)
+        Intent intent = new Intent("COINS_UPDATED");
+        intent.putExtra("new_coins", UNLIMITED_COINS);
+        LocalBroadcastManager.getInstance(activity).sendBroadcast(intent);
+    }
 
     private void showEarnCoinsDialog(int requiredCoins) {
-    if (activity.isDestroyed() || activity.isFinishing()) {
-        return;
+        if (activity.isDestroyed() || activity.isFinishing()) {
+            return;
+        }
+
+        LayoutInflater inflater = LayoutInflater.from(activity);
+        View dialogView = inflater.inflate(R.layout.dialog_earn_coins, null);
+
+        TextView tvMessage = (TextView) dialogView.findViewById(R.id.tvMessage);
+        Button btnEarnCoins = (Button) dialogView.findViewById(R.id.btnEarnCoins);
+        Button btnCancel = (Button) dialogView.findViewById(R.id.btnCancel);
+
+        tvMessage.setText(activity.getString(R.string.coins_required_message, requiredCoins));
+
+        // Use regular theme instead of translucent
+        final AlertDialog dialog = new AlertDialog.Builder(activity)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
+
+        // Remove default background and set transparent window
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            // Remove default padding
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+
+        btnEarnCoins.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(activity, UnityAdActivity.class);
+                activity.startActivity(intent);
+                dialog.dismiss();
+            }
+        });
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
     }
 
-    LayoutInflater inflater = LayoutInflater.from(activity);
-    View dialogView = inflater.inflate(R.layout.dialog_earn_coins, null);
-
-    TextView tvMessage = (TextView) dialogView.findViewById(R.id.tvMessage);
-    Button btnEarnCoins = (Button) dialogView.findViewById(R.id.btnEarnCoins);
-    Button btnCancel = (Button) dialogView.findViewById(R.id.btnCancel);
-
-    tvMessage.setText("You need " + requiredCoins + " coins to perform this action. Would you like to earn more coins?");
-
-    // Use regular theme instead of translucent
-    final AlertDialog dialog = new AlertDialog.Builder(activity)
-            .setView(dialogView)
-            .setCancelable(true)
-            .create();
-
-    // Remove default background and set transparent window
-    if (dialog.getWindow() != null) {
-        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        // Remove default padding
-        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-    }
-
-    btnEarnCoins.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(activity, UnityAdActivity.class);
-            activity.startActivity(intent);
-            dialog.dismiss();
-        }
-    });
-
-    btnCancel.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            dialog.dismiss();
-        }
-    });
-
-    dialog.show();
-}
     public void setupSlideToSet(Wallpaper wallpaper) {
         slideToSetContainer.post(() -> thumbMaxPosition = slideToSetContainer.getWidth() - slideThumb.getWidth());
 
         slideThumb.setOnTouchListener((v, event) -> {
+            // FIX 1: Prevent division by zero if layout hasn't fully rendered
+            if (thumbMaxPosition <= 0) return false;
+
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
                     initialX = event.getRawX();
@@ -234,6 +228,9 @@ private static final int UNLIMITED_COINS = Integer.MAX_VALUE;
         if (activity.getEnhancedImageUri() != null) {
             WallpaperUtils.setWallpaperFromUri(activity, activity.getEnhancedImageUri(), wallpaperFlag);
             deductCoins(coinsRequired);
+            
+            // FIX 2: Dismiss the progress dialog after setting an enhanced wallpaper
+            WallpaperUtils.dismissProgressDialog(activity);
         } else {
             try {
                 Glide.with(activity)
@@ -259,13 +256,13 @@ private static final int UNLIMITED_COINS = Integer.MAX_VALUE;
                         public void onLoadFailed(@Nullable Drawable errorDrawable) {
                             WallpaperUtils.dismissProgressDialog(activity);
                             if (!activity.isDestroyedOrFinishing()) {
-                                Toast.makeText(activity, "Failed to load image for wallpaper", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(activity, activity.getString(R.string.failed_load_wallpaper_image), Toast.LENGTH_SHORT).show();
                             }
                         }
                     });
             } catch (Exception e) {
                 WallpaperUtils.dismissProgressDialog(activity);
-                Toast.makeText(activity, "Failed to start wallpaper loading: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(activity, activity.getString(R.string.failed_start_wallpaper_loading, e.getMessage()), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -280,4 +277,3 @@ private static final int UNLIMITED_COINS = Integer.MAX_VALUE;
         }
     }
 }
-// test

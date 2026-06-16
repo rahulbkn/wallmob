@@ -19,18 +19,19 @@
 		android:theme="@style/AppTheme">
 		
 		<!-- NEW LAUNCHER: Login Screen opens first -->
-		<activity
-			android:name=".LoginActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
-			android:hardwareAccelerated="true"
-			android:supportsPictureInPicture="true"
-			android:screenOrientation="portrait"
-			android:exported="true"> 
-			<intent-filter>
-				<action android:name="android.intent.action.MAIN" />
-				<category android:name="android.intent.category.LAUNCHER" />
-			</intent-filter>
-		</activity>
+	<activity
+    android:name=".LoginActivity"
+    android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+    android:hardwareAccelerated="true"
+    android:theme="@style/Theme.App.Starting" 
+    android:supportsPictureInPicture="true"
+    android:screenOrientation="portrait"
+    android:exported="true"> 
+    <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+    </intent-filter>
+</activity>
     
 		<!-- Main Hub (Now internal, opened after successful login) -->
 		<activity
@@ -143,7 +144,7 @@
 			android:name=".NoInternetActivity"
 			android:exported="false"
 			android:excludeFromRecents="true"
-			android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+			android:theme="@style/AppTheme" />
 			
 			
 			<activity android:name=".SettingsActivity" />
