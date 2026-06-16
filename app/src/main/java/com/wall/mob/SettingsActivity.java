@@ -14,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
@@ -46,6 +45,7 @@ public class SettingsActivity extends AppCompatActivity {
         
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        ThemeUtils.applySystemBars(this);
 
         sharedPreferences = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
 
@@ -87,7 +87,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void applyThemeFromPreference() {
         SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
         String theme = prefs.getString(KEY_THEME, "system");
-        applyTheme(theme);
+        ThemeUtils.applyTheme(theme);
     }
 
     private void updateUI() {
@@ -136,17 +136,7 @@ public class SettingsActivity extends AppCompatActivity {
     private void applyTheme(String themeValue) {
         // Persist the selection so SketchApplication can restore it on cold start
         getSharedPreferences(PREF_NAME, MODE_PRIVATE).edit().putString(KEY_THEME, themeValue).apply();
-        switch (themeValue) {
-            case "light":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                break;
-            case "dark":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                break;
-            default:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                break;
-        }
+        ThemeUtils.applyTheme(themeValue);
     }
 
     // --- LANGUAGE LOGIC ---

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -15,7 +14,6 @@ import android.os.Looper;
 import android.os.Process;
 import android.util.Log;
 
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDexApplication;
 
 import com.google.firebase.FirebaseApp;
@@ -91,19 +89,7 @@ public class SketchApplication extends MultiDexApplication implements Applicatio
     public void onCreate() {
         super.onCreate();
 
-        SharedPreferences prefs = getSharedPreferences("settings_prefs", MODE_PRIVATE);
-        String theme = prefs.getString("app_theme", "system");
-        switch (theme) {
-            case "light":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-                break;
-            case "dark":
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-                break;
-            default:
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-                break;
-        }
+        ThemeUtils.applyThemeFromPrefs(this);
 
         mApplicationContext = getApplicationContext();
 
@@ -353,7 +339,12 @@ public class SketchApplication extends MultiDexApplication implements Applicatio
     }
 
     // Activity lifecycle callbacks to track foreground state and current Activity
-    @Override public void onActivityCreated(Activity activity, Bundle savedInstanceState) {}
+    @Override
+    public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+        if (activity.getClass().getName().startsWith(getPackageName())) {
+            ThemeUtils.applySystemBars(activity);
+        }
+    }
     @Override
     public void onActivityStarted(Activity activity) {
         startedActivities++;

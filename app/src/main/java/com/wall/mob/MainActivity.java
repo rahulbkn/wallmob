@@ -110,30 +110,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-    
-    SharedPreferences prefs =
-        getSharedPreferences("settings_prefs", MODE_PRIVATE);
+        ThemeUtils.applyThemeFromPrefs(this);
 
-String theme = prefs.getString("app_theme", "system");
-
-switch (theme) {
-    case "light":
-        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
-                androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO);
-        break;
-
-    case "dark":
-        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
-                androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES);
-        break;
-
-    default:
-        androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(
-                androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        break;
-}
-    
-    
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
         Log.d(TAG, "========== MainActivity Created ==========");
