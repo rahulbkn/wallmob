@@ -390,9 +390,8 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
             isLoading = false;
             return;
         }
-        int insertStart = wallpapers.size();
         wallpapers.addAll(newWallpapers);
-        adapter.addData(newWallpapers, insertStart); // uses notifyItemRangeInserted
+        adapter.addData(newWallpapers);
         isLoading = false;
         if (newWallpapers.size() < PAGE_SIZE) isLastPage = true;
     }
