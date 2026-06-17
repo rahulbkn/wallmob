@@ -48,159 +48,74 @@
                 android:layout_gravity="end|top" />
 
             <androidx.appcompat.widget.Toolbar
-    android:id="@+id/toolbar"
-    android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:background="@android:color/transparent"
-    android:gravity="center_vertical"
-    app:layout_collapseMode="pin"
-    app:navigationIcon="@drawable/ic_arrow_back"
-    app:navigationIconTint="@color/white"
-    app:titleTextColor="@color/white" />
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/transparent"
+                android:gravity="center_vertical"
+                app:layout_collapseMode="pin"
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:navigationIconTint="@color/white"
+                app:titleTextColor="@color/white" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nested_scroll_view"
-        android:layout_height="match_parent"
+    <!-- RecyclerView directly here — no NestedScrollView wrapper -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/wallpapers_recycler"
         android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        android:fillViewport="true"
-        android:background="@color/background">
+        android:clipToPadding="false"
+        android:paddingBottom="16dp" />
 
-        <LinearLayout
-            android:layout_height="match_parent"
-            android:layout_width="match_parent"
-            android:orientation="vertical">
+    <!-- Full-screen initial loading spinner -->
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:visibility="gone"
+        android:indeterminateTint="@color/onSurface"
+        android:layout_gravity="center" />
 
-            <LinearLayout
-                android:layout_height="match_parent"
-                android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:paddingTop="24dp"
-                android:layout_marginTop="-24dp"
-                android:background="@drawable/bg_section_rounded"
-                android:elevation="4dp">
+    <!-- Empty state centered -->
+    <LinearLayout
+        android:id="@+id/empty_state"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:gravity="center"
+        android:padding="32dp"
+        android:orientation="vertical"
+        android:layout_gravity="center">
 
-                <LinearLayout
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingTop="16dp"
-                    android:paddingBottom="16dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📭"
+            android:textSize="32sp" />
 
-                    <LinearLayout
-                        android:layout_height="wrap_content"
-                        android:layout_width="0dp"
-                        android:orientation="vertical"
-                        android:layout_weight="1">
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textSize="18sp"
+            android:textColor="@color/onSurface"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"
+            android:text="@string/nothing_here_yet" />
 
-                        <TextView
-                            android:layout_height="wrap_content"
-                            android:layout_width="wrap_content"
-                            android:textSize="26sp"
-                            android:textColor="@color/onSurface"
-                            android:id="@+id/category_name"
-                            android:text="@string/category_name"
-                            android:letterSpacing="-0.01"
-                            android:textStyle="bold" />
+        <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textSize="14sp"
+            android:textColor="@color/subtle_on_surface"
+            android:layout_marginTop="6dp"
+            android:gravity="center"
+            android:text="@string/check_back_later" />
 
-                        <TextView
-                            android:layout_height="wrap_content"
-                            android:layout_width="wrap_content"
-                            android:textSize="13sp"
-                            android:textColor="@color/subtle_on_surface"
-                            android:layout_marginTop="4dp"
-                            android:id="@+id/wallpaper_count"
-                            android:text="@string/zero_wallpapers" />
-
-                    </LinearLayout>
-
-                    <ImageView
-                        android:layout_height="36dp"
-                        android:layout_width="36dp"
-                        android:src="@drawable/ic_menu"
-                        android:contentDescription="@string/filter"
-                        android:background="@drawable/pill_black"
-                        android:backgroundTint="#0D000000"
-                        app:tint="@color/onSurface"
-                        android:padding="8dp"
-                        android:id="@+id/filter_button" />
-
-                </LinearLayout>
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:nestedScrollingEnabled="false"
-                    android:id="@+id/wallpapers_recycler" />
-
-                <ProgressBar
-                    android:id="@+id/footer_progress_bar"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:indeterminateTint="@color/onSurface"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginBottom="24dp"
-                    android:visibility="gone" />
-
-                <ProgressBar
-                    android:id="@+id/progress_bar"
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:visibility="gone"
-                    android:indeterminateTint="@color/onSurface"
-                    android:layout_marginTop="32dp"
-                    android:layout_gravity="center" />
-
-                <LinearLayout
-                    android:layout_height="wrap_content"
-                    android:layout_width="match_parent"
-                    android:visibility="gone"
-                    android:gravity="center"
-                    android:padding="32dp"
-                    android:orientation="vertical"
-                    android:id="@+id/empty_state"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="20dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="📭"
-                        android:textSize="32sp" />
-
-                    <TextView
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:textSize="18sp"
-                        android:textColor="@color/onSurface"
-                        android:textStyle="bold"
-                        android:layout_marginTop="16dp"
-                        android:text="@string/nothing_here_yet" />
-
-                    <TextView
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:textSize="14sp"
-                        android:textColor="@color/subtle_on_surface"
-                        android:layout_marginTop="6dp"
-                        android:gravity="center"
-                        android:text="@string/check_back_later" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-        </LinearLayout>
-
-    </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_scroll_top"
@@ -214,6 +129,3 @@
         app:tint="@color/white" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-
-
