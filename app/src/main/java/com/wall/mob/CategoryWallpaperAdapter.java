@@ -21,11 +21,18 @@ import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryWallpaperAdapter extends RecyclerView.Adapter<CategoryWallpaperAdapter.ViewHolder> {
+public class CategoryWallpaperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+    private static final int VIEW_TYPE_HEADER = 0;
+    private static final int VIEW_TYPE_WALLPAPER = 1;
+    private static final int VIEW_TYPE_FOOTER = 2;
 
     private Context context;
     private List<Wallpaper> wallpapers = new ArrayList<>();
     private WallpaperAdapter.OnWallpaperClickListener listener;
+
+    private String headerText = "";
+    private boolean showFooter = false;
 
     public CategoryWallpaperAdapter(Context context, List<Wallpaper> wallpapers,
                                     WallpaperAdapter.OnWallpaperClickListener listener) {
@@ -34,117 +41,142 @@ public class CategoryWallpaperAdapter extends RecyclerView.Adapter<CategoryWallp
         this.listener = listener;
     }
 
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_category_wallpaper, parent, false);
-        return new ViewHolder(view);
+    // Called by Activity's SpanSizeLookup
+    public boolean isHeader(int position) {
+        return position == 0;
+    }
+
+    public void setHeaderText(String text) {
+        this.headerText = text != null ? text : "";
+        notifyItemChanged(0);
+    }
+
+    public void showFooterLoading(boolean show) {
+        if (this.showFooter == show) return;
+        this.showFooter = show;
+        if (show) {
+            notifyItemInserted(getItemCount() - 1);
+        } else {
+            notifyItemRemoved(getItemCount()); // was last item before removal
+        }
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Wallpaper wallpaper = wallpapers.get(position);
-
-        int cornerPx = dpToPx(10);
-        RequestOptions reqOptions = new RequestOptions()
-                .centerCrop()
-                .transform(new RoundedCorners(cornerPx))
-                .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC) // Replaced ALL to handle high definition sampling seamlessly
-                .placeholder(R.drawable.bg)
-                .error(R.drawable.error_image);
-
-        String urlToLoad = (wallpaper.getThumbnailUrl() != null && !wallpaper.getThumbnailUrl().isEmpty())
-                ? wallpaper.getThumbnailUrl()
-                : wallpaper.getImageUrl();
-
-        Glide.with(context)
-                .load(urlToLoad)
-                .apply(reqOptions)
-                .transition(DrawableTransitionOptions.withCrossFade(250))
-                .into(holder.wallpaperImage);
-
-        if (wallpaper.isPremium()) {
-            holder.premiumBadge.setVisibility(View.VISIBLE);
-        } else {
-            holder.premiumBadge.setVisibility(View.GONE);
-        }
-
-        holder.infoOverlay.setVisibility(View.GONE);
-
-        holder.itemView.setOnClickListener(v -> {
-            if (listener != null) {
-                listener.onWallpaperClick(wallpaper);
-            }
-        });
-
-        holder.itemView.setOnLongClickListener(v -> {
-            if (listener != null) {
-                listener.onWallpaperLongClick(wallpaper, position);
-            }
-            return true;
-        });
+    public int getItemViewType(int position) {
+        if (position == 0) return VIEW_TYPE_HEADER;
+        if (showFooter && position == getItemCount() - 1) return VIEW_TYPE_FOOTER;
+        return VIEW_TYPE_WALLPAPER;
     }
 
     @Override
     public int getItemCount() {
-        return wallpapers.size();
+        return 1 + wallpapers.size() + (showFooter ? 1 : 0);
+    }
+
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(context);
+        if (viewType == VIEW_TYPE_HEADER) {
+            View view = inflater.inflate(R.layout.item_category_header, parent, false);
+            return new HeaderViewHolder(view);
+        } else if (viewType == VIEW_TYPE_FOOTER) {
+            View view = inflater.inflate(R.layout.item_footer_loading, parent, false);
+            return new FooterViewHolder(view);
+        } else {
+            View view = inflater.inflate(R.layout.item_category_wallpaper, parent, false);
+            return new WallpaperViewHolder(view);
+        }
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof HeaderViewHolder) {
+            ((HeaderViewHolder) holder).bind(headerText, wallpapers.size());
+        } else if (holder instanceof WallpaperViewHolder) {
+            int dataIndex = position - 1; // offset for header
+            Wallpaper wallpaper = wallpapers.get(dataIndex);
+            ((WallpaperViewHolder) holder).bind(wallpaper, dataIndex);
+        }
+        // FooterViewHolder needs no binding — just a spinner
     }
 
     public void updateData(List<Wallpaper> newWallpapers) {
-        if (newWallpapers == null) {
-            newWallpapers = new ArrayList<>();
-        }
+        if (newWallpapers == null) newWallpapers = new ArrayList<>();
 
-        final List<Wallpaper> finalNewWallpapers = new ArrayList<>(newWallpapers);
+        final List<Wallpaper> finalNew = new ArrayList<>(newWallpapers);
+        final List<Wallpaper> finalOld = new ArrayList<>(wallpapers);
 
         DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+            @Override public int getOldListSize() { return finalOld.size(); }
+            @Override public int getNewListSize() { return finalNew.size(); }
+
             @Override
-            public int getOldListSize() {
-                return wallpapers.size();
+            public boolean areItemsTheSame(int oldPos, int newPos) {
+                return finalOld.get(oldPos).getId().equals(finalNew.get(newPos).getId());
             }
 
             @Override
-            public int getNewListSize() {
-                return finalNewWallpapers.size();
-            }
-
-            @Override
-            public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                return wallpapers.get(oldItemPosition).getId().equals(finalNewWallpapers.get(newItemPosition).getId());
-            }
-
-            @Override
-            public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                return wallpapers.get(oldItemPosition).equals(finalNewWallpapers.get(newItemPosition));
+            public boolean areContentsTheSame(int oldPos, int newPos) {
+                return finalOld.get(oldPos).equals(finalNew.get(newPos));
             }
         });
 
         wallpapers.clear();
-        wallpapers.addAll(finalNewWallpapers);
-        diffResult.dispatchUpdatesTo(this);
+        wallpapers.addAll(finalNew);
+        // +1 offset because DiffUtil doesn't know about header — notify manually
+        // Easiest: just notify full range after header
+        notifyItemRangeChanged(1, wallpapers.size());
+        // Update header count too
+        notifyItemChanged(0);
     }
 
     public void addData(List<Wallpaper> newWallpapers) {
         if (newWallpapers == null || newWallpapers.isEmpty()) return;
-        int startPosition = wallpapers.size();
+        int startPosition = wallpapers.size(); // before adding
         wallpapers.addAll(newWallpapers);
-        notifyItemRangeInserted(startPosition, newWallpapers.size());
+        notifyItemRangeInserted(startPosition + 1, newWallpapers.size()); // +1 for header
+        notifyItemChanged(0); // update count in header
     }
 
     public void clear() {
         int size = wallpapers.size();
         wallpapers.clear();
-        notifyItemRangeRemoved(0, size);
+        notifyItemRangeRemoved(1, size); // +1 for header
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    // ---- ViewHolders ----
+
+    static class HeaderViewHolder extends RecyclerView.ViewHolder {
+        TextView categoryNameText;
+        TextView wallpaperCountText;
+
+        HeaderViewHolder(View itemView) {
+            super(itemView);
+            categoryNameText = itemView.findViewById(R.id.category_name);
+            wallpaperCountText = itemView.findViewById(R.id.wallpaper_count);
+        }
+
+        void bind(String name, int count) {
+            if (categoryNameText != null) categoryNameText.setText(name);
+            if (wallpaperCountText != null) {
+                wallpaperCountText.setText(count + (count == 1 ? " wallpaper" : " wallpapers"));
+            }
+        }
+    }
+
+    static class FooterViewHolder extends RecyclerView.ViewHolder {
+        FooterViewHolder(View itemView) { super(itemView); }
+    }
+
+    class WallpaperViewHolder extends RecyclerView.ViewHolder {
         ImageView wallpaperImage;
         ImageView premiumBadge;
         LinearLayout infoOverlay;
         TextView wallpaperTitle;
         TextView wallpaperAuthor;
 
-        ViewHolder(View itemView) {
+        WallpaperViewHolder(View itemView) {
             super(itemView);
             wallpaperImage = itemView.findViewById(R.id.wallpaper_image);
             premiumBadge = itemView.findViewById(R.id.premium_badge);
@@ -152,12 +184,41 @@ public class CategoryWallpaperAdapter extends RecyclerView.Adapter<CategoryWallp
             wallpaperTitle = itemView.findViewById(R.id.wallpaper_title);
             wallpaperAuthor = itemView.findViewById(R.id.wallpaper_author);
         }
+
+        void bind(Wallpaper wallpaper, int dataIndex) {
+            int cornerPx = dpToPx(10);
+            RequestOptions reqOptions = new RequestOptions()
+                    .centerCrop()
+                    .transform(new RoundedCorners(cornerPx))
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .placeholder(R.drawable.bg)
+                    .error(R.drawable.error_image);
+
+            String urlToLoad = (wallpaper.getThumbnailUrl() != null && !wallpaper.getThumbnailUrl().isEmpty())
+                    ? wallpaper.getThumbnailUrl()
+                    : wallpaper.getImageUrl();
+
+            Glide.with(context)
+                    .load(urlToLoad)
+                    .apply(reqOptions)
+                    .transition(DrawableTransitionOptions.withCrossFade(250))
+                    .into(wallpaperImage);
+
+            premiumBadge.setVisibility(wallpaper.isPremium() ? View.VISIBLE : View.GONE);
+            infoOverlay.setVisibility(View.GONE);
+
+            itemView.setOnClickListener(v -> {
+                if (listener != null) listener.onWallpaperClick(wallpaper);
+            });
+
+            itemView.setOnLongClickListener(v -> {
+                if (listener != null) listener.onWallpaperLongClick(wallpaper, dataIndex);
+                return true;
+            });
+        }
     }
 
     private int dpToPx(int dp) {
-        float density = context.getResources().getDisplayMetrics().density;
-        return Math.round(dp * density);
+        return Math.round(dp * context.getResources().getDisplayMetrics().density);
     }
 }
-
-// test
