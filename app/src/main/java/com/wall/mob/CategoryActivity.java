@@ -19,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -44,7 +43,6 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
     private static final String EXTRA_IS_COLOR_FILTER = "is_color_filter";
     private static final String EXTRA_COLOR_HEX = "color_hex";
 
-    // Constants for pagination
     private static final int PAGE_SIZE = 24;
 
     // UI Components
@@ -52,12 +50,8 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
     private CollapsingToolbarLayout collapsingToolbar;
     private Toolbar toolbar;
     private ImageView categoryHeaderImage;
-    private TextView categoryNameText;
-    private TextView wallpaperCountText;
     private RecyclerView wallpapersRecycler;
     private ProgressBar progressBar;
-    private ProgressBar footerProgressBar;
-    private NestedScrollView nestedScrollView;
     private View emptyState;
     private FloatingActionButton fabScrollTop;
     private ImageView filterButton;
@@ -99,7 +93,7 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.category); // Ensure this points to your updated category.xml
+        setContentView(R.layout.category);
 
         getIntentData();
         initializeViews();
@@ -116,10 +110,7 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
             categoryImage = intent.getStringExtra(EXTRA_CATEGORY_IMAGE);
             isColorFilter = intent.getBooleanExtra(EXTRA_IS_COLOR_FILTER, false);
             colorHex = intent.getStringExtra(EXTRA_COLOR_HEX);
-
-            if (categoryName == null || categoryName.isEmpty()) {
-                categoryName = "Category";
-            }
+            if (categoryName == null || categoryName.isEmpty()) categoryName = "Category";
         }
     }
 
@@ -128,12 +119,8 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
         collapsingToolbar = findViewById(R.id.collapsing_toolbar);
         toolbar = findViewById(R.id.toolbar);
         categoryHeaderImage = findViewById(R.id.category_header_image);
-        categoryNameText = findViewById(R.id.category_name);
-        wallpaperCountText = findViewById(R.id.wallpaper_count);
         wallpapersRecycler = findViewById(R.id.wallpapers_recycler);
         progressBar = findViewById(R.id.progress_bar);
-        footerProgressBar = findViewById(R.id.footer_progress_bar);
-        nestedScrollView = findViewById(R.id.nested_scroll_view);
         emptyState = findViewById(R.id.empty_state);
         fabScrollTop = findViewById(R.id.fab_scroll_top);
         filterButton = findViewById(R.id.filter_button);
@@ -141,28 +128,20 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
 
         apiManager = new ApiManager(this);
 
-        // Update the collapsing toolbar text colors to match the new White/Light theme
         if (collapsingToolbar != null) {
             collapsingToolbar.setTitle(categoryName);
             collapsingToolbar.setCollapsedTitleTextColor(ContextCompat.getColor(this, R.color.onSurface));
             collapsingToolbar.setExpandedTitleColor(ContextCompat.getColor(this, R.color.white));
         }
-        
-        if (categoryNameText != null) {
-            categoryNameText.setText(categoryName);
-        }
 
         setupStatusBar();
-        
-        // Ensure the back button changes color when collapsed
+
         if (appBarLayout != null && toolbar != null) {
             appBarLayout.addOnOffsetChangedListener((appBarLayout, verticalOffset) -> {
                 if (toolbar.getNavigationIcon() != null) {
                     if (Math.abs(verticalOffset) - appBarLayout.getTotalScrollRange() == 0) {
-                        // Collapsed (surface/background) -> onSurface icon color
                         toolbar.getNavigationIcon().setTint(ContextCompat.getColor(CategoryActivity.this, R.color.onSurface));
                     } else {
-                        // Expanded (Image background) -> White Icon
                         toolbar.getNavigationIcon().setTint(ContextCompat.getColor(CategoryActivity.this, R.color.white));
                     }
                 }
@@ -187,21 +166,20 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
                     GradientDrawable indicatorDrawable = new GradientDrawable();
                     indicatorDrawable.setShape(GradientDrawable.OVAL);
                     indicatorDrawable.setColor(parsedColor);
-                    int strokePx = dpToPx(3);
-                    indicatorDrawable.setStroke(strokePx, ContextCompat.getColor(CategoryActivity.this, R.color.onSurface));
-                    int sizePx = dpToPx(40);
-                    indicatorDrawable.setSize(sizePx, sizePx);
-
+                    indicatorDrawable.setStroke(dpToPx(3), ContextCompat.getColor(CategoryActivity.this, R.color.onSurface));
+                    indicatorDrawable.setSize(dpToPx(40), dpToPx(40));
                     colorIndicator.setBackground(indicatorDrawable);
                     colorIndicator.setVisibility(View.VISIBLE);
                 }
-                categoryNameText.setText(categoryName + " Tone Wallpapers");
+
+                // Update header in adapter
+                if (adapter != null) adapter.setHeaderText(categoryName + " Tone Wallpapers");
 
             } catch (IllegalArgumentException e) {
-                Log.e(TAG, "Invalid color hex code: " + colorHex, e);
+                Log.e(TAG, "Invalid color hex: " + colorHex, e);
                 categoryHeaderImage.setBackgroundColor(ContextCompat.getColor(this, R.color.gray_light));
                 if (colorIndicator != null) colorIndicator.setVisibility(View.GONE);
-                categoryNameText.setText(categoryName + " Wallpapers");
+                if (adapter != null) adapter.setHeaderText(categoryName + " Wallpapers");
             }
         } else {
             if (colorIndicator != null) colorIndicator.setVisibility(View.GONE);
@@ -214,7 +192,7 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
             } else {
                 categoryHeaderImage.setImageResource(R.drawable.bg);
             }
-            categoryNameText.setText(categoryName);
+            if (adapter != null) adapter.setHeaderText(categoryName);
         }
 
         if (filterButton != null) {
@@ -240,36 +218,50 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
     private void setupRecyclerView() {
         int spanCount = calculateSpanCount();
         GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
+
+        // Header row spans full width
+        layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                return adapter != null && adapter.isHeader(position) ? spanCount : 1;
+            }
+        });
+
         wallpapersRecycler.setLayoutManager(layoutManager);
-        wallpapersRecycler.setNestedScrollingEnabled(false);
+        wallpapersRecycler.setHasFixedSize(false); // false because header exists
+        // No setNestedScrollingEnabled(false) — let RecyclerView scroll natively
 
         adapter = new CategoryWallpaperAdapter(this, wallpapers, this);
+        adapter.setHeaderText(categoryName);
         wallpapersRecycler.setAdapter(adapter);
 
-        if (nestedScrollView != null) {
-            nestedScrollView.setOnScrollChangeListener(
-                (NestedScrollView.OnScrollChangeListener) (scrollView, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                    if (fabScrollTop != null) {
-                        if (scrollY > oldScrollY) {
-                            fabScrollTop.show();
-                        } else if (scrollY < oldScrollY) {
-                            fabScrollTop.hide();
-                        }
-                    }
+        // Scroll listener replaces NestedScrollView listener
+        wallpapersRecycler.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
+                // FAB show/hide
+                if (fabScrollTop != null) {
+                    if (dy > 10) fabScrollTop.show();
+                    else if (dy < -10) fabScrollTop.hide();
+                }
 
-                    boolean reachedBottom = !scrollView.canScrollVertically(1);
-                    if (reachedBottom && !isLoading && !isLastPage) {
+                // Pagination trigger — load when 6 items from end
+                GridLayoutManager lm = (GridLayoutManager) rv.getLayoutManager();
+                if (lm != null && !isLoading && !isLastPage) {
+                    int totalItems = lm.getItemCount();
+                    int lastVisible = lm.findLastVisibleItemPosition();
+                    if (lastVisible >= totalItems - 6) {
                         loadNextPage();
                     }
-                });
-        }
+                }
+            }
+        });
     }
 
     private int calculateSpanCount() {
         float screenWidthDp = getResources().getDisplayMetrics().widthPixels /
                 getResources().getDisplayMetrics().density;
-        int spanCount = (int) (screenWidthDp / 160);
-        return Math.max(2, Math.min(4, spanCount));
+        return Math.max(2, Math.min(4, (int) (screenWidthDp / 160)));
     }
 
     private void loadFirstPage() {
@@ -334,18 +326,10 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
         wallpapers.clear();
         wallpapers.addAll(loadedWallpapers);
         adapter.updateData(wallpapers);
-        updateWallpaperCount();
-
         isLoading = false;
         showLoading(false);
-
-        if (wallpapers.isEmpty()) {
-            showEmptyState(true);
-        } 
-
-        if (loadedWallpapers.size() < PAGE_SIZE) {
-            isLastPage = true;
-        }
+        showEmptyState(wallpapers.isEmpty());
+        if (loadedWallpapers.size() < PAGE_SIZE) isLastPage = true;
     }
 
     private void handleLoadError(String message) {
@@ -359,7 +343,7 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
         if (isLoading || isLastPage) return;
         isLoading = true;
         currentPage++;
-        if (footerProgressBar != null) footerProgressBar.setVisibility(View.VISIBLE);
+        if (adapter != null) adapter.showFooterLoading(true);
 
         if (isColorFilter) {
             loadNextPageColor();
@@ -378,7 +362,7 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
             }
             @Override
             public void onError(String message) {
-                runOnUiThread(() -> handleMoreWallpapersError(message));
+                runOnUiThread(() -> handleMoreWallpapersError());
             }
         });
     }
@@ -394,57 +378,39 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
             }
             @Override
             public void onError(String message) {
-                runOnUiThread(() -> handleMoreWallpapersError(message));
+                runOnUiThread(() -> handleMoreWallpapersError());
             }
         });
     }
 
     private void handleMoreWallpapersLoaded(List<Wallpaper> newWallpapers) {
-        if (footerProgressBar != null) footerProgressBar.setVisibility(View.GONE);
+        adapter.showFooterLoading(false);
         if (newWallpapers.isEmpty()) {
             isLastPage = true;
             isLoading = false;
             return;
         }
-
+        int insertStart = wallpapers.size();
         wallpapers.addAll(newWallpapers);
-        adapter.addData(newWallpapers);
-        updateWallpaperCount();
+        adapter.addData(newWallpapers, insertStart); // uses notifyItemRangeInserted
         isLoading = false;
-
-        if (newWallpapers.size() < PAGE_SIZE) {
-            isLastPage = true;
-        }
+        if (newWallpapers.size() < PAGE_SIZE) isLastPage = true;
     }
 
-    private void handleMoreWallpapersError(String message) {
-        runOnUiThread(() -> {
-            if (footerProgressBar != null) footerProgressBar.setVisibility(View.GONE);
-            isLoading = false;
-            currentPage--; 
-        });
-    }
-
-    private void updateWallpaperCount() {
-        if (wallpaperCountText != null) {
-            int count = wallpapers.size();
-            String text = count + (count == 1 ? " wallpaper" : " wallpapers");
-            wallpaperCountText.setText(text);
-        }
+    private void handleMoreWallpapersError() {
+        adapter.showFooterLoading(false);
+        isLoading = false;
+        currentPage--;
     }
 
     private void showLoading(boolean show) {
         if (progressBar != null) progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (wallpapersRecycler != null) {
-            if (!show || currentPage == 1) {
-                wallpapersRecycler.setVisibility(show ? View.GONE : View.VISIBLE);
-            }
-        }
+        if (wallpapersRecycler != null) wallpapersRecycler.setVisibility(show && currentPage == 1 ? View.GONE : View.VISIBLE);
     }
 
     private void showEmptyState(boolean show) {
         if (emptyState != null) emptyState.setVisibility(show ? View.VISIBLE : View.GONE);
-        if (wallpapersRecycler != null) wallpapersRecycler.setVisibility(show ? View.GONE : View.VISIBLE);
+        if (wallpapersRecycler != null && show) wallpapersRecycler.setVisibility(View.GONE);
     }
 
     @Override
@@ -453,9 +419,7 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
     }
 
     @Override
-    public void onWallpaperLongClick(Wallpaper wallpaper, int position) {
-        // Optional implementation
-    }
+    public void onWallpaperLongClick(Wallpaper wallpaper, int position) {}
 
     @Override
     public void onBackPressed() {
@@ -464,8 +428,6 @@ public class CategoryActivity extends AppCompatActivity implements WallpaperAdap
     }
 
     private int dpToPx(int dp) {
-        float density = getResources().getDisplayMetrics().density;
-        return Math.round(dp * density);
+        return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 }
-// test
