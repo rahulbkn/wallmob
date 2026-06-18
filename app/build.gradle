@@ -103,4 +103,5 @@ dependencies {
     implementation "com.unity3d.ads:unity-ads:4.10.0"
     implementation "androidx.multidex:multidex:2.0.1"
     implementation "androidx.viewpager2:viewpager2:1.0.0"
+    implementation "jp.co.cyberagent.android:gpuimage:2.1.0"
 }

@@ -8,16 +8,16 @@
      android:background="@color/black"
      android:id="@+id/root">
 
-    <ImageView
-         android:layout_height="0dp"
+    <jp.co.cyberagent.android.gpuimage.GPUImageView
+         android:id="@+id/gpuImageView"
          android:layout_width="0dp"
-         android:src="@drawable/default_image"
-         android:scaleType="centerCrop"
+         android:layout_height="0dp"
+         app:gpuimage_show_loading="false"
+         app:gpuimage_surface_type="texture_view"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toStartOf="parent"
          app:layout_constraintEnd_toEndOf="parent"
-         app:layout_constraintBottom_toBottomOf="parent"
-         android:id="@+id/imageView" />
+         app:layout_constraintBottom_toBottomOf="parent" />
 
     <ImageButton
          android:layout_height="48dp"
@@ -26,13 +26,13 @@
          android:background="@drawable/back_button_icon"
          app:layout_constraintTop_toTopOf="parent"
          app:layout_constraintStart_toStartOf="parent"
-         android:tint="@color/onImage"
+         app:tint="@color/onImage"
          android:layout_marginTop="35dp"
          android:layout_marginStart="16dp"
          android:id="@+id/back_button" />
 
     <FrameLayout
-         android:layout_height="380dp"
+         android:layout_height="480dp"
          android:layout_width="0dp"
          android:background="@drawable/blur_panel_bg"
          app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +45,6 @@
              android:layout_height="match_parent"
              android:layout_width="match_parent"
              android:id="@+id/realtime_blur_view">
-
         </LinearLayout>
 
         <View
@@ -98,7 +97,7 @@
             <LinearLayout
                  android:layout_height="wrap_content"
                  android:layout_width="match_parent"
-                 android:layout_marginBottom="20dp"
+                 android:layout_marginBottom="12dp"
                  android:orientation="vertical"
                  android:id="@+id/blur_section">
 
@@ -106,7 +105,7 @@
                      android:layout_height="wrap_content"
                      android:layout_width="wrap_content"
                      android:layout_marginBottom="8dp"
-                     android:textSize="16sp"
+                     android:textSize="14sp"
                      android:textColor="@color/onImage"
                      android:id="@+id/blur_title"
                      android:text="@string/blur_effect"
@@ -117,14 +116,14 @@
                      android:layout_width="match_parent"
                      android:background="@drawable/black_transparent_round"
                      android:gravity="center_vertical"
-                     android:padding="12dp"
+                     android:padding="8dp"
                      android:orientation="horizontal"
                      android:id="@+id/blur_controls">
 
                     <TextView
                          android:layout_height="wrap_content"
                          android:layout_width="wrap_content"
-                         android:textSize="14sp"
+                         android:textSize="12sp"
                          android:textColor="@color/onImage"
                          android:minWidth="24dp"
                          android:id="@+id/textview50"
@@ -143,7 +142,7 @@
                     <TextView
                          android:layout_height="wrap_content"
                          android:layout_width="wrap_content"
-                         android:textSize="14sp"
+                         android:textSize="12sp"
                          android:textColor="@color/onImage"
                          android:minWidth="24dp"
                          android:id="@+id/textview51"
@@ -156,79 +155,85 @@
             <LinearLayout
                  android:layout_height="wrap_content"
                  android:layout_width="match_parent"
-                 android:layout_marginBottom="20dp"
+                 android:layout_marginBottom="12dp"
                  android:orientation="vertical"
-                 android:id="@+id/filters_section">
+                 android:id="@+id/adjustments_section">
 
                 <TextView
                      android:layout_height="wrap_content"
                      android:layout_width="wrap_content"
-                     android:layout_marginBottom="12dp"
-                     android:textSize="16sp"
+                     android:layout_marginBottom="8dp"
+                     android:textSize="14sp"
                      android:textColor="@color/onImage"
-                     android:id="@+id/textview52"
-                     android:text="@string/color_filters"
+                     android:text="Adjustments"
                      android:textStyle="bold" />
 
                 <LinearLayout
                      android:layout_height="wrap_content"
                      android:layout_width="match_parent"
-                     android:weightSum="4"
-                     android:gravity="center_horizontal|center_vertical"
-                     android:orientation="horizontal"
-                     android:id="@+id/filter_buttons_row">
+                     android:background="@drawable/black_transparent_round"
+                     android:gravity="center_vertical"
+                     android:padding="8dp"
+                     android:layout_marginBottom="6dp"
+                     android:orientation="horizontal">
 
-                    <Button
-                         android:layout_height="42dp"
-                         android:layout_width="0dp"
-                         android:layout_marginEnd="4dp"
-                         android:background="@drawable/black_transparent_round"
-                         android:textSize="8sp"
-                         android:stateListAnimator="@null"
+                    <TextView
+                         android:layout_height="wrap_content"
+                         android:layout_width="wrap_content"
+                         android:textSize="12sp"
                          android:textColor="@color/onImage"
-                         android:layout_weight="1"
-                         android:id="@+id/btnOriginal"
-                         android:text="@string/original" />
+                         android:minWidth="24dp"
+                         android:text="Bri" />
 
-                    <Button
-                         android:layout_height="42dp"
+                    <SeekBar
+                         android:layout_height="wrap_content"
                          android:layout_width="0dp"
-                         android:background="@drawable/black_transparent_round"
-                         android:layout_marginHorizontal="2dp"
-                         android:textSize="8sp"
-                         android:stateListAnimator="@null"
-                         android:textColor="@color/onImage"
+                         android:max="200"
+                         android:progress="100"
+                         android:layout_marginHorizontal="12dp"
+                         android:thumbTint="@color/onImage"
+                         android:progressTint="@color/onImage"
                          android:layout_weight="1"
-                         android:id="@+id/btnSepia"
-                         android:text="@string/sepia" />
-
-                    <Button
-                         android:layout_height="42dp"
-                         android:layout_width="0dp"
-                         android:background="@drawable/black_transparent_round"
-                         android:layout_marginHorizontal="2dp"
-                         android:textSize="8sp"
-                         android:stateListAnimator="@null"
-                         android:textColor="@color/onImage"
-                         android:layout_weight="1"
-                         android:id="@+id/btnGrayscale"
-                         android:text="@string/bw" />
-
-                    <Button
-                         android:layout_height="42dp"
-                         android:layout_width="0dp"
-                         android:background="@drawable/black_transparent_round"
-                         android:textSize="8sp"
-                         android:stateListAnimator="@null"
-                         android:textColor="@color/onImage"
-                         android:layout_marginStart="4dp"
-                         android:layout_weight="1"
-                         android:id="@+id/btnVintage"
-                         android:text="@string/vintage" />
-
+                         android:id="@+id/brightnessSeekBar" />
                 </LinearLayout>
 
+                <LinearLayout
+                     android:layout_height="wrap_content"
+                     android:layout_width="match_parent"
+                     android:background="@drawable/black_transparent_round"
+                     android:gravity="center_vertical"
+                     android:padding="8dp"
+                     android:orientation="horizontal">
+
+                    <TextView
+                         android:layout_height="wrap_content"
+                         android:layout_width="wrap_content"
+                         android:textSize="12sp"
+                         android:textColor="@color/onImage"
+                         android:minWidth="24dp"
+                         android:text="Con" />
+
+                    <SeekBar
+                         android:layout_height="wrap_content"
+                         android:layout_width="0dp"
+                         android:max="200"
+                         android:progress="100"
+                         android:layout_marginHorizontal="12dp"
+                         android:thumbTint="@color/onImage"
+                         android:progressTint="@color/onImage"
+                         android:layout_weight="1"
+                         android:id="@+id/contrastSeekBar" />
+                </LinearLayout>
             </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/filterRecyclerView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:clipToPadding="false"
+    android:overScrollMode="never" />
+
 
             <LinearLayout
                  android:layout_height="wrap_content"
@@ -269,6 +274,3 @@
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-

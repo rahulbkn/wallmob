@@ -32,12 +32,12 @@
                 android:id="@+id/category_header_image"
                 android:background="@color/gray_light" />
 
-            <View
+            <android.view.View
                 android:layout_height="match_parent"
                 android:layout_width="match_parent"
                 android:background="@color/scrim" />
 
-            <View
+            <android.view.View
                 android:layout_height="32dp"
                 android:layout_width="32dp"
                 android:visibility="gone"
@@ -59,28 +59,27 @@
                 app:titleTextColor="@color/white" />
 
         </com.google.android.material.appbar.CollapsingToolbarLayout>
-
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- RecyclerView directly here — no NestedScrollView wrapper -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/wallpapers_recycler"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:clipToPadding="false"
-        android:paddingBottom="16dp" />
+        android:paddingBottom="16dp"
+        android:layout_gravity="top|start"
+        android:layout_marginLeft="0.0dp"
+        android:layout_marginTop="0.0dp" />
 
-    <!-- Full-screen initial loading spinner -->
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:visibility="gone"
         android:indeterminateTint="@color/onSurface"
         android:layout_gravity="center" />
 
-    <!-- Empty state centered -->
     <LinearLayout
         android:id="@+id/empty_state"
         android:layout_height="wrap_content"

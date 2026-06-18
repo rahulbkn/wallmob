@@ -96,6 +96,13 @@ public class HomeFragment extends Fragment {
     private int currentHeroPage = 0;
     private static final int AUTO_SCROLL_INTERVAL_MS = 3500;
 
+    // NASA APOD
+    private static final String NASA_API_KEY = "6QPKzAjSBthigZmCIBTrtHgEPXHTr95ECW1f3r5m";
+    private RecyclerView recyclerNasa;
+    private View nasaSectionView;
+    private NasaApodAdapter nasaApodAdapter;
+    private List<Wallpaper> nasaWallpapers = new ArrayList<>();
+
     private final Runnable autoScrollRunnable = new Runnable() {
         @Override
         public void run() {
@@ -164,6 +171,10 @@ public class HomeFragment extends Fragment {
 
         heroCarousel = view.findViewById(R.id.hero_carousel);
         heroDots = view.findViewById(R.id.hero_dots);
+
+        // NASA APOD
+        recyclerNasa = view.findViewById(R.id.recycler_nasa);
+        nasaSectionView = view.findViewById(R.id.nasa_section);
     }
 
     private void setupRecyclerViews() {
@@ -228,6 +239,15 @@ public class HomeFragment extends Fragment {
         recyclerCategories.addItemDecoration(new GridSpacingItemDecoration(span, dpToPx(2)));
         categoryGridAdapter = new CategoryGridAdapter(mContext, new ArrayList<>(), this::onCategoryClick);
         recyclerCategories.setAdapter(categoryGridAdapter);
+
+        // NASA APOD Setup
+        if (recyclerNasa != null) {
+            LinearLayoutManager nasaLayout = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+            recyclerNasa.setLayoutManager(nasaLayout);
+            recyclerNasa.setNestedScrollingEnabled(false);
+            nasaApodAdapter = new NasaApodAdapter(mContext, new ArrayList<>(), this::onWallpaperClick);
+            recyclerNasa.setAdapter(nasaApodAdapter);
+        }
     }
 
     private void setupSwipeRefresh(View view) {
@@ -247,16 +267,13 @@ public class HomeFragment extends Fragment {
         return Math.round(dp * getResources().getDisplayMetrics().density);
     }
 
-    // ✅ BUG 4 FIXED: Use actual width/height from Wallpaper model instead of string matching
     private boolean isLandscapeWallpaper(Wallpaper w) {
         if (w == null) return false;
         int width = w.getWidth();
         int height = w.getHeight();
-        // If dimensions are available from API, use them
         if (width > 0 && height > 0) {
             return width > height;
         }
-        // Fallback: check category/title string only if dimensions not available
         if (w.getCategory() != null && w.getCategory().toLowerCase().contains("landscape")) return true;
         if (w.getTitle() != null && w.getTitle().toLowerCase().contains("landscape")) return true;
         return false;
@@ -291,7 +308,6 @@ public class HomeFragment extends Fragment {
             landscapeSectionView.setVisibility(landscapeList.isEmpty() ? View.GONE : View.VISIBLE);
         }
 
-        // Hero carousel uses premium wallpapers
         List<Wallpaper> heroMix = new ArrayList<>();
         Set<String> heroUrls = new HashSet<>();
         for (Wallpaper w : premiumWallpapers) {
@@ -314,6 +330,7 @@ public class HomeFragment extends Fragment {
         isLoadingPremiumData = false;
         loadApiWallpapers();
         loadPremiumWallpapersFromFirebase();
+        loadNasaApod();
     }
 
     private void loadApiWallpapers() {
@@ -459,7 +476,6 @@ public class HomeFragment extends Fragment {
         categoryWallpapers.clear();
         for (Wallpaper wallpaper : wallpapers) {
             String category = wallpaper.getCategory();
-            // Keep "Premium" in English as an internal API identifier
             if (category != null && !category.trim().isEmpty() && !category.equalsIgnoreCase("Premium")) {
                 categoryWallpapers.computeIfAbsent(category, k -> new ArrayList<>()).add(wallpaper);
             }
@@ -543,9 +559,25 @@ public class HomeFragment extends Fragment {
         if (getActivity() != null) getActivity().runOnUiThread(this::refreshAllSections);
     }
 
-    private void onWallpaperClick(Wallpaper wallpaper) { WallpaperDetailsActivity.start(mContext, wallpaper); }
-    private void onColorClick(String color) { CategoryActivity.startWithColorFilter(requireContext(), color, color); }
-    private void onCategoryClick(CategoryItem category) { if (category != null) CategoryActivity.start(mContext, category.getName(), category.getImageUrl()); }
+    // ─── UPDATED CLICK LISTENERS (FIXED BUGS) ──────────────────────────────────
+    private void onWallpaperClick(Wallpaper wallpaper) {
+        if (wallpaper != null && isAdded() && getActivity() != null) {
+            WallpaperDetailsActivity.start(getActivity(), wallpaper);
+        }
+    }
+
+    private void onColorClick(String color) {
+        if (color != null && isAdded() && getActivity() != null) {
+            CategoryActivity.startWithColorFilter(getActivity(), color, color);
+        }
+    }
+
+    private void onCategoryClick(CategoryItem category) {
+        if (category != null && isAdded() && getActivity() != null) {
+            CategoryActivity.start(getActivity(), category.getName(), category.getImageUrl());
+        }
+    }
+    // ───────────────────────────────────────────────────────────────────────────
 
     private void showLoading(boolean loading) {
         boolean hasExistingData = !allWallpapers.isEmpty() || !premiumWallpapers.isEmpty();
@@ -570,6 +602,7 @@ public class HomeFragment extends Fragment {
     public void refreshData() {
         allWallpapers.clear();
         loadedWallpaperIds.clear();
+        nasaWallpapers.clear();
         loadAllWallpapers();
     }
 
@@ -647,6 +680,84 @@ public class HomeFragment extends Fragment {
         autoScrollHandler.removeCallbacks(autoScrollRunnable);
         autoScrollHandler.postDelayed(autoScrollRunnable, AUTO_SCROLL_INTERVAL_MS);
     }
+
+
+    // ─── NASA APOD Section ───────────────────────────────────────────────────────
+
+        private void loadNasaApod() {
+        if (mContext == null) return;
+
+        // CHANGED: Use count=15 instead of start_date/end_date to prevent 400 Bad Request errors
+        String url = "https://api.nasa.gov/planetary/apod"
+                + "?api_key=" + NASA_API_KEY
+                + "&count=15"
+                + "&thumbs=true";
+
+        Log.d(TAG, "NASA APOD URL: " + url);
+
+        com.android.volley.toolbox.JsonArrayRequest request = new com.android.volley.toolbox.JsonArrayRequest(
+                com.android.volley.Request.Method.GET, url, null,
+                response -> {
+                    nasaWallpapers.clear();
+                    // Just iterate forward since count returns a random selection anyway
+                    for (int i = 0; i < response.length(); i++) { 
+                        try {
+                            org.json.JSONObject item = response.getJSONObject(i);
+                            String mediaType = item.optString("media_type", "image");
+                            if (!mediaType.equals("image")) continue; // skip videos
+
+                            String imageUrl = item.optString("hdurl", item.optString("url", ""));
+                            String thumbUrl = item.optString("url", imageUrl); 
+                            if (imageUrl.isEmpty()) continue;
+
+                            String date = item.optString("date", "");
+                            String title = item.optString("title", "NASA APOD");
+                            String copyright = item.optString("copyright", "NASA");
+
+                            Wallpaper w = new Wallpaper(
+                                    "nasa-" + date,
+                                    imageUrl,
+                                    thumbUrl,
+                                    title,
+                                    "Space",
+                                    "NASA",
+                                    copyright,
+                                    false
+                            );
+                            nasaWallpapers.add(w);
+                        } catch (org.json.JSONException e) {
+                            Log.e(TAG, "NASA parse error at " + i, e);
+                        }
+                    }
+
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            if (nasaApodAdapter != null) {
+                                nasaApodAdapter.updateData(nasaWallpapers);
+                            }
+                            if (nasaSectionView != null) {
+                                nasaSectionView.setVisibility(nasaWallpapers.isEmpty() ? View.GONE : View.VISIBLE);
+                            }
+                        });
+                    }
+                },
+                error -> {
+                    Log.e(TAG, "NASA APOD error: " + (error.getMessage() != null ? error.getMessage() : "unknown"));
+                    if (nasaSectionView != null && getActivity() != null) {
+                        getActivity().runOnUiThread(() -> nasaSectionView.setVisibility(View.GONE));
+                    }
+                }
+        ) {
+            @Override
+            public com.android.volley.Request.Priority getPriority() {
+                return com.android.volley.Request.Priority.LOW;
+            }
+        };
+
+        com.android.volley.RequestQueue queue = com.android.volley.toolbox.Volley.newRequestQueue(mContext);
+        queue.add(request);
+    }
+
 
     @Override
     public void onDestroyView() {
