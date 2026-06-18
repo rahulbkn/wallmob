@@ -48,15 +48,15 @@ public class HomeFragment extends Fragment {
 
     // UI Components
     private RecyclerView recyclerBestMonth;
-    private RecyclerView recyclerLandscape; 
+    private RecyclerView recyclerLandscape;
     private RecyclerView recyclerColorTone;
     private RecyclerView recyclerCategories;
-    
+
     private View premiumSectionView;
     private TextView premiumSectionTitle;
-    private RecyclerView recyclerPremium; 
-    
-    private View landscapeSectionView; 
+    private RecyclerView recyclerPremium;
+
+    private View landscapeSectionView;
     private TextView tvSeeAllTrending;
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -67,10 +67,10 @@ public class HomeFragment extends Fragment {
 
     // Adapters
     private BestMonthAdapter bestMonthAdapter;
-    private LandscapeAdapter landscapeAdapter; 
+    private LandscapeAdapter landscapeAdapter;
     private ColorToneAdapter colorToneAdapter;
     private CategoryGridAdapter categoryGridAdapter;
-    private BestMonthAdapter premiumAdapter; 
+    private BestMonthAdapter premiumAdapter;
 
     // Data
     private ApiManager apiManager;
@@ -88,7 +88,7 @@ public class HomeFragment extends Fragment {
     private boolean isLoadingApiData = false;
     private boolean isLoadingPremiumData = false;
     private boolean isLoadingMore = false;
-    
+
     private ViewPager2 heroCarousel;
     private LinearLayout heroDots;
     private HeroCarouselAdapter heroCarouselAdapter;
@@ -125,48 +125,50 @@ public class HomeFragment extends Fragment {
         setupRecyclerViews();
         setupSwipeRefresh(view);
         firebasePremiumRef = FirebaseDatabase.getInstance().getReference("wallpapers/premium");
-        
+
         // Populate static categories immediately so the UI doesn't look empty
         updateCategoriesSection();
-        
+
         loadAllWallpapers();
         return view;
     }
 
     private void initializeViews(View view) {
         recyclerBestMonth = view.findViewById(R.id.recycler_best_month);
-        recyclerLandscape = view.findViewById(R.id.recycler_landscape); 
-        landscapeSectionView = view.findViewById(R.id.landscape_section); 
+        recyclerLandscape = view.findViewById(R.id.recycler_landscape);
+        landscapeSectionView = view.findViewById(R.id.landscape_section);
         recyclerColorTone = view.findViewById(R.id.recycler_color_tone);
         recyclerCategories = view.findViewById(R.id.recycler_categories);
         premiumSectionView = view.findViewById(R.id.premium_section);
         premiumSectionTitle = view.findViewById(R.id.premium_section_title);
-        recyclerPremium = view.findViewById(R.id.recycler_premium); 
+        recyclerPremium = view.findViewById(R.id.recycler_premium);
         progressBar = view.findViewById(R.id.progress_bar);
         errorView = view.findViewById(R.id.error_view);
         retryButton = view.findViewById(R.id.retry_button);
         errorMessage = view.findViewById(R.id.error_message);
         tvSeeAllTrending = view.findViewById(R.id.tv_see_all_trending);
         TextView tvUnlockAll = view.findViewById(R.id.tv_unlock_all_premium);
-        
-        if (tvUnlockAll != null) tvUnlockAll.setOnClickListener(v -> { if (getActivity() instanceof MainActivity) ((MainActivity) getActivity()).navigateToPremium(); });
-        
-        // ADDED R.string.trending_now HERE
-        if (tvSeeAllTrending != null) tvSeeAllTrending.setOnClickListener(v -> SeeAllActivity.start(requireContext(), getString(R.string.trending_now), SeeAllActivity.TYPE_TRENDING));
-        
-        apiManager = new ApiManager(requireContext());
-        retryButton.setOnClickListener(v -> { 
-            errorView.setVisibility(View.GONE); 
-            loadAllWallpapers(); 
+
+        if (tvUnlockAll != null) tvUnlockAll.setOnClickListener(v -> {
+            if (getActivity() instanceof MainActivity) ((MainActivity) getActivity()).navigateToPremium();
         });
-        
+
+        if (tvSeeAllTrending != null) tvSeeAllTrending.setOnClickListener(v ->
+                SeeAllActivity.start(requireContext(), getString(R.string.trending_now), SeeAllActivity.TYPE_TRENDING));
+
+        apiManager = new ApiManager(requireContext());
+        retryButton.setOnClickListener(v -> {
+            errorView.setVisibility(View.GONE);
+            loadAllWallpapers();
+        });
+
         heroCarousel = view.findViewById(R.id.hero_carousel);
         heroDots = view.findViewById(R.id.hero_dots);
     }
 
     private void setupRecyclerViews() {
         if (mContext == null) return;
-        
+
         // Trending Now Setup
         LinearLayoutManager bestMonthLayout = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
         recyclerBestMonth.setLayoutManager(bestMonthLayout);
@@ -179,7 +181,8 @@ public class HomeFragment extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
                 LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
                 if (lm != null && !isLoadingMore && lm.findLastVisibleItemPosition() >= lm.getItemCount() - 3) {
-                    isLoadingMore = true; apiManager.loadNextPage();
+                    isLoadingMore = true;
+                    apiManager.loadNextPage();
                 }
             }
         });
@@ -203,7 +206,8 @@ public class HomeFragment extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
                 LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
                 if (lm != null && !isLoadingMore && lm.findLastVisibleItemPosition() >= lm.getItemCount() - 3) {
-                    isLoadingMore = true; apiManager.loadNextPage();
+                    isLoadingMore = true;
+                    apiManager.loadNextPage();
                 }
             }
         });
@@ -230,44 +234,64 @@ public class HomeFragment extends Fragment {
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setOnRefreshListener(this::refreshData);
-            swipeRefreshLayout.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light, android.R.color.holo_orange_light, android.R.color.holo_red_light);
+            swipeRefreshLayout.setColorSchemeResources(
+                    android.R.color.holo_blue_bright,
+                    android.R.color.holo_green_light,
+                    android.R.color.holo_orange_light,
+                    android.R.color.holo_red_light
+            );
         }
     }
 
-    private int dpToPx(int dp) { return Math.round(dp * getResources().getDisplayMetrics().density); }
+    private int dpToPx(int dp) {
+        return Math.round(dp * getResources().getDisplayMetrics().density);
+    }
 
+    // ✅ BUG 4 FIXED: Use actual width/height from Wallpaper model instead of string matching
     private boolean isLandscapeWallpaper(Wallpaper w) {
         if (w == null) return false;
+        int width = w.getWidth();
+        int height = w.getHeight();
+        // If dimensions are available from API, use them
+        if (width > 0 && height > 0) {
+            return width > height;
+        }
+        // Fallback: check category/title string only if dimensions not available
         if (w.getCategory() != null && w.getCategory().toLowerCase().contains("landscape")) return true;
         if (w.getTitle() != null && w.getTitle().toLowerCase().contains("landscape")) return true;
         return false;
     }
 
     private void refreshAllSections() {
-        List<Wallpaper> portraitMerged = new ArrayList<>();
-        List<Wallpaper> landscapeMerged = new ArrayList<>();
+        List<Wallpaper> portraitList = new ArrayList<>();
+        List<Wallpaper> landscapeList = new ArrayList<>();
         Set<String> uniqueUrls = new HashSet<>();
 
         for (Wallpaper w : allWallpapers) {
-            if (w == null || w.getImageUrl() == null || w.isPremium()) continue; 
+            if (w == null || w.getImageUrl() == null || w.isPremium()) continue;
             if (!uniqueUrls.contains(w.getImageUrl())) {
                 uniqueUrls.add(w.getImageUrl());
-                if (isLandscapeWallpaper(w)) landscapeMerged.add(w); else portraitMerged.add(w);
+                if (isLandscapeWallpaper(w)) {
+                    landscapeList.add(w);
+                } else {
+                    portraitList.add(w);
+                }
             }
         }
 
-        if (bestMonthAdapter != null) bestMonthAdapter.updateData(portraitMerged); 
-        if (landscapeAdapter != null) landscapeAdapter.updateData(landscapeMerged); 
-        
-        if (premiumAdapter != null) {
-            premiumAdapter.updateData(premiumWallpapers);
-        }
+        if (bestMonthAdapter != null) bestMonthAdapter.updateData(portraitList);
+        if (landscapeAdapter != null) landscapeAdapter.updateData(landscapeList);
+
+        if (premiumAdapter != null) premiumAdapter.updateData(premiumWallpapers);
         if (premiumSectionView != null) {
-            premiumSectionView.setVisibility(premiumWallpapers.isEmpty() ? View.GONE : View.VISIBLE); 
+            premiumSectionView.setVisibility(premiumWallpapers.isEmpty() ? View.GONE : View.VISIBLE);
         }
 
-        if (landscapeSectionView != null) landscapeSectionView.setVisibility(landscapeMerged.isEmpty() ? View.GONE : View.VISIBLE);
+        if (landscapeSectionView != null) {
+            landscapeSectionView.setVisibility(landscapeList.isEmpty() ? View.GONE : View.VISIBLE);
+        }
 
+        // Hero carousel uses premium wallpapers
         List<Wallpaper> heroMix = new ArrayList<>();
         Set<String> heroUrls = new HashSet<>();
         for (Wallpaper w : premiumWallpapers) {
@@ -286,7 +310,7 @@ public class HomeFragment extends Fragment {
             swipeRefreshLayout.setRefreshing(true);
         }
         showLoading(true);
-        isLoadingApiData = false; 
+        isLoadingApiData = false;
         isLoadingPremiumData = false;
         loadApiWallpapers();
         loadPremiumWallpapersFromFirebase();
@@ -296,21 +320,24 @@ public class HomeFragment extends Fragment {
         isLoadingApiData = true;
         AtomicInteger loadingTasks = new AtomicInteger(1);
         List<Wallpaper> tempWallpapers = Collections.synchronizedList(new ArrayList<>());
-        
+
         apiManager.loadWallpapersFromAllSources(new ApiManager.ApiCallback() {
-            @Override public void onWallpapersLoaded(List<Wallpaper> wallpapers) {
+            @Override
+            public void onWallpapersLoaded(List<Wallpaper> wallpapers) {
                 synchronized (loadedWallpaperIds) {
-                    for (Wallpaper w : wallpapers) if (w != null && w.getId() != null) loadedWallpaperIds.add(w.getId());
+                    for (Wallpaper w : wallpapers)
+                        if (w != null && w.getId() != null) loadedWallpaperIds.add(w.getId());
                 }
-                tempWallpapers.addAll(wallpapers); 
+                tempWallpapers.addAll(wallpapers);
                 isLoadingApiData = false;
                 if (loadingTasks.decrementAndGet() == 0) onAllWallpapersLoaded(tempWallpapers);
             }
-            
-            @Override public void onError(String message) {
-                isLoadingMore = false; 
+
+            @Override
+            public void onError(String message) {
+                isLoadingMore = false;
                 isLoadingApiData = false;
-                
+
                 if (getActivity() != null) {
                     getActivity().runOnUiThread(() -> {
                         if (allWallpapers.isEmpty()) {
@@ -318,7 +345,8 @@ public class HomeFragment extends Fragment {
                             if (swipeRefreshLayout != null) swipeRefreshLayout.setRefreshing(false);
                             if (errorView != null) {
                                 errorView.setVisibility(View.VISIBLE);
-                                if (errorMessage != null) errorMessage.setText(getString(R.string.failed_load_trending, message));
+                                if (errorMessage != null)
+                                    errorMessage.setText(getString(R.string.failed_load_trending, message));
                             }
                         } else {
                             Toast.makeText(mContext, getString(R.string.could_not_refresh_trending), Toast.LENGTH_SHORT).show();
@@ -327,9 +355,11 @@ public class HomeFragment extends Fragment {
                     });
                 }
             }
-            
-            @Override public void onMoreWallpapersLoaded(List<Wallpaper> newWallpapers) {
-                isLoadingMore = false; handleMoreWallpapers(newWallpapers);
+
+            @Override
+            public void onMoreWallpapersLoaded(List<Wallpaper> newWallpapers) {
+                isLoadingMore = false;
+                handleMoreWallpapers(newWallpapers);
             }
         });
     }
@@ -339,8 +369,9 @@ public class HomeFragment extends Fragment {
         if (premiumValueListener != null) firebasePremiumRef.removeEventListener(premiumValueListener);
 
         premiumValueListener = new ValueEventListener() {
-            @Override public void onDataChange(@NonNull DataSnapshot snapshot) {
-                premiumWallpapers.clear(); 
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                premiumWallpapers.clear();
                 Set<String> uniqueIds = new HashSet<>();
                 for (DataSnapshot child : snapshot.getChildren()) {
                     Wallpaper wallpaper = parseWallpaperManually(child);
@@ -352,11 +383,16 @@ public class HomeFragment extends Fragment {
                     }
                 }
                 if (getActivity() != null) getActivity().runOnUiThread(() -> {
-                    refreshAllSections(); isLoadingPremiumData = false; checkAllDataLoaded();
+                    refreshAllSections();
+                    isLoadingPremiumData = false;
+                    checkAllDataLoaded();
                 });
             }
-            @Override public void onCancelled(@NonNull DatabaseError error) {
-                isLoadingPremiumData = false; checkAllDataLoaded();
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                isLoadingPremiumData = false;
+                checkAllDataLoaded();
             }
         };
         firebasePremiumRef.orderByChild("addedAt").addValueEventListener(premiumValueListener);
@@ -368,39 +404,40 @@ public class HomeFragment extends Fragment {
             if (value instanceof Map) {
                 Map<String, Object> map = (Map<String, Object>) value;
                 String id = snapshot.getKey();
-                
+
                 String imageUrl = (String) map.get("imageUrl");
                 String thumbnailUrl = (String) map.get("thumbnailUrl");
-                
+
                 String title = (String) map.get("title");
                 String category = (String) map.get("category");
                 String source = (String) map.get("source");
                 String photographer = (String) map.get("photographer");
 
-                // UPDATED: Using strings.xml 
                 if (title == null && isAdded()) title = getString(R.string.premium_wallpaper);
-                else if (title == null) title = "Premium Wallpaper"; // Fallback if fragment not attached
-                
+                else if (title == null) title = "Premium Wallpaper";
+
                 if (imageUrl == null) imageUrl = "";
                 if (thumbnailUrl == null || thumbnailUrl.isEmpty()) thumbnailUrl = imageUrl;
-                
+
                 if (category == null && isAdded()) category = getString(R.string.premium);
                 else if (category == null) category = "Premium";
-                
+
                 if (source == null && isAdded()) source = getString(R.string.firebase_source);
                 else if (source == null) source = "Firebase";
 
                 return new Wallpaper(id, imageUrl, thumbnailUrl, title, category, source, photographer, true);
             }
-        } catch (Exception e) { Log.e(TAG, "Parse error for ID: " + snapshot.getKey()); }
+        } catch (Exception e) {
+            Log.e(TAG, "Parse error for ID: " + snapshot.getKey());
+        }
         return null;
     }
 
     private void checkAllDataLoaded() {
         if (!isLoadingApiData && !isLoadingPremiumData && getActivity() != null) {
-            getActivity().runOnUiThread(() -> { 
-                showLoading(false); 
-                if (swipeRefreshLayout != null) swipeRefreshLayout.setRefreshing(false); 
+            getActivity().runOnUiThread(() -> {
+                showLoading(false);
+                if (swipeRefreshLayout != null) swipeRefreshLayout.setRefreshing(false);
             });
         }
     }
@@ -413,7 +450,7 @@ public class HomeFragment extends Fragment {
                 allWallpapers.addAll(loadedWallpapers);
                 organizeWallpapersByCategory(allWallpapers);
             }
-            refreshAllSections(); 
+            refreshAllSections();
             checkAllDataLoaded();
         });
     }
@@ -429,7 +466,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    // HELPER METHOD to map API names to Localized strings
     private String getLocalizedCategoryName(String apiName) {
         if (apiName == null || !isAdded()) return apiName;
         switch (apiName.toLowerCase()) {
@@ -449,12 +485,11 @@ public class HomeFragment extends Fragment {
 
     private void updateCategoriesSection() {
         List<CategoryItem> categories = new ArrayList<>();
-        
+
         if (!premiumWallpapers.isEmpty() && isAdded()) {
             categories.add(new CategoryItem(getString(R.string.premium), premiumWallpapers.get(0).getImageUrl()));
         }
 
-        // 1. Define master list of permanent categories using English names as internal keys
         Map<String, String> masterCategories = new LinkedHashMap<>();
         masterCategories.put("Abstract", "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=800&fit=crop");
         masterCategories.put("Amoled", "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=800&fit=crop");
@@ -465,16 +500,15 @@ public class HomeFragment extends Fragment {
         masterCategories.put("Cars", "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&fit=crop");
         masterCategories.put("Anime", "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800&fit=crop");
 
-        // 2. Add dynamically found categories (or update master category thumbnail)
         for (Map.Entry<String, List<Wallpaper>> entry : categoryWallpapers.entrySet()) {
             String rawName = entry.getKey();
             List<Wallpaper> walls = entry.getValue();
-            
+
             if (rawName.equalsIgnoreCase("Landscape") || rawName.equalsIgnoreCase("Premium")) continue;
-            
+
             if (!walls.isEmpty()) {
                 String displayName = rawName.substring(0, 1).toUpperCase() + rawName.substring(1).toLowerCase();
-                
+
                 if (masterCategories.containsKey(displayName)) {
                     masterCategories.put(displayName, walls.get(0).getImageUrl());
                 } else {
@@ -483,7 +517,6 @@ public class HomeFragment extends Fragment {
             }
         }
 
-        // 3. Add all the master categories localized for the UI
         for (Map.Entry<String, String> entry : masterCategories.entrySet()) {
             categories.add(new CategoryItem(getLocalizedCategoryName(entry.getKey()), entry.getValue()));
         }
@@ -499,12 +532,13 @@ public class HomeFragment extends Fragment {
         synchronized (loadedWallpaperIds) {
             for (Wallpaper w : newWallpapers) {
                 if (w != null && w.getId() != null && !loadedWallpaperIds.contains(w.getId())) {
-                    filtered.add(w); loadedWallpaperIds.add(w.getId());
+                    filtered.add(w);
+                    loadedWallpaperIds.add(w.getId());
                 }
             }
         }
         if (filtered.isEmpty()) return;
-        allWallpapers.addAll(filtered); 
+        allWallpapers.addAll(filtered);
         organizeWallpapersByCategory(allWallpapers);
         if (getActivity() != null) getActivity().runOnUiThread(this::refreshAllSections);
     }
@@ -515,11 +549,11 @@ public class HomeFragment extends Fragment {
 
     private void showLoading(boolean loading) {
         boolean hasExistingData = !allWallpapers.isEmpty() || !premiumWallpapers.isEmpty();
-        
+
         if (progressBar != null) {
             progressBar.setVisibility(loading && !hasExistingData ? View.VISIBLE : View.GONE);
         }
-        
+
         if (loading && !hasExistingData) {
             if (recyclerBestMonth != null) recyclerBestMonth.setVisibility(View.INVISIBLE);
             if (recyclerColorTone != null) recyclerColorTone.setVisibility(View.INVISIBLE);
@@ -529,58 +563,112 @@ public class HomeFragment extends Fragment {
             if (recyclerColorTone != null) recyclerColorTone.setVisibility(View.VISIBLE);
             if (recyclerCategories != null) recyclerCategories.setVisibility(View.VISIBLE);
         }
-        
+
         if (errorView != null) errorView.setVisibility(View.GONE);
     }
 
-    public void refreshData() { 
-        allWallpapers.clear(); 
+    public void refreshData() {
+        allWallpapers.clear();
         loadedWallpaperIds.clear();
-        loadAllWallpapers(); 
+        loadAllWallpapers();
     }
 
     private static class HeroCarouselAdapter extends RecyclerView.Adapter<HeroCarouselAdapter.VH> {
-        private final Context ctx; private final List<String> urls;
-        HeroCarouselAdapter(Context ctx, List<String> urls) { this.ctx = ctx; this.urls = urls; }
-        @NonNull @Override public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            ImageView iv = new ImageView(ctx); iv.setLayoutParams(new ViewGroup.LayoutParams(-1, -1)); iv.setScaleType(ImageView.ScaleType.CENTER_CROP); return new VH(iv);
+        private final Context ctx;
+        private final List<String> urls;
+
+        HeroCarouselAdapter(Context ctx, List<String> urls) {
+            this.ctx = ctx;
+            this.urls = urls;
         }
-        @Override public void onBindViewHolder(@NonNull VH holder, int position) {
+
+        @NonNull
+        @Override
+        public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            ImageView iv = new ImageView(ctx);
+            iv.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            return new VH(iv);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull VH holder, int position) {
             String url = urls.get(position);
-            Glide.with(ctx).load(url).apply(new com.bumptech.glide.request.RequestOptions().diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL).centerCrop()).into(holder.imageView);
-            holder.imageView.setOnClickListener(v -> { if (ctx instanceof MainActivity) ((MainActivity) ctx).navigateToPremium(); });
+            Glide.with(ctx)
+                    .load(url)
+                    .apply(new com.bumptech.glide.request.RequestOptions()
+                            .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                            .centerCrop())
+                    .into(holder.imageView);
+            holder.imageView.setOnClickListener(v -> {
+                if (ctx instanceof MainActivity) ((MainActivity) ctx).navigateToPremium();
+            });
         }
-        @Override public int getItemCount() { return urls.size(); }
-        static class VH extends RecyclerView.ViewHolder { final ImageView imageView; VH(ImageView iv) { super(iv); imageView = iv; } }
+
+        @Override
+        public int getItemCount() { return urls.size(); }
+
+        static class VH extends RecyclerView.ViewHolder {
+            final ImageView imageView;
+            VH(ImageView iv) { super(iv); imageView = iv; }
+        }
     }
 
     private void setupHeroCarousel(List<Wallpaper> wallpapers) {
         if (heroCarousel == null || wallpapers == null || wallpapers.isEmpty()) return;
         List<String> urls = new ArrayList<>();
         for (int i = 0; i < Math.min(6, wallpapers.size()); i++) {
-            String url = wallpapers.get(i).getImageUrl(); if (url != null && !url.isEmpty()) urls.add(url);
+            String url = wallpapers.get(i).getImageUrl();
+            if (url != null && !url.isEmpty()) urls.add(url);
         }
         if (urls.isEmpty()) return;
-        heroCarouselAdapter = new HeroCarouselAdapter(mContext, urls); heroCarousel.setAdapter(heroCarouselAdapter);
+        heroCarouselAdapter = new HeroCarouselAdapter(mContext, urls);
+        heroCarousel.setAdapter(heroCarouselAdapter);
         heroDots.removeAllViews();
         for (int i = 0; i < urls.size(); i++) {
-            View dot = new View(mContext); int size = dpToPx(6);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size); lp.setMargins(dpToPx(3), 0, dpToPx(3), 0);
-            dot.setLayoutParams(lp); dot.setBackgroundResource(i == 0 ? R.drawable.dot_active : R.drawable.dot_inactive); heroDots.addView(dot);
+            View dot = new View(mContext);
+            int size = dpToPx(6);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
+            lp.setMargins(dpToPx(3), 0, dpToPx(3), 0);
+            dot.setLayoutParams(lp);
+            dot.setBackgroundResource(i == 0 ? R.drawable.dot_active : R.drawable.dot_inactive);
+            heroDots.addView(dot);
         }
         heroCarousel.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override public void onPageSelected(int position) {
+            @Override
+            public void onPageSelected(int position) {
                 currentHeroPage = position;
-                for (int i = 0; i < heroDots.getChildCount(); i++) heroDots.getChildAt(i).setBackgroundResource(i == position ? R.drawable.dot_active : R.drawable.dot_inactive);
+                for (int i = 0; i < heroDots.getChildCount(); i++) {
+                    heroDots.getChildAt(i).setBackgroundResource(
+                            i == position ? R.drawable.dot_active : R.drawable.dot_inactive);
+                }
             }
         });
-        autoScrollHandler.removeCallbacks(autoScrollRunnable); autoScrollHandler.postDelayed(autoScrollRunnable, AUTO_SCROLL_INTERVAL_MS);
+        autoScrollHandler.removeCallbacks(autoScrollRunnable);
+        autoScrollHandler.postDelayed(autoScrollRunnable, AUTO_SCROLL_INTERVAL_MS);
     }
 
-    @Override public void onDestroyView() {
-        super.onDestroyView(); autoScrollHandler.removeCallbacks(autoScrollRunnable);
-        if (premiumValueListener != null) { firebasePremiumRef.removeEventListener(premiumValueListener); premiumValueListener = null; }
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        autoScrollHandler.removeCallbacks(autoScrollRunnable);
+        if (premiumValueListener != null) {
+            firebasePremiumRef.removeEventListener(premiumValueListener);
+            premiumValueListener = null;
+        }
     }
-    @Override public void onPause() { super.onPause(); autoScrollHandler.removeCallbacks(autoScrollRunnable); }
-    @Override public void onResume() { super.onResume(); if (heroCarouselAdapter != null && heroCarouselAdapter.getItemCount() > 0) autoScrollHandler.postDelayed(autoScrollRunnable, AUTO_SCROLL_INTERVAL_MS); }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        autoScrollHandler.removeCallbacks(autoScrollRunnable);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (heroCarouselAdapter != null && heroCarouselAdapter.getItemCount() > 0) {
+            autoScrollHandler.postDelayed(autoScrollRunnable, AUTO_SCROLL_INTERVAL_MS);
+        }
+    }
 }

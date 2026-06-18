@@ -14,9 +14,17 @@ public class Wallpaper implements Parcelable, Serializable {
     private String photographer;
     private boolean isPremium;
     private long addedAt;
+    private int width;   // ✅ NEW
+    private int height;  // ✅ NEW
 
     public long getAddedAt() { return addedAt; }
     public void setAddedAt(long addedAt) { this.addedAt = addedAt; }
+
+    // ✅ NEW getters/setters
+    public int getWidth() { return width; }
+    public void setWidth(int width) { this.width = width; }
+    public int getHeight() { return height; }
+    public void setHeight(int height) { this.height = height; }
 
     public Wallpaper(String id, String imageUrl, String thumbnailUrl, String title, String category, String source, String photographer, boolean isPremium) {
         this.id = id;
@@ -62,7 +70,9 @@ public class Wallpaper implements Parcelable, Serializable {
         source = in.readString();
         photographer = in.readString();
         isPremium = in.readByte() != 0;
-        addedAt = in.readLong(); // ← added
+        addedAt = in.readLong();
+        width = in.readInt();   // ✅ NEW
+        height = in.readInt();  // ✅ NEW
     }
 
     public static final Creator<Wallpaper> CREATOR = new Creator<Wallpaper>() {
@@ -92,7 +102,9 @@ public class Wallpaper implements Parcelable, Serializable {
         dest.writeString(source);
         dest.writeString(photographer);
         dest.writeByte((byte) (isPremium ? 1 : 0));
-        dest.writeLong(addedAt); // ← added
+        dest.writeLong(addedAt);
+        dest.writeInt(width);   // ✅ NEW
+        dest.writeInt(height);  // ✅ NEW
     }
 
     public String getId() { return id; }
@@ -125,8 +137,8 @@ public class Wallpaper implements Parcelable, Serializable {
                 ", photographer='" + photographer + '\'' +
                 ", isPremium=" + isPremium +
                 ", addedAt=" + addedAt +
+                ", width=" + width +
+                ", height=" + height +
                 '}';
     }
 }
-
-// test

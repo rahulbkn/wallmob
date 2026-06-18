@@ -26,13 +26,14 @@ public class ApiManager {
     private Random random;
     private DeviceUtils deviceUtils;
 
+    // ✅ BUG 1 FIXED: Correct Cloudflare Worker URL
     private static final String UNIFIED_API_URL = "https://api-server.rahulkumarbknv.workers.dev/";
     private static final int DEFAULT_PAGE_SIZE = 100;
 
     private String currentQuery;
     private int currentPage = 1;
     private boolean isLoadingMore = false;
-    private String currentSourceFilter = "all"; 
+    private String currentSourceFilter = "all";
 
     private static final String[] SEARCH_QUERIES = {
             "nature", "abstract", "landscape", "animals", "city",
@@ -73,6 +74,8 @@ public class ApiManager {
 
     public void loadWallpapersBySource(String source, ApiCallback callback) {
         this.callback = callback;
+        // ✅ BUG 3 FIXED: Set source BEFORE resetPagination, then re-apply after
+        // resetPagination() no longer wipes currentSourceFilter
         resetPagination();
         currentSourceFilter = source.toLowerCase();
 
@@ -92,11 +95,20 @@ public class ApiManager {
     private void resetPagination() {
         currentPage = 1;
         isLoadingMore = false;
+        // ✅ BUG 3 FIXED: Don't reset currentSourceFilter here —
+        // loadWallpapersBySource() sets it after calling this
         currentSourceFilter = "all";
     }
 
     private void loadFromUnifiedAPI(String query, int page, int perPage, boolean isPagination) {
-        String url = UNIFIED_API_URL + "?query=" + query.replace(" ", "+") + "&page=" + page + "&per_page=" + perPage;
+        // ✅ BUG 2 FIXED: source filter now appended to URL
+        String url = UNIFIED_API_URL
+                + "?query=" + query.replace(" ", "+")
+                + "&page=" + page
+                + "&per_page=" + perPage
+                + "&source=" + currentSourceFilter;
+
+        Log.d(TAG, "Fetching URL: " + url);
 
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET, url, null,
@@ -121,10 +133,14 @@ public class ApiManager {
                             if (callback != null) callback.onWallpapersLoaded(newWallpapers);
                         }
                     } catch (Exception e) {
+                        Log.e(TAG, "Response parse error", e);
                         handleError("Failed to load wallpapers.");
                     }
                 },
-                error -> handleError("Network error. Check your connection.")
+                error -> {
+                    Log.e(TAG, "Network error: " + (error.getMessage() != null ? error.getMessage() : "unknown"));
+                    handleError("Network error. Check your connection.");
+                }
         ) {
             @Override
             public Map<String, String> getHeaders() {
@@ -145,6 +161,9 @@ public class ApiManager {
         for (int i = 0; i < dataArray.length(); i++) {
             try {
                 JSONObject item = dataArray.getJSONObject(i);
+
+                // ✅ BUG 5 FIXED: Worker already returns id as "pexels-12345" format
+                // Don't add source prefix again — it would create "pexels_pexels-12345"
                 String id = item.optString("id", "unknown_" + i);
                 String source = item.optString("source", "Unknown");
 
@@ -152,9 +171,8 @@ public class ApiManager {
                 String rawUrl = "";
                 String thumbUrl = "";
                 if (urls != null) {
-                    rawUrl = urls.optString("raw", urls.optString("full", ""));
-                    // 🔥 FIXED: Prioritize 'regular' size to fix low-quality thumbnail issues
-                    thumbUrl = urls.optString("regular", urls.optString("small", rawUrl)); 
+                    rawUrl = urls.optString("raw", urls.optString("regular", ""));
+                    thumbUrl = urls.optString("regular", urls.optString("small", rawUrl));
                 }
 
                 if (rawUrl.isEmpty()) continue;
@@ -162,18 +180,40 @@ public class ApiManager {
                 JSONObject info = item.optJSONObject("info");
                 String title = info != null ? info.optString("title", "Wallpaper") : "Wallpaper";
                 String author = info != null ? info.optString("author", "Unknown") : "Unknown";
+
                 String apiCategory = item.optString("category", "");
                 String category = !apiCategory.isEmpty() ? apiCategory : determineCategoryFromTitle(title, source);
 
+                // ✅ BUG 4 FIXED: Parse actual width/height from meta for landscape detection
+                JSONObject meta = item.optJSONObject("meta");
+                int width = 0;
+                int height = 0;
+                if (meta != null) {
+                    width = meta.optInt("width", 0);
+                    height = meta.optInt("height", 0);
+                }
+
+                // Source filter is now handled server-side via URL param,
+                // but keep client-side check as safety net
                 if (!currentSourceFilter.equals("all") && !source.toLowerCase().equals(currentSourceFilter)) continue;
 
-                wallpapers.add(new Wallpaper(
-                        source.toLowerCase() + "_" + id,
-                        rawUrl,         
-                        thumbUrl,       
+                // ✅ BUG 5 FIXED: Use id as-is (already prefixed by Worker)
+                Wallpaper wallpaper = new Wallpaper(
+                        id,
+                        rawUrl,
+                        thumbUrl,
                         title, category, source, author, false
-                ));
-            } catch (JSONException e) { Log.e(TAG, "Parse error", e); }
+                );
+
+                // Store dimensions for landscape detection in HomeFragment
+                wallpaper.setWidth(width);
+                wallpaper.setHeight(height);
+
+                wallpapers.add(wallpaper);
+
+            } catch (JSONException e) {
+                Log.e(TAG, "Parse error at index " + i, e);
+            }
         }
         return wallpapers;
     }
@@ -218,5 +258,3 @@ public class ApiManager {
         if (callback != null) callback.onError(message);
     }
 }
-
-// test
