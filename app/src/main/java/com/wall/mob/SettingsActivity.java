@@ -129,41 +129,25 @@ public class SettingsActivity extends BaseActivity {
 
     // --- THEME LOGIC ---
     private void showThemeDialog() {
-    String[] options = getResources().getStringArray(R.array.theme_options);
-    String[] values = getResources().getStringArray(R.array.theme_values);
+        String[] options = getResources().getStringArray(R.array.theme_options);
+        String[] values = getResources().getStringArray(R.array.theme_values);
 
-    String currentTheme = sharedPreferences.getString(KEY_THEME, "system");
-    int checkedItem = Arrays.asList(values).indexOf(currentTheme);
+        String currentTheme = sharedPreferences.getString(KEY_THEME, "system");
+        int checkedItem = Arrays.asList(values).indexOf(currentTheme);
 
-    new AlertDialog.Builder(this)
-            .setTitle(getString(R.string.select_theme))
-            .setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
-
-                String selectedValue = values[which];
-
-                sharedPreferences.edit()
-                        .putString(KEY_THEME, selectedValue)
-                        .apply();
-
-                // Update icon immediately
-                updateThemeIcon(selectedValue);
-
-                // Update theme description if updateUI() handles it
-                updateUI();
-
-                // Apply theme
-                applyTheme(selectedValue);
-                
-                // Force UI update
-                recreate();
-
-                dialog.dismiss();
-            })
-            .show();
-}
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.select_theme))
+                .setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
+                    String selectedValue = values[which];
+                    sharedPreferences.edit().putString(KEY_THEME, selectedValue).apply();
+                    applyTheme(selectedValue);
+                    dialog.dismiss();
+                    restartApp();
+                })
+                .show();
+    }
 
     private void applyTheme(String themeValue) {
-        // Persist the selection so SketchApplication can restore it on cold start
         getSharedPreferences(PREF_NAME, MODE_PRIVATE).edit().putString(KEY_THEME, themeValue).apply();
         ThemeUtils.applyTheme(themeValue);
     }
@@ -180,91 +164,19 @@ public class SettingsActivity extends BaseActivity {
                 .setTitle(getString(R.string.select_language))
                 .setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
                     String selectedCode = codes[which];
-                    
-                    // Save and set the new language
                     LocaleHelper.setNewLocale(this, selectedCode);
-                    
                     dialog.dismiss();
-                    
-                    // Force UI update
-                    recreate();
+                    restartApp();
                 })
                 .show();
     }
 
+    // --- RESTART LOGIC ---
+    private void restartApp() {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        finishAffinity();
+    }
+
     // --- CACHE LOGIC ---
-    private void calculateCacheSize() {
-        new Thread(() -> {
-            long size = 0;
-            size += getDirSize(getCacheDir());
-            size += getDirSize(getExternalCacheDir());
-            
-            String sizeStr;
-            if (size > 1024 * 1024) {
-                sizeStr = String.format(Locale.getDefault(), "%.2f MB", (float) size / (1024 * 1024));
-            } else {
-                sizeStr = String.format(Locale.getDefault(), "%.2f KB", (float) size / 1024);
-            }
-
-            new Handler(Looper.getMainLooper()).post(() -> tvCacheSize.setText(sizeStr));
-        }).start();
-    }
-
-    private long getDirSize(File dir) {
-        long size = 0;
-        if (dir != null && dir.isDirectory()) {
-            File[] files = dir.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.isFile()) {
-                        size += file.length();
-                    } else if (file.isDirectory()) {
-                        size += getDirSize(file);
-                    }
-                }
-            }
-        }
-        return size;
-    }
-
-    private void clearAppCache() {
-        tvCacheSize.setText(getString(R.string.clearing_cache));
-        new Thread(() -> {
-            deleteDir(getCacheDir());
-            deleteDir(getExternalCacheDir());
-            Glide.get(this).clearDiskCache();
-
-            new Handler(Looper.getMainLooper()).post(() -> {
-                Toast.makeText(this, getString(R.string.cache_cleared), Toast.LENGTH_SHORT).show();
-                tvCacheSize.setText(R.string.cache_zero_mb);
-            });
-        }).start();
-    }
-
-    private boolean deleteDir(File dir) {
-        if (dir != null && dir.isDirectory()) {
-            String[] children = dir.list();
-            if (children != null) {
-                for (String child : children) {
-                    boolean success = deleteDir(new File(dir, child));
-                    if (!success) {
-                        return false;
-                    }
-                }
-            }
-        }
-        return dir != null && dir.delete();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-}
-
-// test
