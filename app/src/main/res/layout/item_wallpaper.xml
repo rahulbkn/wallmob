@@ -25,7 +25,7 @@
     android:layout_height="32dp"
     android:layout_margin="12dp"
     android:src="@drawable/ic_premium"
-    android:tint="#C9A84C"
+    android:tint="?attr/colorAccent"
     android:contentDescription="@string/premium_wallpaper"
     android:visibility="gone"
     android:elevation="8dp"

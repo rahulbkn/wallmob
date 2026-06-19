@@ -29,12 +29,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-public class SeeAllActivity extends AppCompatActivity implements WallpaperAdapter.OnWallpaperClickListener {
+public class SeeAllActivity extends BaseActivity implements WallpaperAdapter.OnWallpaperClickListener {
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase));
-    }
 
     public static final String EXTRA_TITLE = "extra_title";
     public static final String EXTRA_TYPE = "extra_type";

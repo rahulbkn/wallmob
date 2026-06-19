@@ -22,12 +22,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Locale;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase));
-    }
     private ImageView ivThemeIcon;
 
     private TextView tvThemeDesc, tvLanguageDesc, tvCacheSize;
@@ -158,8 +155,6 @@ public class SettingsActivity extends AppCompatActivity {
                 applyTheme(selectedValue);
 
                 dialog.dismiss();
-
-                recreate();
             })
             .show();
 }
@@ -188,7 +183,6 @@ public class SettingsActivity extends AppCompatActivity {
                     
                     dialog.dismiss();
                     updateUI();
-                    recreate();
                 })
                 .show();
     }

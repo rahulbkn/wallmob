@@ -22,12 +22,9 @@ import android.view.WindowManager;
 import androidx.core.content.ContextCompat;
 import com.wall.mob.User;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends BaseActivity {
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase));
-    }
 
     private TextView welcomeText;
     private TextView userInfoText;

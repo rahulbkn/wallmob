@@ -32,12 +32,9 @@ import com.bumptech.glide.request.target.Target;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class WallpaperDetailsActivity extends AppCompatActivity {
+public class WallpaperDetailsActivity extends BaseActivity {
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase));
-    }
 
     private static final String TAG = "WallpaperDetails";
     private static final String EXTRA_WALLPAPER = "extra_wallpaper";

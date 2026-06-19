@@ -38,12 +38,9 @@ import java.util.concurrent.Executors;
  * - Falls back to an active HTTP probe (clients3.google.com/generate_204)
  * - Ensures a minimum visible time to avoid flicker
  */
-public class NoInternetActivity extends AppCompatActivity {
+public class NoInternetActivity extends BaseActivity {
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase));
-    }
 
     private static final String TAG = "NoInternetActivity";
     private BroadcastReceiver hideReceiver;

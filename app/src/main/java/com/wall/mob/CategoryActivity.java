@@ -30,12 +30,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CategoryActivity extends AppCompatActivity implements WallpaperAdapter.OnWallpaperClickListener {
+public class CategoryActivity extends BaseActivity implements WallpaperAdapter.OnWallpaperClickListener {
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase));
-    }
 
     private static final String TAG = "CategoryActivity";
     private static final String EXTRA_CATEGORY_NAME = "category_name";

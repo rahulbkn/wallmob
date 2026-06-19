@@ -25,12 +25,9 @@ import com.google.firebase.database.FirebaseDatabase;
 // Remove the inner User class and import the new one
 import com.wall.mob.User;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends BaseActivity {
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase));
-    }
 
     private EditText fullNameInput;
     private EditText emailInput;

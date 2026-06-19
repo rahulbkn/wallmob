@@ -21,7 +21,7 @@
 		<!-- NEW LAUNCHER: Login Screen opens first -->
 	<activity
     android:name=".LoginActivity"
-    android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+    android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
     android:hardwareAccelerated="true"
     android:theme="@style/Theme.App.Starting" 
     android:supportsPictureInPicture="true"
@@ -36,7 +36,7 @@
 		<!-- Main Hub (Now internal, opened after successful login) -->
 		<activity
 			android:name=".MainActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
 			android:screenOrientation="portrait"
@@ -44,63 +44,63 @@
 			
 		<activity
 			android:name=".UnityAdActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
 			android:exported="false" />
 		
 		<activity
 			android:name=".RegisterActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
 			android:exported="false" />
 			
 		<activity
 			android:name=".ProfileActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
 			android:exported="false" />
 			
 		<activity
 			android:name=".SearchActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
 			android:exported="false" />
 			
 		<activity
 			android:name=".ForgetActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
 			android:exported="false" />
 			
 		<activity
 			android:name=".NotificationsActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
 			android:exported="false" />
 			
 		<activity
 			android:name=".EditActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
 			android:exported="false" />
 			
 		<activity
 			android:name=".CategoryActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
 			android:exported="false" />
 			
 					<activity
 			android:name=".SeeAllActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
 			android:exported="false" />
@@ -147,7 +147,9 @@
 			android:theme="@style/AppTheme" />
 			
 			
-			<activity android:name=".SettingsActivity" />
+			<activity android:name=".SettingsActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
+			android:exported="false" />
 		
 		<!-- Unity Ads SDK Activities -->
 		<activity

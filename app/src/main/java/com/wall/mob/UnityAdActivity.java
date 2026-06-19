@@ -28,9 +28,6 @@ import java.util.Locale;
 public class UnityAdActivity extends Activity {
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase));
-    }
 
     private static final String TAG = "UnityAdActivity";
     private static final String REWARDED_AD_ID = "Rewarded_Android";

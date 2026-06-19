@@ -23,12 +23,9 @@ import android.view.WindowManager;
 import androidx.core.content.ContextCompat;
 import android.os.AsyncTask;
 
-public class NotificationsActivity extends AppCompatActivity {
+public class NotificationsActivity extends BaseActivity {
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase));
-    }
 
     private static final String TAG = "NotificationsActivity";
     private RecyclerView recyclerView;

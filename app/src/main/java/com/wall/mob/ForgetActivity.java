@@ -23,12 +23,9 @@ import android.view.Window;
 import android.view.WindowManager;
 import androidx.core.content.ContextCompat;
 
-public class ForgetActivity extends AppCompatActivity {
+public class ForgetActivity extends BaseActivity {
 
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase));
-    }
 
     private EditText emailInput;
     private Button sendResetButton;
