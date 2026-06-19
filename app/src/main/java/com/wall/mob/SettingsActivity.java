@@ -180,3 +180,4 @@ public class SettingsActivity extends BaseActivity {
     }
 
     // --- CACHE LOGIC ---
+}
