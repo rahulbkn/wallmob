@@ -153,6 +153,9 @@ public class SettingsActivity extends BaseActivity {
 
                 // Apply theme
                 applyTheme(selectedValue);
+                
+                // Force UI update
+                recreate();
 
                 dialog.dismiss();
             })
@@ -182,7 +185,9 @@ public class SettingsActivity extends BaseActivity {
                     LocaleHelper.setNewLocale(this, selectedCode);
                     
                     dialog.dismiss();
-                    updateUI();
+                    
+                    // Force UI update
+                    recreate();
                 })
                 .show();
     }
