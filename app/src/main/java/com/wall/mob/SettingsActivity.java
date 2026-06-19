@@ -171,6 +171,93 @@ public class SettingsActivity extends BaseActivity {
                 .show();
     }
 
+    // --- CACHE LOGIC ---
+
+private void calculateCacheSize() {
+    try {
+        long cacheSize = getDirSize(getCacheDir());
+
+        File externalCache = getExternalCacheDir();
+        if (externalCache != null) {
+            cacheSize += getDirSize(externalCache);
+        }
+
+        tvCacheSize.setText(android.text.format.Formatter.formatFileSize(this, cacheSize));
+    } catch (Exception e) {
+        tvCacheSize.setText("0 MB");
+    }
+}
+
+private void clearAppCache() {
+    try {
+        Glide.get(this).clearMemory();
+
+        new Thread(() -> {
+            try {
+                Glide.get(this).clearDiskCache();
+            } catch (Exception ignored) {
+            }
+
+            deleteDir(getCacheDir());
+
+            File externalCache = getExternalCacheDir();
+            if (externalCache != null) {
+                deleteDir(externalCache);
+            }
+
+            new Handler(Looper.getMainLooper()).post(() -> {
+                calculateCacheSize();
+                Toast.makeText(this, "Cache cleared", Toast.LENGTH_SHORT).show();
+            });
+        }).start();
+
+    } catch (Exception e) {
+        Toast.makeText(this, "Failed to clear cache", Toast.LENGTH_SHORT).show();
+    }
+}
+
+private long getDirSize(File dir) {
+    long size = 0;
+
+    if (dir == null || !dir.exists()) {
+        return 0;
+    }
+
+    File[] files = dir.listFiles();
+    if (files == null) {
+        return 0;
+    }
+
+    for (File file : files) {
+        if (file.isDirectory()) {
+            size += getDirSize(file);
+        } else {
+            size += file.length();
+        }
+    }
+
+    return size;
+}
+
+private boolean deleteDir(File dir) {
+    if (dir == null || !dir.exists()) {
+        return false;
+    }
+
+    File[] files = dir.listFiles();
+    if (files != null) {
+        for (File file : files) {
+            if (file.isDirectory()) {
+                deleteDir(file);
+            } else {
+                file.delete();
+            }
+        }
+    }
+
+    return dir.delete();
+}
+
     // --- RESTART LOGIC ---
     private void restartApp() {
         Intent intent = new Intent(this, MainActivity.class);
