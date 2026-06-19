@@ -280,5 +280,9 @@ You have full access to all features.</string>
     <string name="category_cars">Cars</string>
     <string name="category_anime">Anime</string>
     <string name="category_landscape">Landscape</string>
-
+    <string name="share_via_wallmob">Share Wallpaper via WallMob</string>
+    <string name="share_subject_prefix">Check out this amazing wallpaper: %1$s</string>
+    <string name="wallpaper_set_home_success">Home screen wallpaper set successfully!</string>
+    <string name="wallpaper_set_lock_success">Lock screen wallpaper set successfully!</string>
+    <string name="wallpaper_set_both_success">Wallpaper set for both screens successfully!</string>
 </resources>

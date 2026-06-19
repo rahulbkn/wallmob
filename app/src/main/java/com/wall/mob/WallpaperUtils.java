@@ -131,7 +131,7 @@ public class WallpaperUtils {
                     mainHandler.post(() -> {
                         dismissProgressDialog(activity);
                         if (!activity.isDestroyedOrFinishing()) {
-                            String successMessage = getSuccessMessage(wallpaperFlag);
+                            String successMessage = getSuccessMessage(activity, wallpaperFlag);
                             Toast.makeText(activity, successMessage, Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -177,13 +177,13 @@ public class WallpaperUtils {
         }
     }
 
-    private static String getSuccessMessage(int wallpaperFlag) {
+    private static String getSuccessMessage(WallpaperDetailsActivity activity, int wallpaperFlag) {
         if (wallpaperFlag == WALLPAPER_SYSTEM) {
-            return "Home screen wallpaper set successfully!";
+            return activity.getString(R.string.wallpaper_set_home_success);
         } else if (wallpaperFlag == WALLPAPER_LOCK) {
-            return "Lock screen wallpaper set successfully!";
+            return activity.getString(R.string.wallpaper_set_lock_success);
         } else {
-            return "Wallpaper set for both screens successfully!";
+            return activity.getString(R.string.wallpaper_set_both_success);
         }
     }
 
@@ -338,12 +338,12 @@ shortenUrlWithBitly(originalUrl, shortUrl -> {
             shareIntent.setType("image/jpeg");
             shareIntent.putExtra(Intent.EXTRA_STREAM, shareUri);
             shareIntent.putExtra(Intent.EXTRA_TEXT, shareText);
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Check out this amazing wallpaper: " +
-                (wallpaper.getTitle() != null ? wallpaper.getTitle() : "Wallpaper"));
+            shareIntent.putExtra(Intent.EXTRA_SUBJECT, activity.getString(R.string.share_subject_prefix, 
+                (wallpaper.getTitle() != null ? wallpaper.getTitle() : activity.getString(R.string.wallpaper))));
             shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
             if (shareIntent.resolveActivity(activity.getPackageManager()) != null) {
-                activity.startActivity(Intent.createChooser(shareIntent, "Share Wallpaper via WallMob"));
+                activity.startActivity(Intent.createChooser(shareIntent, activity.getString(R.string.share_via_wallmob)));
             } else {
                 Toast.makeText(activity, activity.getString(R.string.no_share_apps), Toast.LENGTH_SHORT).show();
             }

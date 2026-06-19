@@ -20,7 +20,11 @@
     <string name="continue_as_guest">अतिथि के रूप में जारी रखें</string>
     <string name="dont_have_account">खाता नहीं है? </string>
     <string name="sign_up">साइन अप</string>
-    <string name="logout">लॉग आउट</string>
+    <string name="share_via_wallmob">WallMob के माध्यम से वॉलपेपर साझा करें</string>
+    <string name="share_subject_prefix">यह अद्भुत वॉलपेपर देखें: %1$s</string>
+    <string name="wallpaper_set_home_success">होम स्क्रीन वॉलपेपर सफलतापूर्वक सेट हो गया!</string>
+    <string name="wallpaper_set_lock_success">लॉक स्क्रीन वॉलपेपर सफलतापूर्वक सेट हो गया!</string>
+    <string name="wallpaper_set_both_success">दोनों स्क्रीन के लिए वॉलपेपर सफलतापूर्वक सेट हो गया!</string>
     <string name="search_wallpapers">वॉलपेपर खोजें</string>
     <string name="search_hint">10M+ वॉलपेपर खोजें...</string>
     <string name="notifications">सूचनाएं</string>
@@ -275,4 +279,5 @@
     <string name="category_cars">कारें</string>
     <string name="category_anime">एनीमे</string>
     <string name="category_landscape">लैंडस्केप</string>
+    <string name="logout">लॉग आउट</string>
 </resources>
