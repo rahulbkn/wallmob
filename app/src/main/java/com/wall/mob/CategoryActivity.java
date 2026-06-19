@@ -32,8 +32,6 @@ import java.util.List;
 
 public class CategoryActivity extends BaseActivity implements WallpaperAdapter.OnWallpaperClickListener {
 
-    @Override
-
     private static final String TAG = "CategoryActivity";
     private static final String EXTRA_CATEGORY_NAME = "category_name";
     private static final String EXTRA_CATEGORY_IMAGE = "category_image";

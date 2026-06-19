@@ -25,7 +25,6 @@ import android.os.AsyncTask;
 
 public class NotificationsActivity extends BaseActivity {
 
-    @Override
 
     private static final String TAG = "NotificationsActivity";
     private RecyclerView recyclerView;

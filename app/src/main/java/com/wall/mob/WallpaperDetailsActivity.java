@@ -34,7 +34,6 @@ import java.util.concurrent.Executors;
 
 public class WallpaperDetailsActivity extends BaseActivity {
 
-    @Override
 
     private static final String TAG = "WallpaperDetails";
     private static final String EXTRA_WALLPAPER = "extra_wallpaper";

@@ -27,8 +27,6 @@ import java.util.Locale;
 
 public class UnityAdActivity extends Activity {
 
-    @Override
-
     private static final String TAG = "UnityAdActivity";
     private static final String REWARDED_AD_ID = "Rewarded_Android";
     private static final String PREFS_NAME = "GamePrefs";

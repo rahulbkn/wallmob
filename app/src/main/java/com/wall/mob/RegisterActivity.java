@@ -27,8 +27,6 @@ import com.wall.mob.User;
 
 public class RegisterActivity extends BaseActivity {
 
-    @Override
-
     private EditText fullNameInput;
     private EditText emailInput;
     private EditText phoneInput;

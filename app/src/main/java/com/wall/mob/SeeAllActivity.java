@@ -31,7 +31,6 @@ import java.util.Map;
 
 public class SeeAllActivity extends BaseActivity implements WallpaperAdapter.OnWallpaperClickListener {
 
-    @Override
 
     public static final String EXTRA_TITLE = "extra_title";
     public static final String EXTRA_TYPE = "extra_type";

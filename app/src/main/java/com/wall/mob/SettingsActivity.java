@@ -24,7 +24,7 @@ import java.util.Locale;
 
 public class SettingsActivity extends BaseActivity {
 
-    @Override
+
     private ImageView ivThemeIcon;
 
     private TextView tvThemeDesc, tvLanguageDesc, tvCacheSize;

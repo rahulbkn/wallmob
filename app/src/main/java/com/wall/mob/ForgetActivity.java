@@ -25,8 +25,6 @@ import androidx.core.content.ContextCompat;
 
 public class ForgetActivity extends BaseActivity {
 
-    @Override
-
     private EditText emailInput;
     private Button sendResetButton;
     private TextView backToLoginText;

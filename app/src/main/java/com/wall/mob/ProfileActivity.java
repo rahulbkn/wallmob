@@ -24,7 +24,6 @@ import com.wall.mob.User;
 
 public class ProfileActivity extends BaseActivity {
 
-    @Override
 
     private TextView welcomeText;
     private TextView userInfoText;

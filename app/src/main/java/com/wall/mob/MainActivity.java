@@ -90,8 +90,6 @@ public class MainActivity extends BaseActivity {
     // SwipeRefreshLayout
     private SwipeRefreshLayout swipeRefresh;
     
-        @Override
-    
 
     // Coin update receiver
     private BroadcastReceiver coinsUpdateReceiver = new BroadcastReceiver() {

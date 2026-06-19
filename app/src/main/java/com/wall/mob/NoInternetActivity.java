@@ -40,7 +40,6 @@ import java.util.concurrent.Executors;
  */
 public class NoInternetActivity extends BaseActivity {
 
-    @Override
 
     private static final String TAG = "NoInternetActivity";
     private BroadcastReceiver hideReceiver;

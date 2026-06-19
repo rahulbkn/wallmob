@@ -35,7 +35,6 @@ import java.util.Locale;
 
 public class SearchActivity extends BaseActivity implements WallpaperAdapter.OnWallpaperClickListener {
 
-    @Override
 
     private RecyclerView searchResultsRecyclerView;
     private TextView noResultsText;

@@ -21,7 +21,6 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends BaseActivity {
 
-    @Override
 
     private EditText emailInput;
     private EditText passwordInput;
