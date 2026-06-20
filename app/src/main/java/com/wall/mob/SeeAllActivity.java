@@ -41,6 +41,7 @@ public class SeeAllActivity extends BaseActivity implements WallpaperAdapter.OnW
     private Toolbar toolbar;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
+    private ProgressBar paginationProgressBar;
     private TextView emptyText;
 
     private CategoryWallpaperAdapter adapter;
@@ -78,6 +79,7 @@ public class SeeAllActivity extends BaseActivity implements WallpaperAdapter.OnW
         toolbar = findViewById(R.id.toolbar);
         recyclerView = findViewById(R.id.recycler_see_all);
         progressBar = findViewById(R.id.progress_bar);
+        paginationProgressBar = findViewById(R.id.pagination_progress_bar);
         emptyText = findViewById(R.id.empty_text);
 
         apiManager = new ApiManager(this);
@@ -122,18 +124,26 @@ public class SeeAllActivity extends BaseActivity implements WallpaperAdapter.OnW
         apiManager.loadWallpapersFromAllSources(new ApiManager.ApiCallback() {
             @Override
             public void onWallpapersLoaded(List<Wallpaper> loadedWallpapers) {
-                runOnUiThread(() -> handleDataLoaded(loadedWallpapers));
+                runOnUiThread(() -> {
+                    paginationProgressBar.setVisibility(View.GONE);
+                    handleDataLoaded(loadedWallpapers);
+                });
             }
 
             @Override
             public void onMoreWallpapersLoaded(List<Wallpaper> newWallpapers) {
-                // Ignore pagination for now, or append to adapter
+                runOnUiThread(() -> {
+                    paginationProgressBar.setVisibility(View.GONE);
+                    // Append newWallpapers to adapter/list
+                    // TODO: Implement append logic
+                });
             }
 
             @Override
             public void onError(String message) {
                 runOnUiThread(() -> {
                     progressBar.setVisibility(View.GONE);
+                    paginationProgressBar.setVisibility(View.GONE);
                     emptyText.setVisibility(View.VISIBLE);
                     emptyText.setText(message);
                 });
