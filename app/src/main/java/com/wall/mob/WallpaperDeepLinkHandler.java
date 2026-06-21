@@ -122,11 +122,11 @@ public class WallpaperDeepLinkHandler {
         if (wallpaper == null || activity.isDestroyedOrFinishing()) return;
 
         // Title
-        wallpaperTitle.setText(
-                wallpaper.getTitle() != null
-                        ? wallpaper.getTitle()
-                        : "Wallpaper"
-        );
+                wallpaperTitle.setText(
+                        wallpaper.getTitle() != null
+                                ? wallpaper.getTitle()
+                                : activity.getString(R.string.wallpaper)
+                );
 
         // Author / Category
         if (wallpaper.getPhotographer() != null && !wallpaper.getPhotographer().isEmpty()) {

@@ -282,7 +282,7 @@ public class WallpaperDetailsActivity extends BaseActivity {
                         Log.e(TAG, "Full image load failed: " + (e != null ? e.getMessage() : "unknown"), e);
                         imageProgressBar.setVisibility(View.GONE);
                         Toast.makeText(WallpaperDetailsActivity.this,
-                                "Image load failed. Check internet connection.",
+                                R.string.image_load_failed_check_connection,
                                 Toast.LENGTH_SHORT).show();
                         return false;
                     }

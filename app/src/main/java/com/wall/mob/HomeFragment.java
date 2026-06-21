@@ -55,12 +55,14 @@ public class HomeFragment extends Fragment {
     private View premiumSectionView;
     private TextView premiumSectionTitle;
     private RecyclerView recyclerPremium;
+    private LinearLayout mainContentContainer;
 
     private View landscapeSectionView;
     private TextView tvSeeAllTrending;
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
+    private com.facebook.shimmer.ShimmerFrameLayout shimmerViewContainer;
     private View errorView;
     private Button retryButton;
     private TextView errorMessage;
@@ -149,7 +151,9 @@ public class HomeFragment extends Fragment {
         premiumSectionView = view.findViewById(R.id.premium_section);
         premiumSectionTitle = view.findViewById(R.id.premium_section_title);
         recyclerPremium = view.findViewById(R.id.recycler_premium);
+        mainContentContainer = view.findViewById(R.id.main_content_container);
         progressBar = view.findViewById(R.id.progress_bar);
+        shimmerViewContainer = view.findViewById(R.id.shimmer_view_container);
         errorView = view.findViewById(R.id.error_view);
         retryButton = view.findViewById(R.id.retry_button);
         errorMessage = view.findViewById(R.id.error_message);
@@ -227,7 +231,7 @@ public class HomeFragment extends Fragment {
         LinearLayoutManager colorToneLayout = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
         recyclerColorTone.setLayoutManager(colorToneLayout);
         recyclerColorTone.setNestedScrollingEnabled(false);
-        List<String> colors = Arrays.asList("#FFB6D9", "#4169E1", "#8B00FF", "#40E0D0", "#2C2C2C", "#FF8C00", "#FF1493", "#32CD32");
+        List<String> colors = Arrays.asList("#FF0000", "#FF7F00", "#FFD700", "#32CD32", "#40E0D0", "#4169E1", "#4B0082", "#8B00FF", "#FF1493", "#2C2C2C");
         colorToneAdapter = new ColorToneAdapter(mContext, colors, this::onColorClick);
         recyclerColorTone.setAdapter(colorToneAdapter);
 
@@ -581,19 +585,24 @@ public class HomeFragment extends Fragment {
 
     private void showLoading(boolean loading) {
         boolean hasExistingData = !allWallpapers.isEmpty() || !premiumWallpapers.isEmpty();
+        Log.d(TAG, "showLoading: loading=" + loading + ", hasExistingData=" + hasExistingData);
 
         if (progressBar != null) {
-            progressBar.setVisibility(loading && !hasExistingData ? View.VISIBLE : View.GONE);
+            progressBar.setVisibility(View.GONE); // Use shimmer instead
         }
 
-        if (loading && !hasExistingData) {
-            if (recyclerBestMonth != null) recyclerBestMonth.setVisibility(View.INVISIBLE);
-            if (recyclerColorTone != null) recyclerColorTone.setVisibility(View.INVISIBLE);
-            if (recyclerCategories != null) recyclerCategories.setVisibility(View.INVISIBLE);
-        } else {
-            if (recyclerBestMonth != null) recyclerBestMonth.setVisibility(View.VISIBLE);
-            if (recyclerColorTone != null) recyclerColorTone.setVisibility(View.VISIBLE);
-            if (recyclerCategories != null) recyclerCategories.setVisibility(View.VISIBLE);
+        if (shimmerViewContainer != null) {
+            if (loading && !hasExistingData) {
+                Log.d(TAG, "Showing shimmer");
+                shimmerViewContainer.setVisibility(View.VISIBLE);
+                shimmerViewContainer.startShimmer();
+                if (mainContentContainer != null) mainContentContainer.setVisibility(View.GONE);
+            } else {
+                Log.d(TAG, "Hiding shimmer");
+                shimmerViewContainer.stopShimmer();
+                shimmerViewContainer.setVisibility(View.GONE);
+                if (mainContentContainer != null) mainContentContainer.setVisibility(View.VISIBLE);
+            }
         }
 
         if (errorView != null) errorView.setVisibility(View.GONE);

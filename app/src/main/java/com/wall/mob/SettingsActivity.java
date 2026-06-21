@@ -1,5 +1,6 @@
 package com.wall.mob;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,38 +9,37 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
-import android.widget.ImageView;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Locale;
 
 public class SettingsActivity extends BaseActivity {
 
-
     private ImageView ivThemeIcon;
-
     private TextView tvThemeDesc, tvLanguageDesc, tvCacheSize;
-    private LinearLayout btnTheme, btnLanguage, btnClearCache, btnPrivacy;
+    private LinearLayout btnTheme, btnLanguage, btnClearCache, btnNotifications, btnFeedback, btnRateUs, btnTelegram, btnAbout;
+    private SwitchCompat switchNotifications;
     
     private SharedPreferences sharedPreferences;
     private static final String PREF_NAME = "settings_prefs";
     private static final String KEY_THEME = "app_theme";
     private static final String KEY_LANG = "app_lang";
+    private static final String KEY_NOTIFICATIONS = "notifications_enabled";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Apply theme BEFORE setContentView
         applyThemeFromPreference();
-        
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         ThemeUtils.applySystemBars(this);
@@ -52,7 +52,6 @@ public class SettingsActivity extends BaseActivity {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setHomeAsUpIndicator(androidx.appcompat.R.drawable.abc_ic_ab_back_material);
-            // Tint navigation icon to theme-aware onSurface color
             toolbar.getNavigationIcon().setTint(androidx.core.content.ContextCompat.getColor(this, R.color.onSurface));
         }
 
@@ -64,8 +63,14 @@ public class SettingsActivity extends BaseActivity {
         btnTheme = findViewById(R.id.btn_theme);
         btnLanguage = findViewById(R.id.btn_language);
         btnClearCache = findViewById(R.id.btn_clear_cache);
-        btnPrivacy = findViewById(R.id.btn_privacy);
+        btnNotifications = findViewById(R.id.btn_notifications);
+        btnFeedback = findViewById(R.id.btn_feedback);
+        btnRateUs = findViewById(R.id.btn_rate_us);
+        btnTelegram = findViewById(R.id.btn_telegram);
+        btnAbout = findViewById(R.id.btn_about);
+        
         ivThemeIcon = findViewById(R.id.iv_theme_icon);
+        switchNotifications = findViewById(R.id.switch_notifications);
 
         // Load Initial Data
         updateUI();
@@ -75,12 +80,42 @@ public class SettingsActivity extends BaseActivity {
         btnTheme.setOnClickListener(v -> showThemeDialog());
         btnLanguage.setOnClickListener(v -> showLanguageDialog());
         btnClearCache.setOnClickListener(v -> clearAppCache());
-        btnPrivacy.setOnClickListener(v -> {
-            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://your-privacy-policy-url.com"));
-            startActivity(browserIntent);
+
+        // New Click Listeners
+        switchNotifications.setChecked(sharedPreferences.getBoolean(KEY_NOTIFICATIONS, true));
+        switchNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            sharedPreferences.edit().putBoolean(KEY_NOTIFICATIONS, isChecked).apply();
+        });
+        
+        btnFeedback.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_SENDTO);
+            intent.setData(Uri.parse("mailto:your-email@example.com"));
+            intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.feedback_email_subject));
+            startActivity(intent);
+        });
+
+        btnRateUs.setOnClickListener(v -> {
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=" + getPackageName())));
+            } catch (ActivityNotFoundException e) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=" + getPackageName())));
+            }
+        });
+
+        btnTelegram.setOnClickListener(v -> {
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/your_telegram_channel")));
         });
     }
     
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void updateThemeIcon(String theme) {
     switch (theme) {
         case "light":
@@ -184,7 +219,7 @@ private void calculateCacheSize() {
 
         tvCacheSize.setText(android.text.format.Formatter.formatFileSize(this, cacheSize));
     } catch (Exception e) {
-        tvCacheSize.setText("0 MB");
+        tvCacheSize.setText(R.string.cache_fallback);
     }
 }
 
@@ -207,12 +242,12 @@ private void clearAppCache() {
 
             new Handler(Looper.getMainLooper()).post(() -> {
                 calculateCacheSize();
-                Toast.makeText(this, "Cache cleared", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.cache_cleared, Toast.LENGTH_SHORT).show();
             });
         }).start();
 
     } catch (Exception e) {
-        Toast.makeText(this, "Failed to clear cache", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, R.string.failed_to_clear_cache, Toast.LENGTH_SHORT).show();
     }
 }
 
@@ -265,6 +300,4 @@ private boolean deleteDir(File dir) {
         startActivity(intent);
         finishAffinity();
     }
-
-    // --- CACHE LOGIC ---
 }

@@ -189,8 +189,8 @@ public class SeeAllActivity extends BaseActivity implements WallpaperAdapter.OnW
                 String category = (String) map.get("category");
                 String source = (String) map.get("source");
                 
-                if (title == null) title = "Premium";
-                if (category == null) category = "Premium";
+                if (title == null) title = getString(R.string.premium);
+                if (category == null) category = getString(R.string.premium);
                 
                 return new Wallpaper(id, imageUrl, title, category, source, "", true);
             }

@@ -1,0 +1,20 @@
+{
+  "allFiles": [
+    {
+      "file": "/storage/emulated/0/wallmob/app/src/main/res/layout/home.xml",
+      "selection": {
+        "end": {
+          "column": 56,
+          "index": 33572,
+          "line": 697
+        },
+        "start": {
+          "column": 56,
+          "index": 33572,
+          "line": 697
+        }
+      }
+    }
+  ],
+  "selectedFile": "/storage/emulated/0/wallmob/app/src/main/res/layout/home.xml"
+}

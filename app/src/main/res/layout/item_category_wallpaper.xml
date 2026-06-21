@@ -30,7 +30,7 @@
             android:paddingEnd="12dp"
             android:paddingTop="6dp"
             android:paddingBottom="6dp"
-            android:text="4K"
+            android:text="@string/quality_4k"
             android:textSize="11sp"
             android:textStyle="bold"
             android:textColor="@color/onImage"

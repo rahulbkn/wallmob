@@ -75,6 +75,16 @@
         android:nestedScrollingEnabled="true"
         android:overScrollMode="never" />
 
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_view_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/premium_header"
+        android:visibility="gone">
+
+        <include layout="@layout/shimmer_premium" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
     <!-- Main Loading Progress (Gold) -->
     <ProgressBar
         android:id="@+id/progress_bar"
@@ -84,7 +94,7 @@
         android:layout_centerInParent="true"
         android:indeterminate="false"
         android:indeterminateTint="#C9A84C"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <!-- Pagination/Load More Progress (Gold) -->
     <ProgressBar
@@ -107,7 +117,7 @@
         android:layout_centerInParent="true"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="40dp"
-        android:background="@drawable/bg_section_rounded"
+
         android:backgroundTint="#1AFFFFFF"
         android:elevation="0dp"
         android:gravity="center"

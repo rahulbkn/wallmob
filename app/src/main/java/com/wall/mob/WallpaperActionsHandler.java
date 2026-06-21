@@ -160,10 +160,11 @@ public class WallpaperActionsHandler {
             return;
         }
 
-        WallpaperUtils.showProgressDialog(activity, "Preparing wallpaper for sharing...", false);
+        String shareType = wallpaper.isPremium() ? activity.getString(R.string.premium) : activity.getString(R.string.normal);
+        WallpaperUtils.showProgressDialog(activity, activity.getString(R.string.preparing_share), false);
         if (activity.getEnhancedImageUri() != null) {
             WallpaperUtils.shareWallpaperFromUri(activity, activity.getEnhancedImageUri(), wallpaper);
-            deductCoins(coinsRequired, "Shared " + (wallpaper.isPremium() ? "Premium" : "Normal") + " Wallpaper");
+            deductCoins(coinsRequired, activity.getString(R.string.shared_wallpaper_format, shareType));
         } else {
             try {
                 Glide.with(activity)
@@ -174,7 +175,7 @@ public class WallpaperActionsHandler {
                         public void onResourceReady(@NonNull Bitmap bitmap, @Nullable Transition<? super Bitmap> transition) {
                             if (!activity.isDestroyedOrFinishing()) {
                                 WallpaperUtils.saveAndShareBitmap(activity, bitmap, wallpaper);
-                                deductCoins(coinsRequired, "Shared " + (wallpaper.isPremium() ? "Premium" : "Normal") + " Wallpaper");
+                                deductCoins(coinsRequired, activity.getString(R.string.shared_wallpaper_format, shareType));
                             } else {
                                 WallpaperUtils.dismissProgressDialog(activity);
                             }
@@ -223,10 +224,11 @@ public class WallpaperActionsHandler {
             return;
         }
 
-        WallpaperUtils.showProgressDialog(activity, "Downloading wallpaper...", false);
+        String downloadType = wallpaper.isPremium() ? activity.getString(R.string.premium) : activity.getString(R.string.normal);
+        WallpaperUtils.showProgressDialog(activity, activity.getString(R.string.downloading_wallpaper), false);
         if (activity.getEnhancedImageUri() != null) {
             WallpaperUtils.downloadWallpaperFromUri(activity, activity.getEnhancedImageUri());
-            deductCoins(coinsRequired, "Downloaded " + (wallpaper.isPremium() ? "Premium" : "Normal") + " Wallpaper");
+            deductCoins(coinsRequired, activity.getString(R.string.downloaded_wallpaper_format, downloadType));
         } else {
             try {
                 Glide.with(activity)
@@ -239,7 +241,7 @@ public class WallpaperActionsHandler {
                                 FileUtil.saveBitmapToPublicGallery(activity, bitmap, wallpaper.getTitle());
                                 WallpaperUtils.dismissProgressDialog(activity);
                                 Toast.makeText(activity, activity.getString(R.string.wallpaper_saved_gallery), Toast.LENGTH_SHORT).show();
-                                deductCoins(coinsRequired, "Downloaded " + (wallpaper.isPremium() ? "Premium" : "Normal") + " Wallpaper");
+                                deductCoins(coinsRequired, activity.getString(R.string.downloaded_wallpaper_format, downloadType));
                             } else {
                                 WallpaperUtils.dismissProgressDialog(activity);
                             }

@@ -17,7 +17,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorSurface"
         app:navigationIcon="@drawable/icon_arrow_back_round"
-        app:title="Search Wallpapers"
+        app:title="@string/search_wallpapers"
         app:titleTextColor="?attr/colorOnSurface"
         app:navigationIconTint="?attr/colorOnSurface"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:queryHint="Search 10M+ wallpapers..."
+        android:queryHint="@string/search_hint"
         android:iconifiedByDefault="false" />
 
     <!-- Loading -->

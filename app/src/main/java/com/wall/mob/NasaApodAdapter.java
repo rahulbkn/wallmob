@@ -76,7 +76,7 @@ public class NasaApodAdapter extends RecyclerView.Adapter<NasaApodAdapter.ViewHo
         if (holder.authorView != null) {
             String credit = wallpaper.getPhotographer() != null
                     ? "© " + wallpaper.getPhotographer()
-                    : "NASA";
+                    : context.getString(R.string.nasa_credit);
             holder.authorView.setText(credit);
             holder.authorView.setVisibility(View.VISIBLE);
         }

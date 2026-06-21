@@ -116,13 +116,14 @@ public class ApiManager {
                     try {
                         JSONObject meta = response.optJSONObject("meta");
                         if (meta != null && !meta.optBoolean("success", false)) {
-                            handleError("API error: " + response.optString("error", "Unknown error"));
+                            String errMsg = response.optString("error", context.getString(R.string.unknown_error));
+                            handleError(context.getString(R.string.api_error_format, errMsg));
                             return;
                         }
 
                         List<Wallpaper> newWallpapers = parseUnifiedAPIResponse(response);
                         if (newWallpapers.isEmpty() && !isPagination) {
-                            handleError("No wallpapers found.");
+                            handleError(context.getString(R.string.no_wallpapers_found));
                             return;
                         }
 
@@ -134,12 +135,12 @@ public class ApiManager {
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "Response parse error", e);
-                        handleError("Failed to load wallpapers.");
+                        handleError(context.getString(R.string.failed_to_load_wallpapers));
                     }
                 },
                 error -> {
                     Log.e(TAG, "Network error: " + (error.getMessage() != null ? error.getMessage() : "unknown"));
-                    handleError("Network error. Check your connection.");
+                    handleError(context.getString(R.string.network_error_check_connection));
                 }
         ) {
             @Override

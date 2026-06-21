@@ -285,4 +285,30 @@ You have full access to all features.</string>
     <string name="wallpaper_set_home_success">Home screen wallpaper set successfully!</string>
     <string name="wallpaper_set_lock_success">Lock screen wallpaper set successfully!</string>
     <string name="wallpaper_set_both_success">Wallpaper set for both screens successfully!</string>
+
+    <string name="nasa_space_of_day">NASA — Space of the Day</string>
+    <string name="empty_mailbox">📭</string>
+    <string name="adjustments">Adjustments</string>
+    <string name="brightness_abbr">Bri</string>
+    <string name="contrast_abbr">Con</string>
+    <string name="quality_4k">4K</string>
+    <string name="coin_emoji">💰</string>
+    <string name="cache_fallback">0 MB</string>
+    <string name="failed_to_clear_cache">Failed to clear cache</string>
+    <string name="image_load_failed_check_connection">Image load failed. Check internet connection.</string>
+    <string name="network_error_check_connection">Network error. Check your connection.</string>
+    <string name="nasa_credit">NASA</string>
+    <string name="preparing_share">Preparing wallpaper for sharing...</string>
+    <string name="downloading_wallpaper">Downloading wallpaper...</string>
+    <string name="unknown_error">Unknown error</string>
+    <string name="api_error_format">API error: %1$s</string>
+    <string name="normal">Normal</string>
+    <string name="shared_wallpaper_format">Shared %1$s Wallpaper</string>
+    <string name="downloaded_wallpaper_format">Downloaded %1$s Wallpaper</string>
+    <string name="no_results">No results</string>
+
+    <plurals name="wallpaper_count">
+        <item quantity="one">%d wallpaper</item>
+        <item quantity="other">%d wallpapers</item>
+    </plurals>
 </resources>

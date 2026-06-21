@@ -220,7 +220,7 @@ public class EditActivity extends BaseActivity {
                 gpuImageView.setImage(originalBitmap);
                 generateFilterThumbnails(originalBitmap);
             } else {
-                Toast.makeText(this, "Failed to load image", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, R.string.failed_load_image, Toast.LENGTH_SHORT).show();
                 finish();
             }
         }
@@ -306,7 +306,7 @@ public class EditActivity extends BaseActivity {
             finish();
             
         } catch (Exception e) {
-            Toast.makeText(this, "Failed to save changes", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.failed_save_changes, Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
     }

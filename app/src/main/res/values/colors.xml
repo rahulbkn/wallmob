@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Light palette -->
-    <color name="colorAccent">#000000</color>
+    <color name="colorAccent">#C9A84C</color>
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#222222</color>
     <color name="colorControlHighlight">#212121</color>

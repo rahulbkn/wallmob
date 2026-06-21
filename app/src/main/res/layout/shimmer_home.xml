@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@android:color/transparent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- ───────────────────────────────────────────
+             Hero / Featured Banner (full-width, no radius)
+             ─────────────────────────────────────────── -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:background="@drawable/shimmer_placeholder_no_radius" />
+
+        <!-- ───────────────────────────────────────────
+             Trending Now Section
+             ─────────────────────────────────────────── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="24dp">
+
+            <!-- Row 1: "HOT" badge   +   "See All →" button -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="14dp">
+
+                <!-- HOT pill -->
+                <View
+                    android:layout_width="60dp"
+                    android:layout_height="28dp"
+                    android:background="@drawable/shimmer_placeholder" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1" />
+
+                <!-- See All button -->
+                <View
+                    android:layout_width="100dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/shimmer_placeholder" />
+            </LinearLayout>
+
+            <!-- Row 2: icon  +  "Trending Now" title -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <!-- fire icon placeholder -->
+                <View
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="@drawable/shimmer_placeholder"
+                    android:layout_marginEnd="10dp" />
+
+                <!-- title text -->
+                <View
+                    android:layout_width="180dp"
+                    android:layout_height="26dp"
+                    android:background="@drawable/shimmer_placeholder" />
+            </LinearLayout>
+
+            <!-- Row 3: subtitle -->
+            <View
+                android:layout_width="220dp"
+                android:layout_height="15dp"
+                android:background="@drawable/shimmer_placeholder"
+                android:layout_marginBottom="10dp" />
+
+            <!-- Row 4: short divider underline -->
+            <View
+                android:layout_width="48dp"
+                android:layout_height="3dp"
+                android:background="@drawable/shimmer_placeholder"
+                android:layout_marginBottom="16dp" />
+
+            <!-- Row 5: two tall wallpaper cards side by side -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="220dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/shimmer_placeholder" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="220dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    android:background="@drawable/shimmer_placeholder" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- ───────────────────────────────────────────
+             Color Palettes Section
+             ─────────────────────────────────────────── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="24dp">
+
+            <!-- HOT badge + See All -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="14dp">
+                <View android:layout_width="60dp" android:layout_height="28dp" android:background="@drawable/shimmer_placeholder" />
+                <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+                <View android:layout_width="100dp" android:layout_height="36dp" android:background="@drawable/shimmer_placeholder" />
+            </LinearLayout>
+
+            <!-- Icon + Title -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+                <View android:layout_width="24dp" android:layout_height="24dp" android:background="@drawable/shimmer_placeholder" android:layout_marginEnd="10dp" />
+                <View android:layout_width="180dp" android:layout_height="26dp" android:background="@drawable/shimmer_placeholder" />
+            </LinearLayout>
+
+            <!-- Subtitle -->
+            <View android:layout_width="220dp" android:layout_height="15dp" android:background="@drawable/shimmer_placeholder" android:layout_marginBottom="10dp" />
+
+            <!-- Divider -->
+            <View android:layout_width="48dp" android:layout_height="3dp" android:background="@drawable/shimmer_placeholder" android:layout_marginBottom="16dp" />
+
+            <!-- Horizontal strip (e.g. palette swatches) -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:background="@drawable/shimmer_placeholder" />
+        </LinearLayout>
+
+        <!-- ───────────────────────────────────────────
+             Premium Section
+             ─────────────────────────────────────────── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="24dp">
+
+            <!-- HOT badge + See All -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="14dp">
+                <View android:layout_width="60dp" android:layout_height="28dp" android:background="@drawable/shimmer_placeholder" />
+                <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+                <View android:layout_width="100dp" android:layout_height="36dp" android:background="@drawable/shimmer_placeholder" />
+            </LinearLayout>
+
+            <!-- Icon + Title -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+                <View android:layout_width="24dp" android:layout_height="24dp" android:background="@drawable/shimmer_placeholder" android:layout_marginEnd="10dp" />
+                <View android:layout_width="180dp" android:layout_height="26dp" android:background="@drawable/shimmer_placeholder" />
+            </LinearLayout>
+
+            <!-- Subtitle -->
+            <View android:layout_width="220dp" android:layout_height="15dp" android:background="@drawable/shimmer_placeholder" android:layout_marginBottom="10dp" />
+
+            <!-- Divider -->
+            <View android:layout_width="48dp" android:layout_height="3dp" android:background="@drawable/shimmer_placeholder" android:layout_marginBottom="16dp" />
+
+            <!-- Wide premium card -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:background="@drawable/shimmer_placeholder" />
+        </LinearLayout>
+
+        <!-- ───────────────────────────────────────────
+             Categories Section
+             ─────────────────────────────────────────── -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="24dp"
+            android:layout_marginBottom="80dp">
+
+            <!-- HOT badge + See All -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="14dp">
+                <View android:layout_width="60dp" android:layout_height="28dp" android:background="@drawable/shimmer_placeholder" />
+                <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1" />
+                <View android:layout_width="100dp" android:layout_height="36dp" android:background="@drawable/shimmer_placeholder" />
+            </LinearLayout>
+
+            <!-- Icon + Title -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+                <View android:layout_width="24dp" android:layout_height="24dp" android:background="@drawable/shimmer_placeholder" android:layout_marginEnd="10dp" />
+                <View android:layout_width="180dp" android:layout_height="26dp" android:background="@drawable/shimmer_placeholder" />
+            </LinearLayout>
+
+            <!-- Subtitle -->
+            <View android:layout_width="220dp" android:layout_height="15dp" android:background="@drawable/shimmer_placeholder" android:layout_marginBottom="10dp" />
+
+            <!-- Divider -->
+            <View android:layout_width="48dp" android:layout_height="3dp" android:background="@drawable/shimmer_placeholder" android:layout_marginBottom="16dp" />
+
+            <!-- 2-column category grid -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <View android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:layout_marginEnd="6dp" android:background="@drawable/shimmer_placeholder" />
+                <View android:layout_width="0dp" android:layout_height="100dp" android:layout_weight="1" android:layout_marginStart="6dp" android:background="@drawable/shimmer_placeholder" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

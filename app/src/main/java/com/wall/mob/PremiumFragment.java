@@ -34,6 +34,7 @@ public class PremiumFragment extends Fragment implements WallpaperAdapter.OnWall
     private WallpaperAdapter wallpaperAdapter;
     private List<Wallpaper> premiumWallpapers = new ArrayList<>();
     private ProgressBar progressBar;
+    private com.facebook.shimmer.ShimmerFrameLayout shimmerViewContainer;
     private View errorView;
     private Button retryButton;
     private TextView errorMessage;
@@ -55,6 +56,7 @@ public class PremiumFragment extends Fragment implements WallpaperAdapter.OnWall
         retryButton = view.findViewById(R.id.retry_button);
         errorMessage = view.findViewById(R.id.error_message);
         progressBar = view.findViewById(R.id.progress_bar);
+        shimmerViewContainer = view.findViewById(R.id.shimmer_view_container);
 
         firebasePremiumRef = FirebaseDatabase.getInstance().getReference("wallpapers/premium");
 
@@ -141,12 +143,20 @@ public class PremiumFragment extends Fragment implements WallpaperAdapter.OnWall
     }
 
     private void showMainLoading() {
-        progressBar.setVisibility(View.VISIBLE);
+        if (shimmerViewContainer != null) {
+            shimmerViewContainer.setVisibility(View.VISIBLE);
+            shimmerViewContainer.startShimmer();
+        }
+        progressBar.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
         errorView.setVisibility(View.GONE);
     }
 
     private void hideMainLoading() {
+        if (shimmerViewContainer != null) {
+            shimmerViewContainer.stopShimmer();
+            shimmerViewContainer.setVisibility(View.GONE);
+        }
         progressBar.setVisibility(View.GONE);
     }
 

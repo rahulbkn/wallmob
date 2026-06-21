@@ -62,6 +62,15 @@
     <string name="cache_cleared">कैश साफ हुआ</string>
     <string name="about">ऐप के बारे में</string>
     <string name="privacy_policy">गोपनीयता नीति</string>
+    <string name="settings_notifications">सूचनाएं</string>
+    <string name="enable_notifications">सूचनाएं चालू करें</string>
+    <string name="support">सहायता</string>
+    <string name="feedback">प्रतिक्रिया</string>
+    <string name="feedback_email_subject">ऐप प्रतिक्रिया</string>
+    <string name="rate_us">रेट करें</string>
+    <string name="join_telegram">टेलीग्राम जॉइन करें</string>
+    <string name="info">जानकारी</string>
+    <string name="app_version">ऐप संस्करण: 1.0.0</string>
     <string name="section_featured">विशेष</string>
     <string name="section_discover">बेहतरीन\nवॉलपेपर</string>
     <string name="section_hot">लोकप्रिय</string>
@@ -280,4 +289,28 @@
     <string name="category_anime">एनीमे</string>
     <string name="category_landscape">लैंडस्केप</string>
     <string name="logout">लॉग आउट</string>
+    <string name="nasa_space_of_day">NASA — आज का अंतरिक्ष</string>
+    <string name="empty_mailbox">📭</string>
+    <string name="adjustments">समायोजन</string>
+    <string name="brightness_abbr">चमक</string>
+    <string name="contrast_abbr">कंट्रास्ट</string>
+    <string name="quality_4k">4K</string>
+    <string name="coin_emoji">💰</string>
+    <string name="cache_fallback">0 MB</string>
+    <string name="failed_to_clear_cache">कैश साफ करने में विफल</string>
+    <string name="image_load_failed_check_connection">छवि लोड विफल। इंटरनेट कनेक्शन जांचें।</string>
+    <string name="network_error_check_connection">नेटवर्क त्रुटि। अपना कनेक्शन जांचें।</string>
+    <string name="nasa_credit">NASA</string>
+    <string name="preparing_share">शेयर करने के लिए वॉलपेपर तैयार किया जा रहा है...</string>
+    <string name="downloading_wallpaper">वॉलपेपर डाउनलोड किया जा रहा है...</string>
+    <string name="unknown_error">अज्ञात त्रुटि</string>
+    <string name="api_error_format">API त्रुटि: %1$s</string>
+    <string name="normal">सामान्य</string>
+    <string name="shared_wallpaper_format">साझा किया गया %1$s वॉलपेपर</string>
+    <string name="downloaded_wallpaper_format">डाउनलोड किया गया %1$s वॉलपेपर</string>
+    <string name="no_results">कोई परिणाम नहीं</string>
+    <plurals name="wallpaper_count">
+        <item quantity="one">%d वॉलपेपर</item>
+        <item quantity="other">%d वॉलपेपर</item>
+    </plurals>
 </resources>

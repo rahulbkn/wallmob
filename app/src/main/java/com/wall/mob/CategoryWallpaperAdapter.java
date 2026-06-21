@@ -160,7 +160,7 @@ public class CategoryWallpaperAdapter extends RecyclerView.Adapter<RecyclerView.
         void bind(String name, int count) {
             if (categoryNameText != null) categoryNameText.setText(name);
             if (wallpaperCountText != null) {
-                wallpaperCountText.setText(count + (count == 1 ? " wallpaper" : " wallpapers"));
+                wallpaperCountText.setText(itemView.getContext().getResources().getQuantityString(R.plurals.wallpaper_count, count, count));
             }
         }
     }

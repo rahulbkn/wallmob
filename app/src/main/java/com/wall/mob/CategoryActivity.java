@@ -306,13 +306,15 @@ public class CategoryActivity extends BaseActivity implements WallpaperAdapter.O
 
     private String createColorQuery() {
         switch (colorHex != null ? colorHex.toUpperCase() : "") {
-            case "#FFB6D9": case "#FF1493": return "pink abstract";
-            case "#4169E1": return "blue sky ocean";
-            case "#8B00FF": return "purple violet";
-            case "#40E0D0": return "turquoise teal";
-            case "#2C2C2C": return "dark black gray";
-            case "#FF8C00": return "orange sunset";
+            case "#FF0000": return "red";
+            case "#FF7F00": return "orange sunset";
+            case "#FFD700": return "yellow";
             case "#32CD32": return "green nature";
+            case "#40E0D0": return "turquoise teal";
+            case "#4169E1": return "blue sky ocean";
+            case "#4B0082": return "indigo";
+            case "#8B00FF": case "#FF1493": return "purple violet pink";
+            case "#2C2C2C": return "dark black gray";
             default: return "colorful abstract";
         }
     }

@@ -241,7 +241,7 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
                         @Override public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) { lottieLoader.setVisibility(View.GONE); removeBlurLikeFilter(imageView); return false; }
                     }).into(imageView);
 
-            if (title != null) title.setText(wallpaper.getTitle() == null ? "Wallpaper" : wallpaper.getTitle());
+            if (title != null) title.setText(wallpaper.getTitle() == null ? context.getString(R.string.wallpaper) : wallpaper.getTitle());
             itemView.setOnClickListener(v -> { if (listener != null) listener.onWallpaperClick(wallpaper); });
             itemView.setOnLongClickListener(v -> { if (listener != null) { listener.onWallpaperLongClick(wallpaper, getAdapterPosition()); return true; } return false; });
         }

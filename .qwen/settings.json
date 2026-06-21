@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew *)",
+      "Bash(chmod *)"
+    ]
+  },
+  "$version": 4
+}

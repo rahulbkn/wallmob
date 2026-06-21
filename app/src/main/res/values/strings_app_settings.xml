@@ -6,6 +6,15 @@
     <string name="light">Light</string>
     <string name="dark">Dark</string>
     <string name="english">English</string>
-    <string name="hindi">हिंदी</string>
+    <string name="hindi">हिन्दी</string>
     <string name="japanese">日本語</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="enable_notifications">Enable Notifications</string>
+    <string name="support">Support</string>
+    <string name="feedback">Feedback</string>
+    <string name="feedback_email_subject">App Feedback</string>
+    <string name="rate_us">Rate Us</string>
+    <string name="join_telegram">Join Telegram</string>
+    <string name="info">Info</string>
+    <string name="app_version">App Version: 1.0.0</string>
 </resources>
