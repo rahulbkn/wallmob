@@ -11,12 +11,21 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.palette.graphics.Palette;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
+import android.graphics.drawable.Drawable;
+import android.widget.FrameLayout;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.core.widget.NestedScrollView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -45,6 +54,10 @@ import com.bumptech.glide.Glide;
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
     private static final int PREMIUM_WALLPAPER_LIMIT = 10;
+    
+    private FrameLayout heroContainer;
+    private TextView heroTitle;
+    
 
     // UI Components
     private RecyclerView recyclerBestMonth;
@@ -143,6 +156,15 @@ public class HomeFragment extends Fragment {
     }
 
     private void initializeViews(View view) {
+        NestedScrollView scrollView = view.findViewById(R.id.main_scroll_view);
+        if (scrollView != null) {
+            scrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).updateToolbarOnScroll(scrollY);
+                }
+            });
+        }
+
         recyclerBestMonth = view.findViewById(R.id.recycler_best_month);
         recyclerLandscape = view.findViewById(R.id.recycler_landscape);
         landscapeSectionView = view.findViewById(R.id.landscape_section);
@@ -159,6 +181,10 @@ public class HomeFragment extends Fragment {
         errorMessage = view.findViewById(R.id.error_message);
         tvSeeAllTrending = view.findViewById(R.id.tv_see_all_trending);
         TextView tvUnlockAll = view.findViewById(R.id.tv_unlock_all_premium);
+        
+        heroContainer = view.findViewById(R.id.hero_container);
+        heroTitle = view.findViewById(R.id.hero_title);
+         
 
         if (tvUnlockAll != null) tvUnlockAll.setOnClickListener(v -> {
             if (getActivity() instanceof MainActivity) ((MainActivity) getActivity()).navigateToPremium();
@@ -180,7 +206,8 @@ public class HomeFragment extends Fragment {
         recyclerNasa = view.findViewById(R.id.recycler_nasa);
         nasaSectionView = view.findViewById(R.id.nasa_section);
     }
-
+    
+   
     private void setupRecyclerViews() {
         if (mContext == null) return;
 
@@ -563,7 +590,6 @@ public class HomeFragment extends Fragment {
         if (getActivity() != null) getActivity().runOnUiThread(this::refreshAllSections);
     }
 
-    // ─── UPDATED CLICK LISTENERS (FIXED BUGS) ──────────────────────────────────
     private void onWallpaperClick(Wallpaper wallpaper) {
         if (wallpaper != null && isAdded() && getActivity() != null) {
             WallpaperDetailsActivity.start(getActivity(), wallpaper);
@@ -581,7 +607,6 @@ public class HomeFragment extends Fragment {
             CategoryActivity.start(getActivity(), category.getName(), category.getImageUrl());
         }
     }
-    // ───────────────────────────────────────────────────────────────────────────
 
     private void showLoading(boolean loading) {
         boolean hasExistingData = !allWallpapers.isEmpty() || !premiumWallpapers.isEmpty();
@@ -676,10 +701,13 @@ public class HomeFragment extends Fragment {
             dot.setBackgroundResource(i == 0 ? R.drawable.dot_active : R.drawable.dot_inactive);
             heroDots.addView(dot);
         }
+        
+        
         heroCarousel.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 currentHeroPage = position;
+                
                 for (int i = 0; i < heroDots.getChildCount(); i++) {
                     heroDots.getChildAt(i).setBackgroundResource(
                             i == position ? R.drawable.dot_active : R.drawable.dot_inactive);
@@ -689,14 +717,10 @@ public class HomeFragment extends Fragment {
         autoScrollHandler.removeCallbacks(autoScrollRunnable);
         autoScrollHandler.postDelayed(autoScrollRunnable, AUTO_SCROLL_INTERVAL_MS);
     }
-
-
-    // ─── NASA APOD Section ───────────────────────────────────────────────────────
-
-        private void loadNasaApod() {
+   
+    private void loadNasaApod() {
         if (mContext == null) return;
 
-        // CHANGED: Use count=15 instead of start_date/end_date to prevent 400 Bad Request errors
         String url = "https://api.nasa.gov/planetary/apod"
                 + "?api_key=" + NASA_API_KEY
                 + "&count=15"
@@ -708,12 +732,11 @@ public class HomeFragment extends Fragment {
                 com.android.volley.Request.Method.GET, url, null,
                 response -> {
                     nasaWallpapers.clear();
-                    // Just iterate forward since count returns a random selection anyway
                     for (int i = 0; i < response.length(); i++) { 
                         try {
                             org.json.JSONObject item = response.getJSONObject(i);
                             String mediaType = item.optString("media_type", "image");
-                            if (!mediaType.equals("image")) continue; // skip videos
+                            if (!mediaType.equals("image")) continue; 
 
                             String imageUrl = item.optString("hdurl", item.optString("url", ""));
                             String thumbUrl = item.optString("url", imageUrl); 
@@ -766,7 +789,6 @@ public class HomeFragment extends Fragment {
         com.android.volley.RequestQueue queue = com.android.volley.toolbox.Volley.newRequestQueue(mContext);
         queue.add(request);
     }
-
 
     @Override
     public void onDestroyView() {

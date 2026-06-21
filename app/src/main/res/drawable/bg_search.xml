@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@color/gray_light" />
-    <corners android:radius="18dp" />
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    
+    <!-- 15% Black - creates a beautiful soft frosted glass effect -->
+    <solid android:color="#26000000" /> 
+    
+    <!-- Perfectly rounded pill shape -->
+    <corners android:radius="18dp" /> 
 </shape>

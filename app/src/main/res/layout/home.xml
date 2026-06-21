@@ -12,6 +12,7 @@
          android:layout_width="match_parent">
 
         <androidx.core.widget.NestedScrollView
+             android:id="@+id/main_scroll_view"
              android:layout_height="match_parent"
              android:layout_width="match_parent"
              android:background="@color/background">
@@ -23,7 +24,7 @@
                  android:id="@+id/main_content_container">
 
                 <androidx.cardview.widget.CardView
-                     android:layout_height="220dp"
+                     android:layout_height="250dp"
                      android:layout_width="match_parent"
                      android:layout_marginEnd="0dp"
                      app:cardElevation="0dp"
@@ -33,19 +34,21 @@
 
                     <FrameLayout
                          android:layout_height="match_parent"
+                         android:id="@+id/hero_container"
                          android:layout_width="match_parent">
 
                         <androidx.viewpager2.widget.ViewPager2
                              android:layout_height="match_parent"
                              android:layout_width="match_parent"
                              android:id="@+id/hero_carousel" />
+                             
+                             <View
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:layout_gravity="top"
+                            android:background="@drawable/scrim_top" />
 
-                        <View
-                             android:layout_height="match_parent"
-                             android:layout_width="match_parent"
-                             android:background="@drawable/hero_scrim" />
-
-                        <LinearLayout
+                        <LinearLayout 
                              android:layout_height="wrap_content"
                              android:layout_width="match_parent"
                              android:paddingEnd="20dp"
@@ -73,8 +76,11 @@
                             <TextView
                                  android:layout_height="wrap_content"
                                  android:layout_width="match_parent"
+                                 android:id="@+id/hero_title"
                                  android:textSize="32sp"
                                  android:textColor="@color/white"
+                                 android:maxLines="2"
+                                 android:ellipsize="end"
                                  android:layout_marginTop="8dp"
                                  android:lineSpacingMultiplier="1.05"
                                  android:text="@string/section_discover"
