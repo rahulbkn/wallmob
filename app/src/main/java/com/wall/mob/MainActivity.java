@@ -345,17 +345,11 @@ public class MainActivity extends BaseActivity {
         if (currentPosition != 0) return;
         if (dy > 0 && !uiElementsHidden) {
             uiElementsHidden = true;
-            if (appBarLayout != null) {
-                appBarLayout.animate().translationY(-appBarLayout.getHeight()).setDuration(200);
-            }
             if (bottomNavigationView != null) {
                 bottomNavigationView.animate().translationY(bottomNavigationView.getHeight()).setDuration(200);
             }
         } else if (dy < 0 && uiElementsHidden) {
             uiElementsHidden = false;
-            if (appBarLayout != null) {
-                appBarLayout.animate().translationY(0).setDuration(200);
-            }
             if (bottomNavigationView != null) {
                 bottomNavigationView.animate().translationY(0).setDuration(200);
             }

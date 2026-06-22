@@ -184,6 +184,8 @@
         android:layout_gravity="bottom"
         android:background="@color/surface"
         app:elevation="16dp"
+        app:itemIconTint="@color/nav_item_colors"
+        app:itemTextColor="@color/nav_item_colors"
         app:itemTextAppearanceActive="@style/BottomNavActiveText"
         app:itemTextAppearanceInactive="@style/BottomNavInactiveText"
         app:labelVisibilityMode="labeled"
