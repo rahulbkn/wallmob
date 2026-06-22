@@ -1,26 +1,43 @@
 package com.wall.mob;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import android.widget.FrameLayout;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.palette.graphics.Palette;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.core.widget.NestedScrollView;
+import androidx.viewpager2.widget.ViewPager2;
+import androidx.viewpager2.widget.CompositePageTransformer;
+import androidx.viewpager2.widget.MarginPageTransformer;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,13 +54,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import android.os.Handler;
-import android.os.Looper;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import androidx.viewpager2.widget.ViewPager2;
-import com.bumptech.glide.Glide;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
@@ -639,44 +649,145 @@ public class HomeFragment extends Fragment {
     private static class HeroCarouselAdapter extends RecyclerView.Adapter<HeroCarouselAdapter.VH> {
         private final Context ctx;
         private final List<Wallpaper> wallpapers;
+        private final float density;
 
         HeroCarouselAdapter(Context ctx, List<Wallpaper> wallpapers) {
             this.ctx = ctx;
             this.wallpapers = wallpapers;
+            this.density = ctx.getResources().getDisplayMetrics().density;
+        }
+
+        private int getThemeColor(int attr) {
+            TypedValue typedValue = new TypedValue();
+            ctx.getTheme().resolveAttribute(attr, typedValue, true);
+            return typedValue.data;
         }
 
         @NonNull
         @Override
         public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            FrameLayout container = new FrameLayout(ctx);
-            container.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+            FrameLayout card = new FrameLayout(ctx);
+            card.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+
+            GradientDrawable bg = new GradientDrawable();
+            bg.setShape(GradientDrawable.RECTANGLE);
+            // Corner radius: [TL, TR, BR, BL]
+            bg.setCornerRadii(new float[]{0, 0, 0, 0, 24 * density, 24 * density, 24 * density, 24 * density});
+            bg.setColor(getThemeColor(android.R.attr.windowBackground));
+            card.setBackground(bg);
+            card.setClipToOutline(true);
+            card.setElevation(0f); // Removed elevation
+
             ImageView iv = new ImageView(ctx);
-            iv.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
-            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            container.addView(iv);
-            return new VH(container, iv);
+            iv.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+            // Reverting to FIT_CENTER to show full content as originally requested
+            iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            card.addView(iv);
+
+            // Add top scrim
+            View topScrim = new View(ctx);
+            FrameLayout.LayoutParams topLp = new FrameLayout.LayoutParams(-1, (int) (64 * density));
+            topLp.gravity = android.view.Gravity.TOP;
+            topScrim.setLayoutParams(topLp);
+            topScrim.setBackgroundResource(R.drawable.scrim_top);
+            card.addView(topScrim);
+
+            // Add bottom scrim
+            View bottomScrim = new View(ctx);
+            FrameLayout.LayoutParams bottomLp = new FrameLayout.LayoutParams(-1, (int) (80 * density));
+            bottomLp.gravity = android.view.Gravity.BOTTOM;
+            bottomScrim.setLayoutParams(bottomLp);
+            
+            // Create a drawable that combines the gradient with the same corner radius as the card
+            GradientDrawable scrimBg = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0xCC000000, 0x00000000});
+            scrimBg.setCornerRadii(new float[]{0, 0, 0, 0, 24 * density, 24 * density, 24 * density, 24 * density});
+            bottomScrim.setBackground(scrimBg);
+            
+            card.addView(bottomScrim);
+
+            return new VH(card, iv);
         }
 
         @Override
         public void onBindViewHolder(@NonNull VH holder, int position) {
-            String url = wallpapers.get(position).getImageUrl();
+            Wallpaper wp = wallpapers.get(position);
+            String thumb = wp.getThumbnailUrl();
+            String url = (thumb != null && !thumb.isEmpty()) ? thumb : wp.getImageUrl();
+            holder.currentUrl = url;
+
+            Glide.with(ctx).clear(holder.imageView);
+
+            // Reset card background to match home background
+            int backgroundColor = getThemeColor(android.R.attr.windowBackground);
+            GradientDrawable defaultBg = new GradientDrawable();
+            defaultBg.setShape(GradientDrawable.RECTANGLE);
+            // Corner radius: [TL, TR, BR, BL]
+            defaultBg.setCornerRadii(new float[]{0, 0, 0, 0, 24 * density, 24 * density, 24 * density, 24 * density});
+            defaultBg.setColor(backgroundColor);
+            holder.card.setBackground(defaultBg);
+
             Glide.with(ctx)
+                    .asBitmap()
                     .load(url)
-                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
-                    .centerCrop()
-                    .into(holder.imageView);
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .into(new CustomTarget<Bitmap>() {
+                        @Override
+                        public void onResourceReady(@NonNull Bitmap bitmap, @Nullable Transition<? super Bitmap> transition) {
+                            if (!url.equals(holder.currentUrl)) return;
+                            holder.imageView.setImageBitmap(bitmap);
+
+                            Palette.from(bitmap).generate(palette -> {
+                                if (!url.equals(holder.currentUrl)) return;
+                                
+                                // Default theme colors (using window background for top, hardcoded dark for bottom)
+                                int backgroundColor = getThemeColor(android.R.attr.windowBackground);
+                                int defaultTop = backgroundColor;
+                                int defaultBottom = 0xFF121212;
+
+                                int topColor = palette.getDarkVibrantColor(defaultTop);
+                                int bottomColor = palette.getDarkMutedColor(defaultBottom);
+
+                                GradientDrawable g = new GradientDrawable(
+                                        GradientDrawable.Orientation.TOP_BOTTOM,
+                                        new int[]{topColor, bottomColor});
+
+                                // Corner radius: [TL, TR, BR, BL]
+                                g.setCornerRadii(new float[]{0, 0, 0, 0, 24 * density, 24 * density, 24 * density, 24 * density});
+                                holder.card.setBackground(g);
+                            });
+                        }
+
+                        @Override
+                        public void onLoadCleared(@Nullable Drawable placeholder) {
+                            holder.imageView.setImageDrawable(placeholder);
+                        }
+                    });
+
             holder.imageView.setOnClickListener(v -> {
                 if (ctx instanceof MainActivity) ((MainActivity) ctx).navigateToPremium();
             });
         }
 
         @Override
+        public void onViewRecycled(@NonNull VH holder) {
+            super.onViewRecycled(holder);
+            holder.currentUrl = null;
+            Glide.with(ctx).clear(holder.imageView);
+        }
+
+        @Override
         public int getItemCount() { return wallpapers.size(); }
 
         static class VH extends RecyclerView.ViewHolder {
-            final FrameLayout container;
+            final FrameLayout card;
             final ImageView imageView;
-            VH(FrameLayout container, ImageView iv) { super(container); this.container = container; this.imageView = iv; }
+            String currentUrl;
+
+            VH(FrameLayout card, ImageView iv) {
+                super(card);
+                this.card = card;
+                imageView = iv;
+            }
         }
     }
 
@@ -688,25 +799,55 @@ public class HomeFragment extends Fragment {
             if (w.getImageUrl() != null && !w.getImageUrl().isEmpty()) heroWallpapers.add(w);
         }
         if (heroWallpapers.isEmpty()) return;
+
+        // Calculate card dimensions
+        int screenWidth = getResources().getDisplayMetrics().widthPixels;
+        int cardWidth = screenWidth;
+        // Keep 4:3 aspect ratio height (Height = Width * 3/4)
+        int cardHeight = (int) (cardWidth * 3f / 4f);
+
+        // Set container height for portrait cards
+        ViewGroup.LayoutParams lp = heroContainer.getLayoutParams();
+        lp.height = cardHeight;
+        heroContainer.setLayoutParams(lp);
+
+        // Also set ViewPager2 height to match
+        ViewGroup.LayoutParams vlp = heroCarousel.getLayoutParams();
+        vlp.height = cardHeight;
+        heroCarousel.setLayoutParams(vlp);
+
+        // Configure ViewPager2
+        heroCarousel.setOffscreenPageLimit(3);
+
+        // Configure inner RecyclerView for carousel effect
+        RecyclerView rv = (RecyclerView) heroCarousel.getChildAt(0);
+        rv.setPadding(0, 0, 0, 0); // No padding for edge-to-edge
+        rv.setClipToPadding(false);
+
+        // Simple slide effect (no margin, no scale)
+        CompositePageTransformer transformer = new CompositePageTransformer();
+        // Removed MarginPageTransformer and scale transformer
+        heroCarousel.setPageTransformer(transformer);
+
         heroCarouselAdapter = new HeroCarouselAdapter(mContext, heroWallpapers);
         heroCarousel.setAdapter(heroCarouselAdapter);
         heroDots.removeAllViews();
         for (int i = 0; i < heroWallpapers.size(); i++) {
             View dot = new View(mContext);
             int size = dpToPx(6);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
-            lp.setMargins(dpToPx(3), 0, dpToPx(3), 0);
-            dot.setLayoutParams(lp);
+            LinearLayout.LayoutParams dotLp = new LinearLayout.LayoutParams(size, size);
+            dotLp.setMargins(dpToPx(3), 0, dpToPx(3), 0);
+            dot.setLayoutParams(dotLp);
             dot.setBackgroundResource(i == 0 ? R.drawable.dot_active : R.drawable.dot_inactive);
             heroDots.addView(dot);
         }
-        
-        
+
+
         heroCarousel.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
                 currentHeroPage = position;
-                
+
                 for (int i = 0; i < heroDots.getChildCount(); i++) {
                     heroDots.getChildAt(i).setBackgroundResource(
                             i == position ? R.drawable.dot_active : R.drawable.dot_inactive);
