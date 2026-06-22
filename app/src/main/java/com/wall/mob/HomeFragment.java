@@ -11,12 +11,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.palette.graphics.Palette;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import com.bumptech.glide.request.target.CustomTarget;
-import com.bumptech.glide.request.transition.Transition;
-import android.graphics.drawable.Drawable;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
@@ -644,30 +638,32 @@ public class HomeFragment extends Fragment {
 
     private static class HeroCarouselAdapter extends RecyclerView.Adapter<HeroCarouselAdapter.VH> {
         private final Context ctx;
-        private final List<String> urls;
+        private final List<Wallpaper> wallpapers;
 
-        HeroCarouselAdapter(Context ctx, List<String> urls) {
+        HeroCarouselAdapter(Context ctx, List<Wallpaper> wallpapers) {
             this.ctx = ctx;
-            this.urls = urls;
+            this.wallpapers = wallpapers;
         }
 
         @NonNull
         @Override
         public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            FrameLayout container = new FrameLayout(ctx);
+            container.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
             ImageView iv = new ImageView(ctx);
-            iv.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+            iv.setLayoutParams(new FrameLayout.LayoutParams(-1, -1));
             iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            return new VH(iv);
+            container.addView(iv);
+            return new VH(container, iv);
         }
 
         @Override
         public void onBindViewHolder(@NonNull VH holder, int position) {
-            String url = urls.get(position);
+            String url = wallpapers.get(position).getImageUrl();
             Glide.with(ctx)
                     .load(url)
-                    .apply(new com.bumptech.glide.request.RequestOptions()
-                            .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
-                            .centerCrop())
+                    .diskCacheStrategy(com.bumptech.glide.load.engine.DiskCacheStrategy.ALL)
+                    .centerCrop()
                     .into(holder.imageView);
             holder.imageView.setOnClickListener(v -> {
                 if (ctx instanceof MainActivity) ((MainActivity) ctx).navigateToPremium();
@@ -675,26 +671,27 @@ public class HomeFragment extends Fragment {
         }
 
         @Override
-        public int getItemCount() { return urls.size(); }
+        public int getItemCount() { return wallpapers.size(); }
 
         static class VH extends RecyclerView.ViewHolder {
+            final FrameLayout container;
             final ImageView imageView;
-            VH(ImageView iv) { super(iv); imageView = iv; }
+            VH(FrameLayout container, ImageView iv) { super(container); this.container = container; this.imageView = iv; }
         }
     }
 
     private void setupHeroCarousel(List<Wallpaper> wallpapers) {
         if (heroCarousel == null || wallpapers == null || wallpapers.isEmpty()) return;
-        List<String> urls = new ArrayList<>();
+        List<Wallpaper> heroWallpapers = new ArrayList<>();
         for (int i = 0; i < Math.min(6, wallpapers.size()); i++) {
-            String url = wallpapers.get(i).getImageUrl();
-            if (url != null && !url.isEmpty()) urls.add(url);
+            Wallpaper w = wallpapers.get(i);
+            if (w.getImageUrl() != null && !w.getImageUrl().isEmpty()) heroWallpapers.add(w);
         }
-        if (urls.isEmpty()) return;
-        heroCarouselAdapter = new HeroCarouselAdapter(mContext, urls);
+        if (heroWallpapers.isEmpty()) return;
+        heroCarouselAdapter = new HeroCarouselAdapter(mContext, heroWallpapers);
         heroCarousel.setAdapter(heroCarouselAdapter);
         heroDots.removeAllViews();
-        for (int i = 0; i < urls.size(); i++) {
+        for (int i = 0; i < heroWallpapers.size(); i++) {
             View dot = new View(mContext);
             int size = dpToPx(6);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(size, size);
