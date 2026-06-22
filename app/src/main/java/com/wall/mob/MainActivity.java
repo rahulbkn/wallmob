@@ -36,7 +36,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.button.MaterialButton;
 
@@ -63,7 +62,6 @@ public class MainActivity extends BaseActivity {
     private ImageView notificationButton, profileButton, btn_menu, settingsButton;
     private Toolbar toolbar;
     private AppBarLayout appBarLayout;
-    private CollapsingToolbarLayout collapsingToolbar;
     private TextView textview1;
     
     private Fragment homeFragment;
@@ -280,17 +278,15 @@ public class MainActivity extends BaseActivity {
     }
     
     public void updateToolbarOnScroll(int scrollY) {
-        // Full opacity is reached after scrolling 300 pixels
         float maxScroll = 300f;
         float alpha = Math.min(1.0f, (float) scrollY / maxScroll);
-        
-        // --- 1. BACKGROUND TRANSITION ---
-        int baseBgColor = (currentPosition == 1) ? 
-                ContextCompat.getColor(this, R.color.premium_background) : 
+
+        int baseBgColor = (currentPosition == 1) ?
+                ContextCompat.getColor(this, R.color.premium_background) :
                 ContextCompat.getColor(this, R.color.surface);
 
-        int alphaBgColor = androidx.core.graphics.ColorUtils.setAlphaComponent(baseBgColor, (int) (alpha * 255));
-        
+        int alphaBgColor = ColorUtils.setAlphaComponent(baseBgColor, (int) (alpha * 255));
+
         if (toolbar != null) {
             toolbar.setBackgroundColor(alphaBgColor);
         }
@@ -298,44 +294,76 @@ public class MainActivity extends BaseActivity {
             getWindow().setStatusBarColor(alphaBgColor);
         }
 
-        // --- 2. ICON COLOR TRANSITION ---
-        // Target color when fully scrolled (Gold for Premium, Dark/OnSurface for Normal)
-        int targetIconColor = (currentPosition == 1) ? 
-                ContextCompat.getColor(this, R.color.premium_gold) : 
+        // Status bar icons: white at top, dark when scrolled (Home only, light mode)
+        if (currentPosition == 0 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            boolean isNight = (getResources().getConfiguration().uiMode
+                    & android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES;
+            if (!isNight) {
+                View decorView = getWindow().getDecorView();
+                int flags = decorView.getSystemUiVisibility();
+                if (alpha > 0.5f) {
+                    flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                } else {
+                    flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                }
+                decorView.setSystemUiVisibility(flags);
+            }
+        }
+
+        int targetIconColor = (currentPosition == 1) ?
+                ContextCompat.getColor(this, R.color.premium_gold) :
                 ContextCompat.getColor(this, R.color.onSurface);
 
-        // Blend from solid WHITE (at top) to TARGET COLOR (when scrolled)
-        int currentIconColor = androidx.core.graphics.ColorUtils.blendARGB(Color.WHITE, targetIconColor, alpha);
+        int currentIconColor = ColorUtils.blendARGB(Color.WHITE, targetIconColor, alpha);
 
-        // Apply blended color to all toolbar icons
         if (btn_menu != null) btn_menu.setColorFilter(currentIconColor);
         if (notificationButton != null) notificationButton.setColorFilter(currentIconColor);
         if (profileButton != null) profileButton.setColorFilter(currentIconColor);
         if (settingsButton != null) settingsButton.setColorFilter(currentIconColor);
         if (textview1 != null) textview1.setTextColor(currentIconColor);
 
-        // --- 3. SEARCH BAR TRANSITION ---
         if (searchLayout != null) {
             ImageView searchIcon = findViewById(R.id.imageview1);
             int searchTargetColor = (currentPosition == 1) ? targetIconColor : ContextCompat.getColor(this, R.color.gray_dark);
-            int searchCurrentColor = androidx.core.graphics.ColorUtils.blendARGB(Color.WHITE, searchTargetColor, alpha);
-            
+            int searchCurrentColor = ColorUtils.blendARGB(Color.WHITE, searchTargetColor, alpha);
+
             if (searchIcon != null) searchIcon.setColorFilter(searchCurrentColor);
             if (searchLayout.getChildAt(1) instanceof TextView) {
                 ((TextView) searchLayout.getChildAt(1)).setTextColor(searchCurrentColor);
             }
-            
-            // Fade the search bar background so it isn't a harsh block on top of the image
+
             if (searchLayout.getBackground() != null) {
-                int searchBgAlpha = (int) (70 + (alpha * 185)); // Transitions from 70 (faint) to 255 (solid)
+                int searchBgAlpha = (int) (70 + (alpha * 185));
                 searchLayout.getBackground().mutate().setAlpha(searchBgAlpha);
+            }
+        }
+    }
+
+    private boolean uiElementsHidden = false;
+
+    public void handleScrollDirection(int dy) {
+        if (currentPosition != 0) return;
+        if (dy > 0 && !uiElementsHidden) {
+            uiElementsHidden = true;
+            if (appBarLayout != null) {
+                appBarLayout.animate().translationY(-appBarLayout.getHeight()).setDuration(200);
+            }
+            if (bottomNavigationView != null) {
+                bottomNavigationView.animate().translationY(bottomNavigationView.getHeight()).setDuration(200);
+            }
+        } else if (dy < 0 && uiElementsHidden) {
+            uiElementsHidden = false;
+            if (appBarLayout != null) {
+                appBarLayout.animate().translationY(0).setDuration(200);
+            }
+            if (bottomNavigationView != null) {
+                bottomNavigationView.animate().translationY(0).setDuration(200);
             }
         }
     }
 
     private void initializeViews() {
         appBarLayout = findViewById(R.id.appBarLayout);
-        collapsingToolbar = findViewById(R.id.collapsingToolbar);
         toolbar = findViewById(R.id.toolbar);
 
         if (toolbar != null) {
@@ -611,13 +639,28 @@ public class MainActivity extends BaseActivity {
 
         // THEME SWITCHING LOGIC
         if (position == 1) {
-            enablePremiumTheme(); // Turn on Dark/Gold mode for Premium
+            enablePremiumTheme();
         } else {
-            enableNormalTheme();  // Turn on White/Black mode for Home, Favorites & Downloads
+            enableNormalTheme();
         }
-        
-        // Reset toolbar opacity for the newly selected fragment
-        updateToolbarOnScroll(0);
+
+        // Transparent/scroll toolbar for Home and Premium only
+        if (position == 0 || position == 1) {
+            updateToolbarOnScroll(0);
+        }
+
+        // Reset toolbar/bottom nav visibility when switching fragments
+        showToolbarAndBottomNav();
+    }
+
+    private void showToolbarAndBottomNav() {
+        uiElementsHidden = false;
+        if (appBarLayout != null) {
+            appBarLayout.animate().translationY(0).setDuration(200);
+        }
+        if (bottomNavigationView != null) {
+            bottomNavigationView.animate().translationY(0).setDuration(200);
+        }
     }
     
     private void enablePremiumTheme() {
@@ -636,6 +679,12 @@ public class MainActivity extends BaseActivity {
             }
             window.getDecorView().setSystemUiVisibility(flags);
             window.setNavigationBarColor(darkColor);
+        }
+
+        if (toolbar != null) toolbar.setBackgroundColor(darkColor);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(darkColor);
         }
 
         if (btn_menu != null) btn_menu.setColorFilter(goldColor);
@@ -700,6 +749,12 @@ public class MainActivity extends BaseActivity {
             }
             window.getDecorView().setSystemUiVisibility(flags);
             window.setNavigationBarColor(surfaceColor);
+        }
+
+        if (toolbar != null) toolbar.setBackgroundColor(surfaceColor);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            getWindow().setStatusBarColor(surfaceColor);
         }
 
         if (btn_menu != null) btn_menu.setColorFilter(onSurfaceColor);

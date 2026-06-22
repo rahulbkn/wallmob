@@ -159,8 +159,10 @@ public class HomeFragment extends Fragment {
         NestedScrollView scrollView = view.findViewById(R.id.main_scroll_view);
         if (scrollView != null) {
             scrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                if (getActivity() instanceof MainActivity) {
-                    ((MainActivity) getActivity()).updateToolbarOnScroll(scrollY);
+                MainActivity activity = (MainActivity) getActivity();
+                if (activity != null) {
+                    activity.updateToolbarOnScroll(scrollY);
+                    activity.handleScrollDirection(scrollY - oldScrollY);
                 }
             });
         }

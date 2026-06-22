@@ -2,8 +2,11 @@ package com.wall.mob;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.LruCache;
+
 import com.android.volley.RequestQueue;
 import com.android.volley.Request;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -12,10 +15,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 public class ApiManager {
     private static final String TAG = "ApiManager";
@@ -26,9 +31,9 @@ public class ApiManager {
     private Random random;
     private DeviceUtils deviceUtils;
 
-    // ✅ BUG 1 FIXED: Correct Cloudflare Worker URL
     private static final String UNIFIED_API_URL = "https://api-server.rahulkumarbknv.workers.dev/";
     private static final int DEFAULT_PAGE_SIZE = 100;
+    private static final int CACHE_MAX_AGE_SEC = 600;
 
     private String currentQuery;
     private int currentPage = 1;
@@ -37,8 +42,27 @@ public class ApiManager {
 
     private static final String[] SEARCH_QUERIES = {
             "nature", "abstract", "landscape", "animals", "city",
-            "space", "beach", "minimal", "dark", "colorful"
+            "space", "beach", "minimal", "dark", "colorful",
+            "mountain", "ocean", "forest", "sunset", "flowers",
+            "architecture", "galaxy", "neon", "aesthetic", "vintage"
     };
+
+    private LruCache<String, CachedResponse> responseCache;
+    private static final int CACHE_SIZE = 50;
+
+    private static class CachedResponse {
+        final List<Wallpaper> wallpapers;
+        final long timestamp;
+
+        CachedResponse(List<Wallpaper> wallpapers) {
+            this.wallpapers = wallpapers;
+            this.timestamp = System.currentTimeMillis();
+        }
+
+        boolean isExpired() {
+            return System.currentTimeMillis() - timestamp > CACHE_MAX_AGE_SEC * 1000L;
+        }
+    }
 
     public interface ApiCallback {
         void onWallpapersLoaded(List<Wallpaper> wallpapers);
@@ -51,6 +75,7 @@ public class ApiManager {
         this.requestQueue = Volley.newRequestQueue(this.context);
         this.random = new Random();
         this.deviceUtils = new DeviceUtils(context);
+        this.responseCache = new LruCache<>(CACHE_SIZE);
     }
 
     public void loadWallpapersFromAllSources(ApiCallback callback) {
@@ -74,8 +99,6 @@ public class ApiManager {
 
     public void loadWallpapersBySource(String source, ApiCallback callback) {
         this.callback = callback;
-        // ✅ BUG 3 FIXED: Set source BEFORE resetPagination, then re-apply after
-        // resetPagination() no longer wipes currentSourceFilter
         resetPagination();
         currentSourceFilter = source.toLowerCase();
 
@@ -95,13 +118,21 @@ public class ApiManager {
     private void resetPagination() {
         currentPage = 1;
         isLoadingMore = false;
-        // ✅ BUG 3 FIXED: Don't reset currentSourceFilter here —
-        // loadWallpapersBySource() sets it after calling this
         currentSourceFilter = "all";
     }
 
     private void loadFromUnifiedAPI(String query, int page, int perPage, boolean isPagination) {
-        // ✅ BUG 2 FIXED: source filter now appended to URL
+        String cacheKey = query + "|" + page + "|" + perPage + "|" + currentSourceFilter;
+
+        if (!isPagination) {
+            CachedResponse cached = responseCache.get(cacheKey);
+            if (cached != null && !cached.isExpired()) {
+                Log.d(TAG, "Using cached response for: " + cacheKey);
+                if (callback != null) callback.onWallpapersLoaded(new ArrayList<>(cached.wallpapers));
+                return;
+            }
+        }
+
         String url = UNIFIED_API_URL
                 + "?query=" + query.replace(" ", "+")
                 + "&page=" + page
@@ -122,16 +153,23 @@ public class ApiManager {
                         }
 
                         List<Wallpaper> newWallpapers = parseUnifiedAPIResponse(response);
-                        if (newWallpapers.isEmpty() && !isPagination) {
+
+                        List<Wallpaper> deduped = deduplicateByUrl(newWallpapers);
+
+                        if (deduped.isEmpty() && !isPagination) {
                             handleError(context.getString(R.string.no_wallpapers_found));
                             return;
                         }
 
+                        if (!isPagination) {
+                            responseCache.put(cacheKey, new CachedResponse(new ArrayList<>(deduped)));
+                        }
+
                         if (isPagination) {
                             isLoadingMore = false;
-                            if (callback != null) callback.onMoreWallpapersLoaded(newWallpapers);
+                            if (callback != null) callback.onMoreWallpapersLoaded(deduped);
                         } else {
-                            if (callback != null) callback.onWallpapersLoaded(newWallpapers);
+                            if (callback != null) callback.onWallpapersLoaded(deduped);
                         }
                     } catch (Exception e) {
                         Log.e(TAG, "Response parse error", e);
@@ -140,18 +178,47 @@ public class ApiManager {
                 },
                 error -> {
                     Log.e(TAG, "Network error: " + (error.getMessage() != null ? error.getMessage() : "unknown"));
+
+                    if (!isPagination) {
+                        CachedResponse stale = responseCache.get(cacheKey);
+                        if (stale != null) {
+                            Log.d(TAG, "Falling back to stale cache for: " + cacheKey);
+                            if (callback != null) callback.onWallpapersLoaded(new ArrayList<>(stale.wallpapers));
+                            return;
+                        }
+                    }
+
                     handleError(context.getString(R.string.network_error_check_connection));
                 }
         ) {
             @Override
             public Map<String, String> getHeaders() {
                 Map<String, String> headers = new HashMap<>();
-                headers.put("Cache-Control", "no-cache");
                 headers.put("Accept", "application/json");
                 return headers;
             }
         };
+
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                10000,
+                2,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+        ));
+
         requestQueue.add(request);
+    }
+
+    private List<Wallpaper> deduplicateByUrl(List<Wallpaper> wallpapers) {
+        Set<String> seen = new HashSet<>();
+        List<Wallpaper> result = new ArrayList<>();
+        for (Wallpaper wp : wallpapers) {
+            String url = wp.getImageUrl();
+            if (url != null && !seen.contains(url)) {
+                seen.add(url);
+                result.add(wp);
+            }
+        }
+        return result;
     }
 
     private List<Wallpaper> parseUnifiedAPIResponse(JSONObject response) {
@@ -163,8 +230,6 @@ public class ApiManager {
             try {
                 JSONObject item = dataArray.getJSONObject(i);
 
-                // ✅ BUG 5 FIXED: Worker already returns id as "pexels-12345" format
-                // Don't add source prefix again — it would create "pexels_pexels-12345"
                 String id = item.optString("id", "unknown_" + i);
                 String source = item.optString("source", "Unknown");
 
@@ -185,7 +250,6 @@ public class ApiManager {
                 String apiCategory = item.optString("category", "");
                 String category = !apiCategory.isEmpty() ? apiCategory : determineCategoryFromTitle(title, source);
 
-                // ✅ BUG 4 FIXED: Parse actual width/height from meta for landscape detection
                 JSONObject meta = item.optJSONObject("meta");
                 int width = 0;
                 int height = 0;
@@ -194,11 +258,8 @@ public class ApiManager {
                     height = meta.optInt("height", 0);
                 }
 
-                // Source filter is now handled server-side via URL param,
-                // but keep client-side check as safety net
                 if (!currentSourceFilter.equals("all") && !source.toLowerCase().equals(currentSourceFilter)) continue;
 
-                // ✅ BUG 5 FIXED: Use id as-is (already prefixed by Worker)
                 Wallpaper wallpaper = new Wallpaper(
                         id,
                         rawUrl,
@@ -206,7 +267,6 @@ public class ApiManager {
                         title, category, source, author, false
                 );
 
-                // Store dimensions for landscape detection in HomeFragment
                 wallpaper.setWidth(width);
                 wallpaper.setHeight(height);
 

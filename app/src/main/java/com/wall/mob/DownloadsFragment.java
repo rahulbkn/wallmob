@@ -52,6 +52,7 @@ public class DownloadsFragment extends Fragment implements WallpaperAdapter.OnWa
         // Reusing your main WallpaperAdapter!
         adapter = new WallpaperAdapter(requireContext(), downloadedWallpapers, this);
         recyclerView.setAdapter(adapter);
+
     }
 
     @Override

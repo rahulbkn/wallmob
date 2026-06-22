@@ -26,22 +26,11 @@
         android:stateListAnimator="@null"
         android:background="@android:color/transparent"> 
         
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/collapsingToolbar"
+        <LinearLayout
+            android:id="@+id/linear42"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_scrollFlags="scroll|enterAlways|snap"
-            app:contentScrim="@color/surface"
-            app:expandedTitleMarginStart="64dp"
-            app:expandedTitleMarginEnd="64dp"
-            app:titleEnabled="false">
-
-            <LinearLayout
-                android:id="@+id/linear42"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_collapseMode="pin">
+            android:orientation="vertical">
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
@@ -73,10 +62,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/wallmob_brand"
-                            android:textSize="20sp"
+                            android:textSize="16sp"
                             android:visibility="gone"
                             android:textStyle="bold"
-                            android:layout_marginStart="8dp"
+                            android:layout_marginStart="4dp"
                             android:textColor="@color/onSurface"/>
 
                         <LinearLayout
@@ -106,7 +95,7 @@
                                 android:layout_marginStart="8dp"
                                 android:text="@string/search"
                                 android:textColor="@color/gray_dark"
-                                android:textSize="14sp"/>
+                                android:textSize="12sp"/>
                         </LinearLayout>
                         
                         <ImageView
@@ -128,10 +117,10 @@
                             android:gravity="center_vertical"
                             android:visibility="gone"
                             android:background="@drawable/coin_background"
-                            android:paddingStart="10dp"
-                            android:paddingEnd="10dp"
-                            android:paddingTop="6dp"
-                            android:paddingBottom="6dp"
+                            android:paddingStart="6dp"
+                            android:paddingEnd="6dp"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp"
                             android:layout_marginEnd="12dp">
 
                             <ImageView
@@ -147,7 +136,7 @@
                                 android:layout_height="wrap_content"
                                 android:text="0"
                                 android:textColor="@color/onSurface"
-                                android:textSize="14sp"
+                                android:textSize="12sp"
                                 android:textStyle="bold"/>
                         </LinearLayout>
 
@@ -186,7 +175,6 @@
                     </LinearLayout>
                 </androidx.appcompat.widget.Toolbar>
             </LinearLayout>
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
