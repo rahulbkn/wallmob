@@ -513,8 +513,11 @@ public class HomeFragment extends Fragment {
         categoryWallpapers.clear();
         for (Wallpaper wallpaper : wallpapers) {
             String category = wallpaper.getCategory();
+            // Replace 'Premium' check with a generic logic, ensuring it goes into 'Others' if needed or is ignored
             if (category != null && !category.trim().isEmpty() && !category.equalsIgnoreCase("Premium")) {
                 categoryWallpapers.computeIfAbsent(category, k -> new ArrayList<>()).add(wallpaper);
+            } else {
+                categoryWallpapers.computeIfAbsent("Others", k -> new ArrayList<>()).add(wallpaper);
             }
         }
     }
@@ -531,17 +534,13 @@ public class HomeFragment extends Fragment {
             case "cars": return getString(R.string.category_cars);
             case "anime": return getString(R.string.category_anime);
             case "landscape": return getString(R.string.category_landscape);
-            case "premium": return getString(R.string.premium);
+            case "premium": return getString(R.string.others);
             default: return apiName.substring(0, 1).toUpperCase() + apiName.substring(1).toLowerCase();
         }
     }
 
     private void updateCategoriesSection() {
         List<CategoryItem> categories = new ArrayList<>();
-
-        if (!premiumWallpapers.isEmpty() && isAdded()) {
-            categories.add(new CategoryItem(getString(R.string.premium), premiumWallpapers.get(0).getImageUrl()));
-        }
 
         Map<String, String> masterCategories = new LinkedHashMap<>();
         masterCategories.put("Abstract", "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=800&fit=crop");
@@ -557,7 +556,7 @@ public class HomeFragment extends Fragment {
             String rawName = entry.getKey();
             List<Wallpaper> walls = entry.getValue();
 
-            if (rawName.equalsIgnoreCase("Landscape") || rawName.equalsIgnoreCase("Premium")) continue;
+            if (rawName.equalsIgnoreCase("Landscape")) continue;
 
             if (!walls.isEmpty()) {
                 String displayName = rawName.substring(0, 1).toUpperCase() + rawName.substring(1).toLowerCase();
