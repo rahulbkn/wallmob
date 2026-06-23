@@ -331,6 +331,7 @@ android:clipToPadding="false"
                      android:background="@drawable/premium_bg_gradient"
                      android:orientation="vertical"
                      android:paddingBottom="16dp"
+                     android:layout_marginBottom="16dp"
                      android:layout_marginTop="4dp"
                      android:id="@+id/premium_section"
                      android:paddingTop="14dp">
@@ -472,7 +473,7 @@ android:paddingEnd="12dp"
                         <LinearLayout
                              android:layout_height="wrap_content"
                              android:layout_width="match_parent"
-                             android:layout_marginBottom="16dp"
+                             android:layout_marginBottom="5dp"
                              android:gravity="center_vertical"
                              android:orientation="horizontal">
 
@@ -517,6 +518,7 @@ android:clipToPadding="false"
                 <LinearLayout
                      android:layout_height="wrap_content"
                      android:layout_width="match_parent"
+                     android:layout_marginBottom="16dp"
                      android:visibility="gone"
                      android:orientation="vertical"
                      android:id="@+id/nasa_section">
@@ -524,7 +526,7 @@ android:clipToPadding="false"
                     <LinearLayout
                          android:layout_height="wrap_content"
                          android:layout_width="match_parent"
-                         android:layout_marginBottom="16dp"
+                         android:layout_marginBottom="8dp"
                          android:orientation="vertical"
                          android:paddingStart="12dp"
                          android:paddingEnd="12dp"
