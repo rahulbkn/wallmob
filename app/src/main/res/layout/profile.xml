@@ -38,6 +38,7 @@
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:layout_marginBottom="16dp"
+                android:tint="@color/onSurface"
                 android:padding="20dp"
                 android:background="@drawable/circle_background"
                 android:src="@drawable/ic_person"
@@ -92,6 +93,7 @@
                     <ImageView
                         android:id="@+id/imageview9"
                         android:layout_width="32dp"
+                        android:tint="@color/onSurface"
                         android:layout_height="32dp"
                         android:layout_marginBottom="8dp"
                         android:src="@drawable/ic_dashboard" />
@@ -121,6 +123,7 @@
                     <ImageView
                         android:id="@+id/imageview10"
                         android:layout_width="32dp"
+                        android:tint="@color/onSurface"
                         android:layout_height="32dp"
                         android:layout_marginBottom="8dp"
                         android:src="@drawable/ic_settings" />
