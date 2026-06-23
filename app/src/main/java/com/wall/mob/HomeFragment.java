@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.util.SparseArray;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -113,7 +114,7 @@ public class HomeFragment extends Fragment {
     private HeroCarouselAdapter heroCarouselAdapter;
     private Handler autoScrollHandler = new Handler(Looper.getMainLooper());
     private int currentHeroPage = 0;
-    private static final int AUTO_SCROLL_INTERVAL_MS = 3500;
+    private static final int AUTO_SCROLL_INTERVAL_MS = 5000;
 
     // NASA APOD
     private static final String NASA_API_KEY = "6QPKzAjSBthigZmCIBTrtHgEPXHTr95ECW1f3r5m";
@@ -649,11 +650,21 @@ public class HomeFragment extends Fragment {
         private final Context ctx;
         private final List<Wallpaper> wallpapers;
         private final float density;
+        private final SparseArray<int[]> paletteColors = new SparseArray<>();
 
         HeroCarouselAdapter(Context ctx, List<Wallpaper> wallpapers) {
             this.ctx = ctx;
             this.wallpapers = wallpapers;
             this.density = ctx.getResources().getDisplayMetrics().density;
+        }
+
+        void storeColors(int position, int top, int bottom) {
+            paletteColors.put(position, new int[]{top, bottom});
+        }
+
+        @Nullable
+        int[] getStoredColors(int position) {
+            return paletteColors.get(position);
         }
 
         private int getThemeColor(int attr) {
@@ -665,21 +676,45 @@ public class HomeFragment extends Fragment {
         @NonNull
         @Override
         public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            FrameLayout card = new FrameLayout(ctx);
+            androidx.cardview.widget.CardView card = new androidx.cardview.widget.CardView(ctx);
             card.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+            card.setCardElevation(0f);
+            card.setCardBackgroundColor(getThemeColor(android.R.attr.windowBackground));
+            card.setPreventCornerOverlap(false);
+            card.setClipChildren(true);
+            card.setClipToPadding(true);
 
-            GradientDrawable bg = new GradientDrawable();
-            bg.setShape(GradientDrawable.RECTANGLE);
-            // Corner radius: [TL, TR, BR, BL]
-            bg.setCornerRadii(new float[]{0, 0, 0, 0, 24 * density, 24 * density, 24 * density, 24 * density});
-            bg.setColor(getThemeColor(android.R.attr.windowBackground));
-            card.setBackground(bg);
-            card.setClipToOutline(true);
-            card.setElevation(0f); // Removed elevation
+            float radius = 24 * density;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                card.setRadius(0f);
+                card.setOutlineProvider(new android.view.ViewOutlineProvider() {
+                    @Override
+                    public void getOutline(View view, android.graphics.Outline outline) {
+                        android.graphics.Path path = new android.graphics.Path();
+                        path.addRoundRect(0, 0, view.getWidth(), view.getHeight(),
+                                new float[]{0, 0, 0, 0, radius, radius, radius, radius},
+                                android.graphics.Path.Direction.CW);
+                        outline.setConvexPath(path);
+                    }
+                });
+                card.setClipToOutline(true);
+            } else {
+                card.setRadius(radius);
+                card.setClipToOutline(true);
+            }
+
+            // Background gradient view (child 0) - keeps CardView's own background intact for proper outlining
+            View bgView = new View(ctx);
+            FrameLayout.LayoutParams bgLp = new FrameLayout.LayoutParams(-1, -1);
+            bgView.setLayoutParams(bgLp);
+            GradientDrawable initialBg = new GradientDrawable();
+            initialBg.setCornerRadii(new float[]{0, 0, 0, 0, radius, radius, radius, radius});
+            initialBg.setColor(getThemeColor(android.R.attr.windowBackground));
+            bgView.setBackground(initialBg);
+            card.addView(bgView);
 
             ImageView iv = new ImageView(ctx);
             iv.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
-            // Reverting to FIT_CENTER to show full content as originally requested
             iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
             card.addView(iv);
 
@@ -704,7 +739,7 @@ public class HomeFragment extends Fragment {
             
             card.addView(bottomScrim);
 
-            return new VH(card, iv);
+            return new VH(card, bgView, iv);
         }
 
         @Override
@@ -720,10 +755,9 @@ public class HomeFragment extends Fragment {
             int backgroundColor = getThemeColor(android.R.attr.windowBackground);
             GradientDrawable defaultBg = new GradientDrawable();
             defaultBg.setShape(GradientDrawable.RECTANGLE);
-            // Corner radius: [TL, TR, BR, BL]
             defaultBg.setCornerRadii(new float[]{0, 0, 0, 0, 24 * density, 24 * density, 24 * density, 24 * density});
             defaultBg.setColor(backgroundColor);
-            holder.card.setBackground(defaultBg);
+            holder.bgView.setBackground(defaultBg);
 
             Glide.with(ctx)
                     .asBitmap()
@@ -737,10 +771,9 @@ public class HomeFragment extends Fragment {
 
                             Palette.from(bitmap).generate(palette -> {
                                 if (!url.equals(holder.currentUrl)) return;
-                                
-                                // Default theme colors (using window background for top, hardcoded dark for bottom)
-                                int backgroundColor = getThemeColor(android.R.attr.windowBackground);
-                                int defaultTop = backgroundColor;
+
+                                int defaultBgColor = getThemeColor(android.R.attr.windowBackground);
+                                int defaultTop = defaultBgColor;
                                 int defaultBottom = 0xFF121212;
 
                                 int topColor = palette.getDarkVibrantColor(defaultTop);
@@ -749,10 +782,9 @@ public class HomeFragment extends Fragment {
                                 GradientDrawable g = new GradientDrawable(
                                         GradientDrawable.Orientation.TOP_BOTTOM,
                                         new int[]{topColor, bottomColor});
-
-                                // Corner radius: [TL, TR, BR, BL]
-                                g.setCornerRadii(new float[]{0, 0, 0, 0, 24 * density, 24 * density, 24 * density, 24 * density});
-                                holder.card.setBackground(g);
+                                g.setCornerRadii(new float[]{0, 0, 0, 0,
+                                        24 * density, 24 * density, 24 * density, 24 * density});
+                                holder.bgView.setBackground(g);
                             });
                         }
 
@@ -778,13 +810,15 @@ public class HomeFragment extends Fragment {
         public int getItemCount() { return wallpapers.size(); }
 
         static class VH extends RecyclerView.ViewHolder {
-            final FrameLayout card;
+            final androidx.cardview.widget.CardView card;
+            final View bgView;
             final ImageView imageView;
             String currentUrl;
 
-            VH(FrameLayout card, ImageView iv) {
+            VH(androidx.cardview.widget.CardView card, View bgView, ImageView iv) {
                 super(card);
                 this.card = card;
+                this.bgView = bgView;
                 imageView = iv;
             }
         }
@@ -826,10 +860,34 @@ public class HomeFragment extends Fragment {
         // Simple slide effect (no margin, no scale)
         CompositePageTransformer transformer = new CompositePageTransformer();
         // Removed MarginPageTransformer and scale transformer
+        
+        // Parallax effect
+        transformer.addTransformer((page, position) -> {
+            // Translate the image to create parallax
+            if (page instanceof ViewGroup) {
+                View imageView = ((ViewGroup) page).getChildAt(1);
+                if (imageView != null) {
+                    imageView.setTranslationX(-position * (page.getWidth() * 0.5f));
+                }
+            }
+        });
         heroCarousel.setPageTransformer(transformer);
 
         heroCarouselAdapter = new HeroCarouselAdapter(mContext, heroWallpapers);
         heroCarousel.setAdapter(heroCarouselAdapter);
+
+        // Add dark background behind ViewPager so rounded-corner gaps don't show white
+        View oldBg = heroContainer.findViewWithTag("hero_dark_bg");
+        if (oldBg != null) heroContainer.removeView(oldBg);
+        View darkBg = new View(mContext);
+        darkBg.setTag("hero_dark_bg");
+        darkBg.setLayoutParams(new FrameLayout.LayoutParams(screenWidth, cardHeight));
+        GradientDrawable bgGradient = new GradientDrawable(
+                GradientDrawable.Orientation.TOP_BOTTOM,
+                new int[]{0xFF000000, 0x00000000});
+        darkBg.setBackground(bgGradient);
+        heroContainer.addView(darkBg, 0);
+
         heroDots.removeAllViews();
         for (int i = 0; i < heroWallpapers.size(); i++) {
             View dot = new View(mContext);

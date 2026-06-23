@@ -45,6 +45,8 @@
                         <androidx.viewpager2.widget.ViewPager2
                              android:layout_height="match_parent"
                              android:layout_width="match_parent"
+                             android:clipChildren="true"
+android:clipToPadding="true"
                              android:id="@+id/hero_carousel" />
                              
                              <View
@@ -83,7 +85,7 @@ android:paddingEnd="12dp"
                                  android:layout_height="wrap_content"
                                  android:layout_width="match_parent"
                                  android:id="@+id/hero_title"
-                                 android:textSize="28sp"
+                                 android:textSize="20sp"
                                  android:textColor="@color/white"
                                  android:maxLines="2"
                                  android:ellipsize="end"
@@ -119,7 +121,7 @@ android:paddingEnd="12dp"
                      android:elevation="2dp"
                      android:orientation="vertical"
                      android:paddingBottom="16dp"
-                     android:layout_marginTop="10dp"
+                     android:layout_marginTop="4dp"
                      android:layout_marginStart="0dp"
                      android:paddingTop="12dp">
 
@@ -234,7 +236,7 @@ android:clipToPadding="false"
                      android:elevation="2dp"
                      android:orientation="vertical"
                      android:paddingBottom="16dp"
-                     android:layout_marginTop="10dp"
+                     android:layout_marginTop="4dp"
                      android:layout_marginStart="0dp"
                      android:paddingTop="12dp">
 
@@ -329,7 +331,7 @@ android:clipToPadding="false"
                      android:background="@drawable/premium_bg_gradient"
                      android:orientation="vertical"
                      android:paddingBottom="16dp"
-                     android:layout_marginTop="10dp"
+                     android:layout_marginTop="4dp"
                      android:id="@+id/premium_section"
                      android:paddingTop="14dp">
 
@@ -430,7 +432,7 @@ android:clipToPadding="false"
                      android:elevation="2dp"
                      android:orientation="vertical"
                      android:paddingBottom="16dp"
-                     android:layout_marginTop="10dp"
+                     android:layout_marginTop="4dp"
                      android:layout_marginStart="0dp"
                      android:id="@+id/landscape_section"
                      android:paddingTop="12dp">
@@ -470,7 +472,7 @@ android:paddingEnd="12dp"
                         <LinearLayout
                              android:layout_height="wrap_content"
                              android:layout_width="match_parent"
-                             android:layout_marginBottom="5dp"
+                             android:layout_marginBottom="16dp"
                              android:gravity="center_vertical"
                              android:orientation="horizontal">
 
@@ -522,38 +524,59 @@ android:clipToPadding="false"
                     <LinearLayout
                          android:layout_height="wrap_content"
                          android:layout_width="match_parent"
+                         android:layout_marginBottom="16dp"
+                         android:orientation="vertical"
+                         android:paddingStart="12dp"
                          android:paddingEnd="12dp"
-                         android:gravity="center_vertical"
-                         android:orientation="horizontal"
-android:paddingBottom="4dp"
-                          android:paddingStart="12dp"
-                          android:paddingTop="12dp">
+                         android:paddingTop="12dp">
 
-                        <ImageView
-                             android:layout_height="20dp"
-                             android:layout_width="20dp"
-                             android:src="@drawable/ic_star"
-                             android:contentDescription="@null"
-                             android:tint="?attr/colorPrimary" />
+                        <LinearLayout
+                             android:layout_height="wrap_content"
+                             android:layout_width="match_parent"
+                             android:layout_marginBottom="5dp"
+                             android:gravity="center_vertical"
+                             android:orientation="horizontal">
+
+                            <ImageView
+                                 android:layout_height="24dp"
+                                 android:layout_width="24dp"
+                                 android:src="@drawable/ic_star"
+                                 android:layout_marginEnd="8dp"
+                                 app:tint="@color/onSurface" />
+
+                            <TextView
+                                 android:layout_height="wrap_content"
+                                 android:layout_width="match_parent"
+                                 android:textSize="20sp"
+                                 android:textColor="@color/onSurface"
+                                 android:letterSpacing="-0.01"
+                                 android:text="@string/nasa_space_of_day"
+                                 android:textStyle="bold" />
+
+                        </LinearLayout>
 
                         <TextView
                              android:layout_height="wrap_content"
-                             android:layout_width="0dp"
-android:textSize="14sp"
-                              android:textColor="?attr/colorOnBackground"
-                              android:layout_marginStart="8dp"
-                             android:layout_weight="1"
-                             android:text="@string/nasa_space_of_day"
-                             android:textStyle="bold" />
+                             android:layout_width="match_parent"
+                             android:textSize="11sp"
+                             android:textColor="@color/subtle_on_surface"
+                             android:letterSpacing="0.01"
+                             android:text="@string/nasa_desc" />
+
+                        <View
+                             android:layout_height="2dp"
+                             android:layout_width="32dp"
+                             android:background="@color/onSurface"
+                             android:layout_marginTop="8dp" />
 
                     </LinearLayout>
 
                     <androidx.recyclerview.widget.RecyclerView
-                         android:layout_height="220dp"
+                         android:layout_height="wrap_content"
                          android:layout_width="match_parent"
-android:paddingEnd="8dp"
-android:clipToPadding="false"
-                          android:paddingStart="8dp"
+                         android:paddingEnd="8dp"
+                         android:clipToPadding="false"
+                         android:paddingStart="8dp"
                          android:nestedScrollingEnabled="false"
                          android:id="@+id/recycler_nasa" />
 
@@ -567,7 +590,7 @@ android:clipToPadding="false"
                      android:elevation="2dp"
                      android:orientation="vertical"
                      android:paddingBottom="16dp"
-                     android:layout_marginTop="10dp"
+                     android:layout_marginTop="4dp"
                      android:layout_marginStart="0dp"
                      android:paddingTop="12dp">
 

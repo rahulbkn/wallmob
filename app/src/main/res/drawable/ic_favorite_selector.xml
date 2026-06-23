@@ -2,8 +2,8 @@
     <!-- Selected state (filled red) -->
     <item android:state_selected="true">
         <vector
-            android:width="24dp"
-            android:height="24dp"
+            android:width="20dp"
+            android:height="20dp"
             android:viewportWidth="24"
             android:viewportHeight="24"
             xmlns:android="http://schemas.android.com/apk/res/android">
@@ -20,8 +20,8 @@
     <!-- Default (unselected = white outline) -->
     <item>
         <vector
-            android:width="24dp"
-            android:height="24dp"
+            android:width="20dp"
+            android:height="20dp"
             android:viewportWidth="24"
             android:viewportHeight="24"
             xmlns:android="http://schemas.android.com/apk/res/android">

@@ -40,8 +40,7 @@ public class NasaApodAdapter extends RecyclerView.Adapter<NasaApodAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // CHANGED: R.layout.item_wallpaper_card to R.layout.item_wallpaper
-        View view = LayoutInflater.from(context).inflate(R.layout.item_wallpaper, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_landscape, parent, false);
         return new ViewHolder(view);
     }
 
@@ -54,8 +53,7 @@ public class NasaApodAdapter extends RecyclerView.Adapter<NasaApodAdapter.ViewHo
                 .apply(new RequestOptions()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .centerCrop()
-                        // CHANGED: Use a drawable that actually exists in your project, or remove the placeholder
-                        .error(R.drawable.error_image)) 
+                        .error(R.drawable.error_image))
                 .thumbnail(
                         Glide.with(context)
                                 .load(wallpaper.getThumbnailUrl())
@@ -64,21 +62,10 @@ public class NasaApodAdapter extends RecyclerView.Adapter<NasaApodAdapter.ViewHo
                                         .centerCrop())
                 )
                 .into(holder.imageView);
-        
-       
-
 
         if (holder.titleView != null) {
             holder.titleView.setText(wallpaper.getTitle());
             holder.titleView.setVisibility(View.VISIBLE);
-        }
-
-        if (holder.authorView != null) {
-            String credit = wallpaper.getPhotographer() != null
-                    ? "© " + wallpaper.getPhotographer()
-                    : context.getString(R.string.nasa_credit);
-            holder.authorView.setText(credit);
-            holder.authorView.setVisibility(View.VISIBLE);
         }
 
         holder.itemView.setOnClickListener(v -> {
@@ -94,13 +81,11 @@ public class NasaApodAdapter extends RecyclerView.Adapter<NasaApodAdapter.ViewHo
     static class ViewHolder extends RecyclerView.ViewHolder {
         final ImageView imageView;
         final TextView titleView;
-        final TextView authorView;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.wallpaper_image);
             titleView = itemView.findViewById(R.id.wallpaper_title);
-            authorView = itemView.findViewById(R.id.wallpaper_author);
         }
     }
 }
