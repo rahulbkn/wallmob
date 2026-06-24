@@ -39,6 +39,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -51,6 +52,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,6 +71,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView recyclerLandscape;
     private RecyclerView recyclerColorTone;
     private RecyclerView recyclerCategories;
+    private List<Wallpaper> allPortraitWallpapers = new ArrayList<>();
 
     private View premiumSectionView;
     private TextView premiumSectionTitle;
@@ -145,6 +148,7 @@ public class HomeFragment extends Fragment {
         mContext = null;
     }
 
+// ... inside HomeFragment class ...
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home, container, false);
@@ -355,7 +359,9 @@ public class HomeFragment extends Fragment {
             }
         }
 
+        allPortraitWallpapers = portraitList;
         if (bestMonthAdapter != null) bestMonthAdapter.updateData(portraitList);
+
         if (landscapeAdapter != null) landscapeAdapter.updateData(landscapeList);
 
         if (premiumAdapter != null) premiumAdapter.updateData(premiumWallpapers);
@@ -714,7 +720,7 @@ public class HomeFragment extends Fragment {
             // ImageView (child 1)
             ImageView iv = new ImageView(ctx);
             iv.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
-            iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
             root.addView(iv);
 
             // Top scrim

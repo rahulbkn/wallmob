@@ -1,6 +1,7 @@
 package com.wall.mob;
 
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,6 +32,7 @@ public class FavoriteFragment extends Fragment implements WallpaperAdapter.OnWal
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        applyHeaderPadding(view);
 
         recyclerView = view.findViewById(R.id.recycler_view);
         emptyStateView = view.findViewById(R.id.empty_view);
@@ -41,6 +43,27 @@ public class FavoriteFragment extends Fragment implements WallpaperAdapter.OnWal
         recyclerView.setAdapter(adapter);
 
         loadFavorites();
+    }
+
+    private void applyHeaderPadding(View view) {
+        View header = view.findViewById(R.id.header_container);
+        if (header == null) return;
+        int statusBarHeight = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+        }
+        int actionBarHeight = 0;
+        TypedValue tv = new TypedValue();
+        if (requireContext().getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true)) {
+            actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, getResources().getDisplayMetrics());
+        }
+        header.setPadding(
+                header.getPaddingStart(),
+                statusBarHeight + actionBarHeight,
+                header.getPaddingEnd(),
+                header.getPaddingBottom()
+        );
     }
 
     public void refreshData() {
