@@ -95,7 +95,7 @@ function buildResponse(data, params) {
 
 async function refreshCache(cacheKey, params, env) {
   try {
-    const result = await fetchAllWallpapers(params.page, params.perPage, params.source, params.keyword, env);
+    const result = await fetchAllWallpapers(params.page, params.perPage, params.source, params.keyword, params.orientation, env);
     const payload = {
       meta: {
         success: true,
@@ -121,7 +121,7 @@ async function fetchWithDedup(cacheKey, params, env) {
   if (inFlightRequests[cacheKey]) {
     return inFlightRequests[cacheKey];
   }
-  const promise = fetchAllWallpapers(params.page, params.perPage, params.source, params.keyword, env).finally(() => {
+  const promise = fetchAllWallpapers(params.page, params.perPage, params.source, params.keyword, params.orientation, env).finally(() => {
     delete inFlightRequests[cacheKey];
   });
   inFlightRequests[cacheKey] = promise;
@@ -133,7 +133,8 @@ function parseQueryParams(url) {
   const perPage = Math.min(CONFIG.MAX_PER_PAGE, Math.max(CONFIG.MIN_PER_PAGE, parseInt(url.searchParams.get("per_page") || CONFIG.DEFAULT_PER_PAGE)));
   const source = url.searchParams.get("source") || "all";
   const keyword = (url.searchParams.get("query") || url.searchParams.get("keyword") || url.searchParams.get("q") || "").trim();
-  return { page, perPage, source, keyword };
+  const orientation = url.searchParams.get("orientation") || "all";
+  return { page, perPage, source, keyword, orientation };
 }
 function validateApiKeys(env, sourceFilter) {
   const sources = ["Unsplash", "Pexels", "Pixabay", "Wallhaven"];
@@ -155,7 +156,7 @@ function createErrorResponse(error, message, status, additionalData = {}) {
   });
 }
 
-async function fetchAllWallpapers(page, perPage, sourceFilter, keyword, env) {
+async function fetchAllWallpapers(page, perPage, sourceFilter, keyword, orientation, env) {
   const sources = ["Unsplash", "Pexels", "Pixabay", "Wallhaven"];
   const activeSources = sourceFilter === "all" ? sources : sources.filter((s) => s.toLowerCase() === sourceFilter.toLowerCase());
   const itemsPerSource = Math.ceil(perPage / activeSources.length) + 15;
@@ -163,25 +164,25 @@ async function fetchAllWallpapers(page, perPage, sourceFilter, keyword, env) {
     {
       name: "Unsplash",
       enabled: activeSources.includes("Unsplash") && env.UNSPLASH_KEY,
-      url: `https://api.unsplash.com/search/photos?query=${encodeURIComponent(keyword)}&page=${page}&per_page=${itemsPerSource}&orientation=portrait`,
+      url: `https://api.unsplash.com/search/photos?query=${encodeURIComponent(keyword)}&page=${page}&per_page=${itemsPerSource}`,
       headers: { Authorization: `Client-ID ${env.UNSPLASH_KEY || ""}` }
     },
     {
       name: "Pexels",
       enabled: activeSources.includes("Pexels") && env.PEXELS_KEY,
-      url: `https://api.pexels.com/v1/search?query=${encodeURIComponent(keyword)}&page=${page}&per_page=${itemsPerSource}&orientation=portrait`,
+      url: `https://api.pexels.com/v1/search?query=${encodeURIComponent(keyword)}&page=${page}&per_page=${itemsPerSource}`,
       headers: { Authorization: env.PEXELS_KEY || "" }
     },
     {
       name: "Pixabay",
       enabled: activeSources.includes("Pixabay") && env.PIXABAY_KEY,
-      url: `https://pixabay.com/api/?key=${env.PIXABAY_KEY || ""}&q=${encodeURIComponent(keyword)}&image_type=photo&orientation=vertical&min_width=${CONFIG.MIN_WIDTH}&min_height=${CONFIG.MIN_HEIGHT}&safesearch=true&page=${page}&per_page=${itemsPerSource}`,
+      url: `https://pixabay.com/api/?key=${env.PIXABAY_KEY || ""}&q=${encodeURIComponent(keyword)}&image_type=photo&min_width=${CONFIG.MIN_WIDTH}&min_height=${CONFIG.MIN_HEIGHT}&safesearch=true&page=${page}&per_page=${itemsPerSource}`,
       headers: {}
     },
     {
       name: "Wallhaven",
       enabled: activeSources.includes("Wallhaven") && env.WALLHAVEN_KEY,
-      url: `https://wallhaven.cc/api/v1/search?q=${encodeURIComponent(keyword)}&categories=111&purity=100&ratios=9x16,10x16&atleast=1080x1920&page=${page}`,
+      url: `https://wallhaven.cc/api/v1/search?q=${encodeURIComponent(keyword)}&categories=111&purity=100&atleast=1920x1080&page=${page}`,
       headers: env.WALLHAVEN_KEY ? { "X-API-Key": env.WALLHAVEN_KEY } : {}
     }
   ];
@@ -203,6 +204,10 @@ async function fetchAllWallpapers(page, perPage, sourceFilter, keyword, env) {
     if (result.status === "fulfilled") {
       const sourceData = result.value;
       for (const wp of sourceData.items) {
+        const w = wp.meta?.width || 0;
+        const h = wp.meta?.height || 0;
+        if (orientation === "landscape" && h >= w) continue;
+        if (orientation === "portrait" && w > h) continue;
         const urlKey = wp.urls.regular || wp.urls.raw;
         if (!seen.has(urlKey)) {
           seen.add(urlKey);
@@ -223,7 +228,8 @@ async function fetchAllWallpapers(page, perPage, sourceFilter, keyword, env) {
     const h = wp.meta?.height || 0;
     const resolution = w * h;
     if (w >= 3840 && h >= 2160) score += 50;
-    else if (w >= 1920 && h >= 2560) score += 40;
+    else if (w >= 2560 && h >= 1440) score += 40;
+    else if (w >= 1920 && h >= 1080) score += 30;
     else if (w >= 1440 && h >= 1920) score += 20;
     if (wp.stats?.likes && wp.stats.likes > 100) score += 15;
     else if (wp.stats?.likes && wp.stats.likes > 10) score += 5;
@@ -231,8 +237,11 @@ async function fetchAllWallpapers(page, perPage, sourceFilter, keyword, env) {
     else if (wp.stats?.downloads && wp.stats.downloads > 1e3) score += 5;
     if (wp.meta?.dominant_color && wp.meta.dominant_color !== "#E0E0E0") score += 5;
     const aspect = w && h ? w / h : 0;
-    const ideal = 9 / 16;
-    const ratioScore = Math.max(0, 10 - Math.abs(aspect - ideal) * 50);
+    const portraitIdeal = 9 / 16;
+    const landscapeIdeal = 16 / 9;
+    const ratioScore = aspect <= 1
+      ? Math.max(0, 10 - Math.abs(aspect - portraitIdeal) * 50)
+      : Math.max(0, 10 - Math.abs(aspect - landscapeIdeal) * 20);
     score += ratioScore;
     return { wallpaper: wp, score };
   });
@@ -279,29 +288,25 @@ function normalizeData(source, data, minWidth, minHeight) {
       case "Unsplash":
         total = data.total || 0;
         (data.results || []).forEach((item) => {
-          if (item.height > item.width) {
-            wallpapers.push(createWallpaperObject({
+          wallpapers.push(createWallpaperObject({
               id: item.id, source: "Unsplash", url: item.urls.regular, thumb: item.urls.small,
               full: item.urls.full, width: item.width, height: item.height, color: item.color,
               title: item.alt_description || item.description || "Untitled",
               author: item.user?.name || "Unknown", author_url: item.user?.links?.html || "",
               downloads: item.downloads, likes: item.likes
             }));
-          }
         });
         break;
       case "Pexels":
         total = data.total_results || 0;
         if (data.photos) {
           data.photos.forEach((item) => {
-            if (item.height > item.width) {
               wallpapers.push(createWallpaperObject({
                 id: item.id.toString(), source: "Pexels", url: item.src.large2x || item.src.large,
                 thumb: item.src.medium, full: item.src.original, width: item.width, height: item.height,
                 color: item.avg_color, title: item.alt || "Untitled", author: item.photographer,
                 author_url: item.photographer_url
               }));
-            }
           });
         }
         break;
@@ -309,16 +314,14 @@ function normalizeData(source, data, minWidth, minHeight) {
         total = data.totalHits || 0;
         if (data.hits) {
           data.hits.forEach((item) => {
-            if (item.imageHeight > item.imageWidth) {
               wallpapers.push(createWallpaperObject({
                 id: item.id.toString(), source: "Pixabay", url: item.largeImageURL,
                 thumb: item.webformatURL, full: item.imageURL || item.largeImageURL,
                 width: item.imageWidth, height: item.imageHeight, color: null,
                 title: item.tags || "Untitled", author: item.user,
                 author_url: `https://pixabay.com/users/${item.user}-${item.user_id}/`,
-                likes: item.likes, downloads: item.downloads
+                likes: item.likes,                 downloads: item.downloads
               }));
-            }
           });
         }
         break;
@@ -326,15 +329,13 @@ function normalizeData(source, data, minWidth, minHeight) {
         total = data.meta?.total || 0;
         if (data.data) {
           data.data.forEach((item) => {
-            if (item.dimension_y > item.dimension_x) {
               const color = item.colors && item.colors.length > 0 ? item.colors[0] : null;
               wallpapers.push(createWallpaperObject({
                 id: item.id, source: "Wallhaven", url: item.path, thumb: item.thumbs?.small || item.path,
                 full: item.path, width: item.dimension_x, height: item.dimension_y, color,
                 title: item.category ? `${item.category} wallpaper` : "Wallpaper",
-                author: "Wallhaven", author_url: item.url, favorites: item.favorites
+                author: "Wallhaven", author_url: item.url,                 favorites: item.favorites
               }));
-            }
           });
         }
         break;
@@ -345,7 +346,7 @@ function normalizeData(source, data, minWidth, minHeight) {
   return { items: wallpapers, total };
 }
 function createWallpaperObject({ id, source, url, thumb, full, width, height, color, title, author, author_url, downloads, likes, favorites }) {
-  const is4K = width >= 1440 && height >= 2560;
+  const is4K = (width >= 3840 && height >= 2160) || (width >= 2560 && height >= 1440);
   const aspectRatio = width && height ? width / height : null;
   return {
     id: `${source.toLowerCase()}-${id}`,
@@ -354,7 +355,7 @@ function createWallpaperObject({ id, source, url, thumb, full, width, height, co
     meta: {
       width, height,
       aspect_ratio: aspectRatio ? parseFloat(aspectRatio.toFixed(2)) : null,
-      orientation: "portrait",
+      orientation: height >= width ? "portrait" : "landscape",
       is_mobile_4k: is4K,
       quality: is4K ? "4K" : "HD",
       dominant_color: color || "#E0E0E0"

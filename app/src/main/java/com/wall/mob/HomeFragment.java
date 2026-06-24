@@ -253,6 +253,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
+                applyParallax(recyclerView);
                 LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
                 if (lm != null && !isLoadingMore && lm.findLastVisibleItemPosition() >= lm.getItemCount() - 3) {
                     isLoadingMore = true;
@@ -260,6 +261,7 @@ public class HomeFragment extends Fragment {
                 }
             }
         });
+        recyclerLandscape.post(() -> applyParallax(recyclerLandscape));
 
         // Color Palettes Setup
         LinearLayoutManager colorToneLayout = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
@@ -285,6 +287,25 @@ public class HomeFragment extends Fragment {
             recyclerNasa.setNestedScrollingEnabled(false);
             nasaApodAdapter = new NasaApodAdapter(mContext, new ArrayList<>(), this::onWallpaperClick);
             recyclerNasa.setAdapter(nasaApodAdapter);
+        }
+    }
+
+    private void applyParallax(RecyclerView recyclerView) {
+        if (recyclerView == null || recyclerView.getChildCount() == 0) return;
+        float rvCenter = recyclerView.getWidth() / 2f;
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            View child = recyclerView.getChildAt(i);
+            ImageView image = child.findViewById(R.id.wallpaper_image);
+            if (image == null) continue;
+            int containerW = child.getWidth();
+            int imageW = image.getWidth();
+            if (containerW <= 0 || imageW <= containerW) continue;
+            float initialOffset = -(imageW - containerW) / 2f;
+            float childCenter = child.getX() + containerW / 2f;
+            float distance = childCenter - rvCenter;
+            float maxParallax = (imageW - containerW) / 2f * 0.7f;
+            float parallaxOffset = -(distance / rvCenter) * maxParallax;
+            image.setTranslationX(initialOffset + parallaxOffset);
         }
     }
 
@@ -676,70 +697,45 @@ public class HomeFragment extends Fragment {
         @NonNull
         @Override
         public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            androidx.cardview.widget.CardView card = new androidx.cardview.widget.CardView(ctx);
-            card.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
-            card.setCardElevation(0f);
-            card.setCardBackgroundColor(getThemeColor(android.R.attr.windowBackground));
-            card.setPreventCornerOverlap(false);
-            card.setClipChildren(true);
-            card.setClipToPadding(true);
+            FrameLayout root = new FrameLayout(ctx);
+            root.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+            root.setClipChildren(true);
+            root.setClipToPadding(true);
 
-            float radius = 24 * density;
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                card.setRadius(0f);
-                card.setOutlineProvider(new android.view.ViewOutlineProvider() {
-                    @Override
-                    public void getOutline(View view, android.graphics.Outline outline) {
-                        android.graphics.Path path = new android.graphics.Path();
-                        path.addRoundRect(0, 0, view.getWidth(), view.getHeight(),
-                                new float[]{0, 0, 0, 0, radius, radius, radius, radius},
-                                android.graphics.Path.Direction.CW);
-                        outline.setConvexPath(path);
-                    }
-                });
-                card.setClipToOutline(true);
-            } else {
-                card.setRadius(radius);
-                card.setClipToOutline(true);
-            }
-
-            // Background gradient view (child 0) - keeps CardView's own background intact for proper outlining
+            // Background gradient view (child 0)
             View bgView = new View(ctx);
-            FrameLayout.LayoutParams bgLp = new FrameLayout.LayoutParams(-1, -1);
-            bgView.setLayoutParams(bgLp);
+            bgView.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
             GradientDrawable initialBg = new GradientDrawable();
-            initialBg.setCornerRadii(new float[]{0, 0, 0, 0, radius, radius, radius, radius});
+            initialBg.setShape(GradientDrawable.RECTANGLE);
             initialBg.setColor(getThemeColor(android.R.attr.windowBackground));
             bgView.setBackground(initialBg);
-            card.addView(bgView);
+            root.addView(bgView);
 
+            // ImageView (child 1)
             ImageView iv = new ImageView(ctx);
             iv.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
             iv.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            card.addView(iv);
+            root.addView(iv);
 
-            // Add top scrim
+            // Top scrim
             View topScrim = new View(ctx);
             FrameLayout.LayoutParams topLp = new FrameLayout.LayoutParams(-1, (int) (64 * density));
             topLp.gravity = android.view.Gravity.TOP;
             topScrim.setLayoutParams(topLp);
             topScrim.setBackgroundResource(R.drawable.scrim_top);
-            card.addView(topScrim);
+            root.addView(topScrim);
 
-            // Add bottom scrim
+            // Bottom scrim
             View bottomScrim = new View(ctx);
             FrameLayout.LayoutParams bottomLp = new FrameLayout.LayoutParams(-1, (int) (80 * density));
             bottomLp.gravity = android.view.Gravity.BOTTOM;
             bottomScrim.setLayoutParams(bottomLp);
-            
-            // Create a drawable that combines the gradient with the same corner radius as the card
             GradientDrawable scrimBg = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0xCC000000, 0x00000000});
-            scrimBg.setCornerRadii(new float[]{0, 0, 0, 0, 24 * density, 24 * density, 24 * density, 24 * density});
+            scrimBg.setShape(GradientDrawable.RECTANGLE);
             bottomScrim.setBackground(scrimBg);
-            
-            card.addView(bottomScrim);
+            root.addView(bottomScrim);
 
-            return new VH(card, bgView, iv);
+            return new VH(root, bgView, iv);
         }
 
         @Override
@@ -755,7 +751,6 @@ public class HomeFragment extends Fragment {
             int backgroundColor = getThemeColor(android.R.attr.windowBackground);
             GradientDrawable defaultBg = new GradientDrawable();
             defaultBg.setShape(GradientDrawable.RECTANGLE);
-            defaultBg.setCornerRadii(new float[]{0, 0, 0, 0, 24 * density, 24 * density, 24 * density, 24 * density});
             defaultBg.setColor(backgroundColor);
             holder.bgView.setBackground(defaultBg);
 
@@ -782,8 +777,7 @@ public class HomeFragment extends Fragment {
                                 GradientDrawable g = new GradientDrawable(
                                         GradientDrawable.Orientation.TOP_BOTTOM,
                                         new int[]{topColor, bottomColor});
-                                g.setCornerRadii(new float[]{0, 0, 0, 0,
-                                        24 * density, 24 * density, 24 * density, 24 * density});
+                                g.setShape(GradientDrawable.RECTANGLE);
                                 holder.bgView.setBackground(g);
                             });
                         }
@@ -810,14 +804,14 @@ public class HomeFragment extends Fragment {
         public int getItemCount() { return wallpapers.size(); }
 
         static class VH extends RecyclerView.ViewHolder {
-            final androidx.cardview.widget.CardView card;
+            final FrameLayout root;
             final View bgView;
             final ImageView imageView;
             String currentUrl;
 
-            VH(androidx.cardview.widget.CardView card, View bgView, ImageView iv) {
-                super(card);
-                this.card = card;
+            VH(FrameLayout root, View bgView, ImageView iv) {
+                super(root);
+                this.root = root;
                 this.bgView = bgView;
                 imageView = iv;
             }
@@ -863,11 +857,10 @@ public class HomeFragment extends Fragment {
         
         // Parallax effect
         transformer.addTransformer((page, position) -> {
-            // Translate the image to create parallax
             if (page instanceof ViewGroup) {
-                View imageView = ((ViewGroup) page).getChildAt(1);
-                if (imageView != null) {
-                    imageView.setTranslationX(-position * (page.getWidth() * 0.5f));
+                ViewGroup vg = (ViewGroup) page;
+                if (vg.getChildCount() > 1) {
+                    vg.getChildAt(1).setTranslationX(-position * (page.getWidth() * 0.5f));
                 }
             }
         });
