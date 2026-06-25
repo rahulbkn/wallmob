@@ -19,6 +19,11 @@
     <string name="dont_have_account">Don\'t have an account\? </string>
     <string name="sign_up">Sign Up</string>
     <string name="welcome_exclaim">Welcome!</string>
+    <string name="welcome_subtitle">Let\'s set up your experience.</string>
+    <string name="device_information">Device Information</string>
+    <string name="device_model_label">Model: %1$s</string>
+    <string name="device_os_label">OS Version: %1$s</string>
+    <string name="get_started">Get Started</string>
     <string name="user_info_placeholder">User information will appear here</string>
     <string name="dashboard">Dashboard</string>
     <string name="app_status">App Status</string>

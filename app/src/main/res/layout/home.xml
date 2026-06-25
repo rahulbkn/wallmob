@@ -407,9 +407,9 @@ android:clipToPadding="false"
                              android:text="@string/section_premium_desc" />
 
                         <View
-                             android:layout_height="2dp"
+                             android:layout_height="1dp"
                              android:layout_width="32dp"
-                             android:background="@color/onSurface"
+                             android:background="@color/premium_gold"
                              android:layout_marginTop="8dp" />
 
                     </LinearLayout>

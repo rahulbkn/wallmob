@@ -87,6 +87,11 @@
     <string name="wallpaper_title">वॉलपेपर शीर्षक</string>
     <string name="photo">फोटो</string>
     <string name="welcome_exclaim">स्वागत है!</string>
+    <string name="welcome_subtitle">आइए आपके अनुभव को सेट करें।</string>
+    <string name="device_information">डिवाइस की जानकारी</string>
+    <string name="device_model_label">मॉडल: %1$s</string>
+    <string name="device_os_label">ओएस संस्करण: %1$s</string>
+    <string name="get_started">शुरू करें</string>
     <string name="user_info_placeholder">उपयोगकर्ता जानकारी यहाँ दिखाई देगी</string>
     <string name="dashboard">डैशबोर्ड</string>
     <string name="app_status">ऐप स्थिति</string>

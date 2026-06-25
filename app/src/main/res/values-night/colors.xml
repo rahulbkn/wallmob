@@ -2,7 +2,7 @@
 <resources>
     <!-- Night palette -->
     <color name="colorAccent">#C9A84C</color>
-    <color name="colorPrimary">#121212</color>
+    <color name="colorPrimary">#333333</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorControlHighlight">#1F1F1F</color>
     <color name="colorControlNormal">#FFFFFF</color>

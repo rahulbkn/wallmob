@@ -42,6 +42,13 @@ public class LoginActivity extends BaseActivity {
 
         super.onCreate(savedInstanceState);
 
+        // Check if it's the first run
+        if (getSharedPreferences("settings_prefs", MODE_PRIVATE).getBoolean("isFirstRun", true)) {
+            startActivity(new Intent(this, WelcomeActivity.class));
+            finish();
+            return;
+        }
+
         // 2. Initialize SessionManager early
         sessionManager = new SessionManager(this);
 

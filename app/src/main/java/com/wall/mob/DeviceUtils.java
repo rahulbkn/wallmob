@@ -62,6 +62,14 @@ public class DeviceUtils {
         return scaleFactor;
     }
 
+    public String getDeviceModel() {
+        return android.os.Build.MODEL;
+    }
+
+    public String getOSVersion() {
+        return android.os.Build.VERSION.RELEASE;
+    }
+
     // Get optimal image width for downloading (2x device width for quality)
     public int getOptimalImageWidth() {
         return deviceWidth * 2;
@@ -103,6 +111,8 @@ public class DeviceUtils {
                 ", aspectRatio=" + String.format("%.2f", aspectRatio) +
                 ", density=" + pixelDensity +
                 ", scaleFactor=" + scaleFactor +
+                ", model='" + getDeviceModel() + '\'' +
+                ", osVersion='" + getOSVersion() + '\'' +
                 '}';
     }
 }

@@ -33,22 +33,11 @@ public class LandscapeAdapter extends RecyclerView.Adapter<LandscapeAdapter.View
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_landscape, parent, false);
-        ViewHolder vh = new ViewHolder(view);
-        ViewGroup.LayoutParams lp = vh.image.getLayoutParams();
-        if (lp != null) {
-            float density = context.getResources().getDisplayMetrics().density;
-            int containerWidth = (int)(200 * density);
-            int imageWidth = (int)(containerWidth * 1.4f);
-            lp.width = imageWidth;
-            vh.image.setLayoutParams(lp);
-            vh.image.setTranslationX(-(imageWidth - containerWidth) / 2f);
-        }
-        return vh;
+        return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if (position < 0 || position >= wallpapers.size()) return;
         Wallpaper wallpaper = wallpapers.get(position);
         
         holder.title.setText(wallpaper.getTitle());
@@ -61,7 +50,7 @@ public class LandscapeAdapter extends RecyclerView.Adapter<LandscapeAdapter.View
         Glide.with(context)
                 .load(urlToLoad)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(R.drawable.bg_section_rounded)
+                .placeholder(R.drawable.bg)
                 .error(R.drawable.error_image)
                 .centerCrop()
                 .transition(DrawableTransitionOptions.withCrossFade(300))

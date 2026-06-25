@@ -52,16 +52,13 @@ public class BestMonthAdapter extends RecyclerView.Adapter<BestMonthAdapter.View
             urlToLoad = wallpaper.getImageUrl();
         }
         
-        int targetW = (int) (160 * context.getResources().getDisplayMetrics().density);
-        int targetH = (int) (200 * context.getResources().getDisplayMetrics().density);
         Glide.with(context)
                 .load(urlToLoad)
-                .override(targetW, targetH)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .placeholder(R.drawable.bg)
                 .error(R.drawable.error_image)
                 .centerCrop()
-                .transition(DrawableTransitionOptions.withCrossFade(300))
+                .transition(DrawableTransitionOptions.withCrossFade(300)) 
                 .into(holder.image);
         
         holder.itemView.setOnClickListener(v -> {

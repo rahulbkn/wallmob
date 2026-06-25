@@ -32,6 +32,13 @@
         <category android:name="android.intent.category.LAUNCHER" />
     </intent-filter>
 </activity>
+
+    <activity
+        android:name=".WelcomeActivity"
+        android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
+        android:hardwareAccelerated="true"
+        android:screenOrientation="portrait"
+        android:exported="false" />
     
 		<!-- Main Hub (Now internal, opened after successful login) -->
 		<activity

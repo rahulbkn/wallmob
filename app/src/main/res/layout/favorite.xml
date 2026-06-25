@@ -17,7 +17,6 @@
         android:paddingEnd="12dp"
         android:paddingTop="90dp"
         android:paddingBottom="10dp">
-     
 
         <TextView
             android:layout_width="wrap_content"

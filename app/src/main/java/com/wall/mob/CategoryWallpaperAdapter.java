@@ -187,15 +187,8 @@ public class CategoryWallpaperAdapter extends RecyclerView.Adapter<RecyclerView.
 
         void bind(Wallpaper wallpaper, int dataIndex) {
             int cornerPx = dpToPx(10);
-            int targetW = wallpaperImage.getWidth();
-            int targetH = wallpaperImage.getHeight();
-            if (targetW <= 0 || targetH <= 0) {
-                targetW = dpToPx(152);
-                targetH = dpToPx(200);
-            }
             RequestOptions reqOptions = new RequestOptions()
                     .centerCrop()
-                    .override(targetW, targetH)
                     .transform(new RoundedCorners(cornerPx))
                     .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
                     .placeholder(R.drawable.bg)

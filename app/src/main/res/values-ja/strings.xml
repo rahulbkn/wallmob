@@ -84,6 +84,11 @@
     <string name="wallpaper_title">壁紙タイトル</string>
     <string name="photo">写真</string>
     <string name="welcome_exclaim">ようこそ！</string>
+    <string name="welcome_subtitle">あなたの体験を設定しましょう。</string>
+    <string name="device_information">端末情報</string>
+    <string name="device_model_label">モデル: %1$s</string>
+    <string name="device_os_label">OSバージョン: %1$s</string>
+    <string name="get_started">始める</string>
     <string name="user_info_placeholder">ユーザー情報がここに表示されます</string>
     <string name="dashboard">ダッシュボード</string>
     <string name="app_status">アプリの状態</string>

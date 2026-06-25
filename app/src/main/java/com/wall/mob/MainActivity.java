@@ -638,11 +638,9 @@ public class MainActivity extends BaseActivity {
             enableNormalTheme();
         }
 
-        // Toolbar state per fragment
+        // Transparent/scroll toolbar for Home and Premium only
         if (position == 0 || position == 1) {
             updateToolbarOnScroll(0);
-        } else {
-            updateToolbarOnScroll(300);
         }
 
         // Reset toolbar/bottom nav visibility when switching fragments
