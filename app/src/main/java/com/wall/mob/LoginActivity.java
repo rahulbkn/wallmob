@@ -2,6 +2,7 @@ package com.wall.mob;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -42,17 +43,25 @@ public class LoginActivity extends BaseActivity {
 
         super.onCreate(savedInstanceState);
 
-        // Check if it's the first run
-        if (getSharedPreferences("settings_prefs", MODE_PRIVATE).getBoolean("isFirstRun", true)) {
-            startActivity(new Intent(this, WelcomeActivity.class));
-            finish();
-            return;
-        }
-
         // 2. Initialize SessionManager early
         sessionManager = new SessionManager(this);
 
-        // 3. Check if user is already logged in BEFORE setting the content view
+        // 3. Check if it's a genuine first-time install vs upgrade
+        SharedPreferences prefs = getSharedPreferences("settings_prefs", MODE_PRIVATE);
+        if (!prefs.contains("isFirstRun")) {
+            // Preference doesn't exist — this is either a fresh install or an upgrade.
+            // Distinguish by checking for an existing session.
+            if (!sessionManager.isLoggedIn()) {
+                // No session + no pref = genuine first-time install → show onboarding
+                startActivity(new Intent(this, WelcomeActivity.class));
+                finish();
+                return;
+            }
+            // Existing session exists = upgrading user → mark as non-first-run
+            prefs.edit().putBoolean("isFirstRun", false).apply();
+        }
+
+        // 4. Check if user is already logged in BEFORE setting the content view
         if (sessionManager.isLoggedIn()) {
             // Keep the splash screen frozen on the screen while we transition to MainActivity
             splashScreen.setKeepOnScreenCondition(() -> true); 
