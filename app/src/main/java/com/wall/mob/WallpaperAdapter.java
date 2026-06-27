@@ -196,6 +196,11 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
 
             String imageUrl = wallpaper.getImageUrl();
             if (imageUrl == null || imageUrl.isEmpty()) { lottieLoader.setVisibility(View.GONE); return; }
+        
+            // Ensure thumbnail URL is never null
+            if (wallpaper.getThumbnailUrl() == null) {
+                wallpaper.setThumbnailUrl(imageUrl);
+            }
 
             String storedThumb = wallpaper.getThumbnailUrl();
             String thumbnailUrl = (storedThumb != null && !storedThumb.trim().isEmpty()) ? storedThumb : generateThumbnailUrl(imageUrl, wallpaper.getSource());
