@@ -316,6 +316,7 @@ public class EditActivity extends BaseActivity {
         super.onDestroy();
         if (originalBitmap != null && !originalBitmap.isRecycled()) {
             originalBitmap.recycle();
+            originalBitmap = null;
         }
     }
 

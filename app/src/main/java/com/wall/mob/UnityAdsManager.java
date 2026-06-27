@@ -237,7 +237,9 @@ public class UnityAdsManager {
         // Skip banner ads for premium users
         if (isPremiumUser(activity)) {
             Log.d(TAG, "Premium user - skipping banner ad");
-            bannerContainer.removeAllViews();
+            if (bannerContainer != null) {
+                bannerContainer.removeAllViews();
+            }
             return;
         }
 

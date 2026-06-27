@@ -420,7 +420,7 @@ public class HomeFragment extends Fragment {
                 isLoadingMore = false;
                 isLoadingApiData = false;
 
-                if (getActivity() != null) {
+                if (getActivity() != null && isAdded()) {
                     getActivity().runOnUiThread(() -> {
                         if (allWallpapers.isEmpty()) {
                             showLoading(false);

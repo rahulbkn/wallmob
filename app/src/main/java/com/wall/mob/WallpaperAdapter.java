@@ -218,6 +218,11 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
                     thumbnailOptions = thumbnailOptions.override(800, 1200);
                     fullOptions = fullOptions.priority(com.bumptech.glide.Priority.HIGH);
                     break;
+                default:
+                    // Default to medium speed settings
+                    thumbnailOptions = thumbnailOptions.override(600, 900);
+                    fullOptions = fullOptions.override(800, 1200).priority(com.bumptech.glide.Priority.NORMAL);
+                    break;
             }
 
             RequestBuilder<Drawable> blurPlaceholder = Glide.with(context).load(blurPreviewUrl)
@@ -244,6 +249,9 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
             if (title != null) title.setText(wallpaper.getTitle() == null ? context.getString(R.string.wallpaper) : wallpaper.getTitle());
             itemView.setOnClickListener(v -> { if (listener != null) listener.onWallpaperClick(wallpaper); });
             itemView.setOnLongClickListener(v -> { if (listener != null) { listener.onWallpaperLongClick(wallpaper, getAdapterPosition()); return true; } return false; });
+        
+            // Clear previous Glide load to prevent memory leaks
+            Glide.with(context).clear(imageView);
         }
     }
 
