@@ -37,7 +37,7 @@ public class SearchActivity extends BaseActivity implements WallpaperAdapter.OnW
 
 
     private RecyclerView searchResultsRecyclerView;
-    private TextView noResultsText;
+    private View noResultsText;
     private ProgressBar loadingProgressBar;
     private Toolbar toolbar;
     private SearchView searchView;
@@ -171,7 +171,7 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
         GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
         searchResultsRecyclerView.setLayoutManager(layoutManager);
 
-        wallpaperAdapter = new WallpaperAdapter(this, new ArrayList<>(), this);
+        wallpaperAdapter = new WallpaperAdapter(this, new ArrayList<>(), this, true);
         searchResultsRecyclerView.setAdapter(wallpaperAdapter);
 
         // Infinite scroll
@@ -335,7 +335,10 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
     private void updateNoResultsView(String query, boolean noResults) {
         if (noResults) {
             noResultsText.setVisibility(View.VISIBLE);
-            noResultsText.setText(getString(R.string.no_results_for, query));
+            TextView textView = noResultsText.findViewById(R.id.no_results_text_view);
+            if (textView != null) {
+                textView.setText(getString(R.string.no_results_for, query));
+            }
             searchResultsRecyclerView.setVisibility(View.GONE);
         } else {
             noResultsText.setVisibility(View.GONE);
@@ -345,7 +348,10 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 
     private void showInitialState() {
         noResultsText.setVisibility(View.VISIBLE);
-        noResultsText.setText(R.string.search_start_typing);
+        TextView textView = noResultsText.findViewById(R.id.no_results_text_view);
+        if (textView != null) {
+            textView.setText(R.string.search_start_typing);
+        }
         searchResultsRecyclerView.setVisibility(View.GONE);
         wallpaperAdapter.updateData(new ArrayList<>());
     }

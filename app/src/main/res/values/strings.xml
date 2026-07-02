@@ -35,9 +35,11 @@
     <string name="search_wallpapers">Search Wallpapers</string>
     <string name="search_hint">Search 10M+ wallpapers...</string>
     <string name="search_start_typing">Start typing to search wallpapers</string>
+    <string name="search_desc">Find your perfect wallpaper from millions of options</string>
     <string name="notifications">Notifications</string>
     <string name="clear_all">Clear All</string>
     <string name="no_notifications_yet">No notifications yet</string>
+    <string name="notifications_desc">You\'ll see updates and alerts here when they arrive</string>
 
     <string name="zero_wallpapers">0 wallpapers</string>
     <string name="nothing_here_yet">Nothing here yet</string>
@@ -98,6 +100,7 @@
 
     <string name="search">Search</string>
     <string name="no_wallpapers_found">No wallpapers found</string>
+    <string name="try_different_category">Try exploring a different category or search term</string>
     <string name="failed_to_load_wallpapers">Failed to load wallpapers</string>
     
     <string name="email">Email</string>

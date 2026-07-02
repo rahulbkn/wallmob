@@ -29,7 +29,7 @@ public class NotificationsActivity extends BaseActivity {
     private static final String TAG = "NotificationsActivity";
     private RecyclerView recyclerView;
     private NotificationAdapter adapter;
-    private TextView emptyView;
+    private View emptyView;
     private List<NotificationItem> notifications;
     private ProgressBar progressBar;
 

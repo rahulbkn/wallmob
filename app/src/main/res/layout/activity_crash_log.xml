@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background_color"
+    android:padding="16dp">
+
+    <!-- Header -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="App Crashed"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/error_color"
+        android:gravity="center"
+        android:paddingBottom="8dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="The app encountered an unexpected error. Details below:"
+        android:textSize="14sp"
+        android:textColor="@color/text_secondary"
+        android:gravity="center"
+        android:paddingBottom="16dp" />
+
+    <!-- Crash Log ScrollView -->
+    <ScrollView
+        android:id="@+id/crash_log_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@drawable/bg_section_rounded"
+        android:padding="12dp">
+
+        <TextView
+            android:id="@+id/crash_log_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:fontFamily="monospace"
+            android:textColor="@color/text_primary"
+            android:textIsSelectable="true" />
+    </ScrollView>
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="16dp">
+
+        <Button
+            android:id="@+id/btn_copy_log"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Copy Log to Clipboard"
+            android:background="@drawable/button_outline"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="8dp" />
+
+        <Button
+            android:id="@+id/btn_view_all_logs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="View All Crash Logs"
+            android:background="@drawable/button_outline"
+            android:textColor="@color/text_primary"
+            android:layout_marginBottom="8dp" />
+
+        <Button
+            android:id="@+id/btn_restart_app"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Restart App"
+            android:background="@drawable/button_primary"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+</LinearLayout>

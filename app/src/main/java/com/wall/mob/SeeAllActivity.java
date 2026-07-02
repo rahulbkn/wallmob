@@ -42,9 +42,9 @@ public class SeeAllActivity extends BaseActivity implements WallpaperAdapter.OnW
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private ProgressBar paginationProgressBar;
-    private TextView emptyText;
+    private View emptyText;
 
-    private CategoryWallpaperAdapter adapter;
+    private WallpaperAdapter adapter;
     private List<Wallpaper> wallpapers = new ArrayList<>();
 
     private String title;
@@ -97,13 +97,12 @@ public class SeeAllActivity extends BaseActivity implements WallpaperAdapter.OnW
  }
 
     private void setupRecyclerView() {
-        // Automatically adjust grid columns based on screen width
-        float screenWidthDp = getResources().getDisplayMetrics().widthPixels / getResources().getDisplayMetrics().density;
-        int spanCount = (int) (screenWidthDp / 160);
-        spanCount = Math.max(2, Math.min(4, spanCount));
-
-        recyclerView.setLayoutManager(new GridLayoutManager(this, spanCount));
-        adapter = new CategoryWallpaperAdapter(this, wallpapers, this);
+        // Use 2 columns like trending section
+        int spanCount = 2;
+        GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
+        recyclerView.setLayoutManager(layoutManager);
+        
+        adapter = new WallpaperAdapter(this, wallpapers, this, true);
         recyclerView.setAdapter(adapter);
     }
 
@@ -145,7 +144,10 @@ public class SeeAllActivity extends BaseActivity implements WallpaperAdapter.OnW
                     progressBar.setVisibility(View.GONE);
                     paginationProgressBar.setVisibility(View.GONE);
                     emptyText.setVisibility(View.VISIBLE);
-                    emptyText.setText(message);
+                    TextView emptyTextView = emptyText.findViewById(R.id.empty_message_text);
+                    if (emptyTextView != null) {
+                        emptyTextView.setText(message);
+                    }
                 });
             }
         });
@@ -173,7 +175,10 @@ public class SeeAllActivity extends BaseActivity implements WallpaperAdapter.OnW
             public void onCancelled(@NonNull DatabaseError error) {
                 progressBar.setVisibility(View.GONE);
                 emptyText.setVisibility(View.VISIBLE);
-                emptyText.setText(R.string.failed_load_premium_wallpapers_period);
+                TextView emptyTextView = emptyText.findViewById(R.id.empty_message_text);
+                if (emptyTextView != null) {
+                    emptyTextView.setText(R.string.failed_load_premium_wallpapers_period);
+                }
             }
         });
     }

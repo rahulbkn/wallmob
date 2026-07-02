@@ -11,7 +11,7 @@
         android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/surface"
+        android:background="@color/background"
         app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
@@ -19,7 +19,8 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:titleTextColor="@color/onSurface"
-            app:navigationIcon="@drawable/ic_arrow_back"/>
+            app:navigationIcon="@drawable/ic_arrow_back"
+            app:navigationIconTint="@color/onSurface"/>
     </com.google.android.material.appbar.AppBarLayout>
 
     <!-- Content -->
@@ -34,41 +35,74 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingStart="12dp"
-            android:paddingEnd="12dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"/>
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="16dp"
+            android:nestedScrollingEnabled="true"
+            android:overScrollMode="never"/>
 
         <!-- Main loading indicator -->
         <ProgressBar
             android:id="@+id/progress_bar"
-            style="?android:attr/progressBarStyleLarge"
+            style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:indeterminate="true"
             android:indeterminateTint="@color/onSurface"/>
 
-        <!-- Pagination loading bar (horizontal) -->
+        <!-- Pagination loading bar -->
         <ProgressBar
             android:id="@+id/pagination_progress_bar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_gravity="bottom"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="24dp"
             android:indeterminate="true"
             android:indeterminateTint="@color/onSurface"
-            android:visibility="gone"
-            android:padding="8dp"/>
+            android:visibility="gone"/>
 
-        <!-- Empty state text -->
-        <TextView
+        <!-- Empty state -->
+        <LinearLayout
             android:id="@+id/empty_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="@string/no_wallpapers_found"
-            android:textColor="@color/gray_medium"
-            android:textSize="16sp"
-            android:visibility="gone"/>
+            android:gravity="center"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_category"
+                app:tint="@color/onSurface"
+                android:contentDescription="@string/no_wallpapers_found" />
+
+            <TextView
+                android:id="@+id/empty_message_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/no_wallpapers_found"
+                android:textSize="16sp"
+                android:textColor="@color/onSurface"
+                android:textStyle="bold"
+                android:letterSpacing="-0.01" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/try_different_category"
+                android:textSize="12sp"
+                android:textColor="@color/subtle_on_surface"
+                android:textAlignment="center"
+                android:lineSpacingMultiplier="1.2" />
+
+        </LinearLayout>
     </FrameLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

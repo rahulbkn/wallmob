@@ -5,14 +5,14 @@
      xmlns:tools="http://schemas.android.com/tools"
      android:layout_height="match_parent"
      android:layout_width="match_parent"
-     android:background="@color/surface"
+     android:background="@color/background"
      android:orientation="vertical"
      tools:context=".NotificationsActivity">
 
     <LinearLayout
          android:layout_height="?attr/actionBarSize"
          android:layout_width="match_parent"
-         android:background="@color/surface"
+         android:background="@color/background"
          android:gravity="center_vertical"
          android:elevation="4dp"
          android:orientation="horizontal"
@@ -25,7 +25,7 @@
              android:src="@drawable/icon_arrow_back_round"
              android:scaleType="center"
              android:background="?attr/selectableItemBackgroundBorderless"
-             android:tint="?android:attr/textColorPrimary"
+             android:tint="@color/onSurface"
              android:id="@+id/back_button" />
 
         <TextView
@@ -59,8 +59,9 @@
              android:layout_height="wrap_content"
              android:layout_width="wrap_content"
              android:visibility="gone"
-             android:layout_centerInParent="true"
-             android:indeterminate="false"
+             android:layout_gravity="center"
+             android:indeterminate="true"
+             android:indeterminateTint="@color/onSurface"
              style="?android:progressBarStyle"
              android:id="@+id/progressBar" />
 
@@ -68,19 +69,52 @@
              android:layout_height="match_parent"
              android:layout_width="match_parent"
              android:scrollbars="vertical"
-             android:padding="8dp"
+             android:paddingStart="8dp"
+             android:paddingEnd="8dp"
+             android:paddingTop="4dp"
+             android:paddingBottom="8dp"
              tools:listitem="@layout/item_notification"
              android:clipToPadding="false"
              android:id="@+id/recyclerView" />
 
-        <TextView
-             android:layout_height="match_parent"
+        <LinearLayout
+             android:layout_height="wrap_content"
              android:layout_width="match_parent"
              android:visibility="gone"
-             android:gravity="center_horizontal|center_vertical"
-             android:textSize="16sp"
-             android:id="@+id/empty_view"
-             android:text="@string/no_notifications_yet" />
+             android:layout_gravity="center"
+             android:gravity="center"
+             android:orientation="vertical"
+             android:padding="24dp"
+             android:id="@+id/empty_view">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:src="@drawable/ic_notification"
+                app:tint="@color/onSurface"
+                android:contentDescription="@string/no_notifications_yet" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/no_notifications_yet"
+                android:textSize="16sp"
+                android:textColor="@color/onSurface"
+                android:textStyle="bold"
+                android:letterSpacing="-0.01" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="@string/notifications_desc"
+                android:textSize="12sp"
+                android:textColor="@color/subtle_on_surface"
+                android:textAlignment="center"
+                android:lineSpacingMultiplier="1.2" />
+
+        </LinearLayout>
 
     </FrameLayout>
 

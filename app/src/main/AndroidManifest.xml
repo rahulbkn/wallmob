@@ -118,6 +118,13 @@
 			android:theme="@style/AppTheme"
 			android:exported="false" />
 			
+		<activity
+			android:name=".CrashLogActivity"
+			android:screenOrientation="portrait"
+			android:theme="@style/AppTheme"
+			android:exported="false"
+			android:excludeFromRecents="true" />
+			
 		<!-- Wallpaper details with deep links (Must remain exported="true") -->
 		<activity
 			android:name=".WallpaperDetailsActivity"

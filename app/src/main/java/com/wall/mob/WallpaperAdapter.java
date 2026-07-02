@@ -39,6 +39,7 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
     private Set<String> displayedIds = new HashSet<>();
     private OnWallpaperClickListener listener;
     private Context context;
+    private boolean forceLowQuality = false;
 
     public interface OnWallpaperClickListener {
         void onWallpaperClick(Wallpaper wallpaper);
@@ -47,8 +48,13 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
     }
 
     public WallpaperAdapter(Context context, List<Wallpaper> wallpaperList, OnWallpaperClickListener listener) {
+        this(context, wallpaperList, listener, false);
+    }
+
+    public WallpaperAdapter(Context context, List<Wallpaper> wallpaperList, OnWallpaperClickListener listener, boolean forceLowQuality) {
         this.context = context.getApplicationContext();
         this.wallpaperList = new ArrayList<>();
+        this.forceLowQuality = forceLowQuality;
         this.listener = listener;
         updateData(wallpaperList != null ? wallpaperList : new ArrayList<>());
     }
@@ -192,6 +198,9 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
             favoriteIcon.setSelected(isFavorite(wallpaper));
             favoriteIcon.setOnClickListener(v -> { toggleFavorite(wallpaper); favoriteIcon.setSelected(isFavorite(wallpaper)); });
 
+            // Clear previous Glide load to prevent memory leaks
+            Glide.with(context).clear(imageView);
+            
             lottieLoader.setVisibility(View.VISIBLE); lottieLoader.playAnimation();
 
             String imageUrl = wallpaper.getImageUrl();
@@ -210,24 +219,30 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
             RequestOptions thumbnailOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop().format(com.bumptech.glide.load.DecodeFormat.PREFER_RGB_565);
             RequestOptions fullOptions = new RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop();
 
-            switch (connectionSpeed) {
-                case SLOW:
-                    thumbnailOptions = thumbnailOptions.override(300, 450);
-                    fullOptions = fullOptions.override(600, 900).priority(com.bumptech.glide.Priority.LOW);
-                    break;
-                case MEDIUM:
-                    thumbnailOptions = thumbnailOptions.override(600, 900);
-                    fullOptions = fullOptions.override(800, 1200).priority(com.bumptech.glide.Priority.NORMAL);
-                    break;
-                case FAST:
-                    thumbnailOptions = thumbnailOptions.override(800, 1200);
-                    fullOptions = fullOptions.priority(com.bumptech.glide.Priority.HIGH);
-                    break;
-                default:
-                    // Default to medium speed settings
-                    thumbnailOptions = thumbnailOptions.override(600, 900);
-                    fullOptions = fullOptions.override(800, 1200).priority(com.bumptech.glide.Priority.NORMAL);
-                    break;
+            // Force low quality for search and see all activities
+            if (forceLowQuality) {
+                thumbnailOptions = thumbnailOptions.override(400, 600);
+                fullOptions = fullOptions.override(400, 600).priority(com.bumptech.glide.Priority.LOW);
+            } else {
+                switch (connectionSpeed) {
+                    case SLOW:
+                        thumbnailOptions = thumbnailOptions.override(300, 450);
+                        fullOptions = fullOptions.override(600, 900).priority(com.bumptech.glide.Priority.LOW);
+                        break;
+                    case MEDIUM:
+                        thumbnailOptions = thumbnailOptions.override(600, 900);
+                        fullOptions = fullOptions.override(800, 1200).priority(com.bumptech.glide.Priority.NORMAL);
+                        break;
+                    case FAST:
+                        thumbnailOptions = thumbnailOptions.override(800, 1200);
+                        fullOptions = fullOptions.priority(com.bumptech.glide.Priority.HIGH);
+                        break;
+                    default:
+                        // Default to medium speed settings
+                        thumbnailOptions = thumbnailOptions.override(600, 900);
+                        fullOptions = fullOptions.override(800, 1200).priority(com.bumptech.glide.Priority.NORMAL);
+                        break;
+                }
             }
 
             RequestBuilder<Drawable> blurPlaceholder = Glide.with(context).load(blurPreviewUrl)
@@ -254,9 +269,6 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
             if (title != null) title.setText(wallpaper.getTitle() == null ? context.getString(R.string.wallpaper) : wallpaper.getTitle());
             itemView.setOnClickListener(v -> { if (listener != null) listener.onWallpaperClick(wallpaper); });
             itemView.setOnLongClickListener(v -> { if (listener != null) { listener.onWallpaperLongClick(wallpaper, getAdapterPosition()); return true; } return false; });
-        
-            // Clear previous Glide load to prevent memory leaks
-            Glide.with(context).clear(imageView);
         }
     }
 

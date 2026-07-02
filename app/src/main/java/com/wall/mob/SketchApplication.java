@@ -117,11 +117,9 @@ public class SketchApplication extends MultiDexApplication implements Applicatio
 
         registerNetworkCallback();
 
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
-            Log.e("APP_CRASH", "Application crashed!", throwable);
-            Process.killProcess(Process.myPid());
-            System.exit(1);
-        });
+        // Initialize crash handler to catch and log all uncaught exceptions
+        CrashHandler.initialize(this);
+        Log.d(TAG, "CrashHandler initialized");
 
         Log.d(TAG, "APPLICATION STARTED");
     }

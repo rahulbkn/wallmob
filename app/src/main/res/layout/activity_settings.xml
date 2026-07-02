@@ -10,11 +10,12 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/surface"
+        android:background="@color/background"
         android:elevation="4dp"
         app:title="@string/settings"
         app:titleTextColor="@color/onSurface"
-        app:navigationIcon="?attr/homeAsUpIndicator" />
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        app:navigationIconTint="@color/onSurface" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"

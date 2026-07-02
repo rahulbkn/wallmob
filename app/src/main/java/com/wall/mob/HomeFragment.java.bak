@@ -723,20 +723,12 @@ public class HomeFragment extends Fragment {
             blurIv.setScaleType(ImageView.ScaleType.CENTER_CROP);
             root.addView(blurIv);
 
-            // Content container to shift phone frame down
-            FrameLayout contentContainer = new FrameLayout(ctx);
-            contentContainer.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
-            contentContainer.setPadding(0, (int) (50 * density), 0, 0); // Padding to shift content down
-            root.addView(contentContainer);
-
-            // Calculate 1:1 phone dimensions with padding - smaller size
+            // Calculate 9:18 phone dimensions with padding - smaller size
             android.util.DisplayMetrics dm = ctx.getResources().getDisplayMetrics();
             int containerWidth = dm.widthPixels;
 
             int framePadding = (int) (80 * density);
-            int calculatedWidth = (int) ((containerWidth - 2 * framePadding) * 0.55f); // 55% width
-            int maxWidth = (int) (400 * density); // 400dp max width for tablet
-            int phoneWidth = Math.min(calculatedWidth, maxWidth);
+            int phoneWidth = (int) ((containerWidth - 2 * framePadding) * 0.55f); // 55% width
             int phoneHeight = (int) (phoneWidth * 18f / 9f); // 9:18 phone (taller)
             
             // Silver phone frame background (child 2) - 9:18 centered, 2dp larger
@@ -748,36 +740,25 @@ public class HomeFragment extends Fragment {
             silverFrame.setLayoutParams(silverLp);
             silverFrame.setScaleType(ImageView.ScaleType.FIT_XY);
             silverFrame.setImageResource(R.drawable.phone_silver_frame);
-            contentContainer.addView(silverFrame);
+            root.addView(silverFrame);
             
             // CardView wrapper for rounded corners (child 3) - centered with padding
             androidx.cardview.widget.CardView cardView = new androidx.cardview.widget.CardView(ctx);
             FrameLayout.LayoutParams cardLp = new FrameLayout.LayoutParams(phoneWidth, phoneHeight);
             cardLp.gravity = android.view.Gravity.CENTER;
             cardView.setLayoutParams(cardLp);
-            cardView.setRadius(16 * density); // Reduced roundness
+            cardView.setRadius(16 * density); // Adjusted for better match
             cardView.setPreventCornerOverlap(false);
             cardView.setUseCompatPadding(false);
             cardView.setCardElevation(0);
-            cardView.setCardBackgroundColor(0xFF000000); // Set background to black
-            cardView.setContentPadding((int)(1 * density), (int)(1 * density), (int)(1 * density), (int)(1 * density)); // 1dp padding for border effect
+            cardView.setCardBackgroundColor(0x00000000);
             
             // Main ImageView inside CardView - FIT_XY to fill frame
             ImageView iv = new ImageView(ctx);
             iv.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
             iv.setScaleType(ImageView.ScaleType.FIT_XY);
             cardView.addView(iv);
-            contentContainer.addView(cardView);
-
-            // Bottom scrim
-            View bottomScrim = new View(ctx);
-            FrameLayout.LayoutParams bottomLp = new FrameLayout.LayoutParams(-1, (int) (80 * density));
-            bottomLp.gravity = android.view.Gravity.BOTTOM;
-            bottomScrim.setLayoutParams(bottomLp);
-            GradientDrawable scrimBg = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0xCC000000, 0x00000000});
-            scrimBg.setShape(GradientDrawable.RECTANGLE);
-            bottomScrim.setBackground(scrimBg);
-            contentContainer.addView(bottomScrim);
+            root.addView(cardView);
 
             // Top scrim
             View topScrim = new View(ctx);
@@ -787,69 +768,57 @@ public class HomeFragment extends Fragment {
             topScrim.setBackgroundResource(R.drawable.scrim_top);
             root.addView(topScrim);
 
-            // Dummy Status Bar
-            LinearLayout statusBar = new LinearLayout(ctx);
-            statusBar.setOrientation(LinearLayout.HORIZONTAL);
-            FrameLayout.LayoutParams statusLp = new FrameLayout.LayoutParams(phoneWidth, (int) (20 * density));
-            statusLp.gravity = android.view.Gravity.TOP | android.view.Gravity.CENTER_HORIZONTAL;
-            statusBar.setLayoutParams(statusLp);
-            statusBar.setGravity(android.view.Gravity.CENTER_VERTICAL | android.view.Gravity.END);
-            statusBar.setPadding((int) (10 * density), 0, (int) (10 * density), 0);
+            // Bottom scrim
+            View bottomScrim = new View(ctx);
+            FrameLayout.LayoutParams bottomLp = new FrameLayout.LayoutParams(-1, (int) (80 * density));
+            bottomLp.gravity = android.view.Gravity.BOTTOM;
+            bottomScrim.setLayoutParams(bottomLp);
+            GradientDrawable scrimBg = new GradientDrawable(GradientDrawable.Orientation.BOTTOM_TOP, new int[]{0xCC000000, 0x00000000});
+            scrimBg.setShape(GradientDrawable.RECTANGLE);
+            bottomScrim.setBackground(scrimBg);
+            root.addView(bottomScrim);
 
-            // Simple time indicator
-            TextView timeTv = new TextView(ctx);
-            timeTv.setText("9:41");
-            timeTv.setTextSize(8); // Smaller text size
-            timeTv.setTextColor(0xFFFFFFFF);
-            statusBar.addView(timeTv);
-
-            cardView.addView(statusBar);
-
-            // App icons container - 8 rounded boxes in 2 rows (4+4)
+            // App icons container - 10 rounded boxes in 2 rows (5+5)
             LinearLayout appsContainer = new LinearLayout(ctx);
             appsContainer.setOrientation(LinearLayout.VERTICAL);
-            // Set height to MATCH_PARENT so that Gravity.BOTTOM works within the cardView
-            FrameLayout.LayoutParams appsLp = new FrameLayout.LayoutParams(phoneWidth, FrameLayout.LayoutParams.MATCH_PARENT);
+            FrameLayout.LayoutParams appsLp = new FrameLayout.LayoutParams(phoneWidth, -2);
             appsLp.gravity = android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.BOTTOM;
-            appsLp.bottomMargin = (int) (10 * density); // Add 10dp bottom margin
+            appsLp.bottomMargin = (int) (40 * density);
             appsContainer.setLayoutParams(appsLp);
-            appsContainer.setGravity(android.view.Gravity.BOTTOM | android.view.Gravity.CENTER_HORIZONTAL);
-            appsContainer.setPadding((int) (2 * density), 0, (int) (2 * density), 0); // 2dp padding
-
-            // Create 2 rows of 4 app icons each
+            appsContainer.setPadding((int) (20 * density), 0, (int) (20 * density), 0);
+            
+            // Create 2 rows of 5 app icons each
             for (int row = 0; row < 2; row++) {
                 LinearLayout rowLayout = new LinearLayout(ctx);
                 rowLayout.setOrientation(LinearLayout.HORIZONTAL);
-                rowLayout.setGravity(android.view.Gravity.CENTER);
                 rowLayout.setLayoutParams(new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
                         LinearLayout.LayoutParams.WRAP_CONTENT));
 
                 if (row == 1) {
-                    rowLayout.setPadding(0, (int) (2 * density), 0, 0); // 2dp gap between rows
+                    rowLayout.setPadding(0, (int) (5 * density), 0, 0);
                 }
 
-                for (int i = 0; i < 4; i++) { // 4 icons
+                for (int i = 0; i < 5; i++) {
                     // Equal-width container
                     LinearLayout holder = new LinearLayout(ctx);
                     holder.setGravity(android.view.Gravity.CENTER);
-                    LinearLayout.LayoutParams holderLp = new LinearLayout.LayoutParams(
+                    holder.setLayoutParams(new LinearLayout.LayoutParams(
+                            0,
                             LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT);
-                    holderLp.setMargins((int) (2 * density), (int) (2 * density), (int) (2 * density), (int) (2 * density)); // 2dp margins
-                    holder.setLayoutParams(holderLp);
+                            1f));
 
-                    // 22dp icon
+                    // 20dp icon
                     View appIcon = new View(ctx);
                     LinearLayout.LayoutParams iconLp =
                             new LinearLayout.LayoutParams(
-                                    (int) (22 * density),
-                                    (int) (22 * density));
+                                    (int) (20 * density),
+                                    (int) (20 * density));
                     appIcon.setLayoutParams(iconLp);
 
                     GradientDrawable iconBg = new GradientDrawable();
                     iconBg.setShape(GradientDrawable.RECTANGLE);
-                    iconBg.setCornerRadius(4 * density); // Reduced roundness
+                    iconBg.setCornerRadius(6 * density);
                     iconBg.setColor(0x40FFFFFF);
                     appIcon.setBackground(iconBg);
 
@@ -870,7 +839,7 @@ public class HomeFragment extends Fragment {
             frameIv.setLayoutParams(frameLp);
             frameIv.setScaleType(ImageView.ScaleType.FIT_XY);
             frameIv.setImageResource(R.drawable.phone_frame_overlay);
-            contentContainer.addView(frameIv);
+            root.addView(frameIv);
 
             return new VH(root, bgView, blurIv, iv);
         }
@@ -978,8 +947,8 @@ public class HomeFragment extends Fragment {
         // Calculate card dimensions
         int screenWidth = getResources().getDisplayMetrics().widthPixels;
         int cardWidth = screenWidth;
-        // Keep 1:1 aspect ratio for container
-        int cardHeight = cardWidth; // 1:1 aspect ratio
+        // Keep 4:3 aspect ratio for container (Height = Width * 3/4)
+        int cardHeight = (int) (cardWidth * 3f / 4f);
 
         // Set container height for portrait cards
         ViewGroup.LayoutParams lp = heroContainer.getLayoutParams();

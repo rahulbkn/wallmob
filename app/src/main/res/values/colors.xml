@@ -44,4 +44,10 @@
     <!-- TextInputLayout stroke colors -->
     <color name="text_input_box_stroke">#000000</color>
     <color name="text_input_box_stroke_focused">#000000</color>
+
+    <!-- Crash Activity Colors -->
+    <color name="background_color">#FFFFFF</color>
+    <color name="error_color">#F44336</color>
+    <color name="text_secondary">#666666</color>
+    <color name="text_primary">#000000</color>
 </resources>

@@ -18,7 +18,7 @@
             android:id="@+id/collapsing_toolbar"
             android:layout_width="match_parent"
             android:layout_height="280dp"
-            app:contentScrim="@color/surface"
+            app:contentScrim="@color/background"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
             app:expandedTitleMarginStart="20dp"
             app:expandedTitleMarginBottom="20dp"
@@ -71,7 +71,12 @@
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:clipToPadding="false"
-        android:paddingBottom="16dp"/>
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="16dp"
+        android:nestedScrollingEnabled="true"
+        android:overScrollMode="never"/>
 
     <!-- Primary loading spinner -->
     <ProgressBar

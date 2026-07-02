@@ -1,0 +1,44 @@
+
+================================================================================
+ERROR LOGGED: 2026-07-02T12:46:16.111Z
+User ID: rahulkumarbknv@gmail.com
+================================================================================
+Error Name: GatewayError
+Error Message: Request failed after 6 attempts: fetch failed
+
+Stack Trace:
+GatewayError: Request failed after 6 attempts: fetch failed
+    at t.fetch (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:777:4792)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async t.createChatCompletion (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:777:8904)
+    at async iit.createChatCompletionWithTokenRenewal (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2152:235)
+    at async iit.generateContentStreamInternal (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2157:52)
+    at async _3.loggingStreamWrapper (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:800:31296)
+    at async BY.processStreamResponse (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2463:81)
+    at async file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2457:22044
+    at async sG.run (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2463:3153)
+    at async Bwe.sendMessageStream (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2796:511)
+================================================================================
+
+
+================================================================================
+ERROR LOGGED: 2026-07-02T12:50:29.156Z
+User ID: rahulkumarbknv@gmail.com
+================================================================================
+Error Name: GatewayError
+Error Message: Request failed after 6 attempts: fetch failed
+
+Stack Trace:
+GatewayError: Request failed after 6 attempts: fetch failed
+    at t.fetch (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:777:4792)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async t.createChatCompletion (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:777:8904)
+    at async iit.createChatCompletionWithTokenRenewal (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2152:235)
+    at async iit.generateContentStreamInternal (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2157:52)
+    at async _3.loggingStreamWrapper (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:800:31296)
+    at async BY.processStreamResponse (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2463:81)
+    at async file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2457:22044
+    at async sG.run (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2463:3153)
+    at async Bwe.sendMessageStream (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2796:511)
+================================================================================
+
