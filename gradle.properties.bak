@@ -11,4 +11,4 @@ org.gradle.daemon=true
 org.gradle.parallel=true
 org.gradle.caching=true
 android.suppressUnsupportedCompileSdk=35
-android.aapt2FromMavenOverride=/tmp/aapt2
+# android.aapt2FromMavenOverride=/tmp/aapt2

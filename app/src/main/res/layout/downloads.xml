@@ -66,10 +66,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/header_container"
-android:clipToPadding="false"
-         android:paddingStart="8dp"
-android:paddingEnd="8dp"
-         android:paddingTop="4dp"
+        android:clipToPadding="false"
+        android:paddingStart="8dp"
+        android:paddingEnd="8dp"
+        android:paddingTop="4dp"
         android:paddingBottom="80dp"
         android:nestedScrollingEnabled="true"
         android:overScrollMode="never" />
@@ -105,8 +105,8 @@ android:paddingEnd="8dp"
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-android:layout_marginTop="4dp"
-             android:text="@string/no_downloads_desc"
+            android:layout_marginTop="4dp"
+            android:text="@string/no_downloads_desc"
             android:textSize="12sp"
             android:textColor="@color/subtle_on_surface"
             android:textAlignment="center"
@@ -123,5 +123,58 @@ android:layout_marginTop="4dp"
         android:indeterminate="true"
         android:indeterminateTint="@color/onSurface"
         android:visibility="gone" />
+
+    <!-- Selection Bar -->
+    <LinearLayout
+        android:id="@+id/selection_bar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/surface"
+        android:elevation="8dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:visibility="gone">
+
+        <Button
+            android:id="@+id/btn_select_all"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="@color/colorPrimary"
+            android:text="Select All"
+            android:textColor="@color/colorOnPrimary"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_delete_selected"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:backgroundTint="#FF4444"
+            android:text="Delete"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_cancel_selection"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_marginStart="4dp"
+            android:backgroundTint="@color/subtle_on_surface"
+            android:text="Cancel"
+            android:textColor="@color/onSurface"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
 
 </RelativeLayout>

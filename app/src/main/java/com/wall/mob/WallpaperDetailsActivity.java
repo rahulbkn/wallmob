@@ -39,11 +39,12 @@ public class WallpaperDetailsActivity extends BaseActivity {
     private static final String EXTRA_WALLPAPER = "extra_wallpaper";
     private static final int REQUEST_EDIT = 1001;
 
-    private ImageView wallpaperImage;
+    private ZoomableImageView wallpaperImage;
     private ProgressBar imageProgressBar;
     private TextView wallpaperTitle;
     private TextView wallpaperAuthor;
     private TextView wallpaperSource;
+    private TextView wallpaperResolution;
     private ImageButton backButton;
     private ImageButton favButton;
     private ImageButton shareBtn;
@@ -99,6 +100,7 @@ public class WallpaperDetailsActivity extends BaseActivity {
         wallpaperTitle = findViewById(R.id.wallpaperTitle);
         wallpaperAuthor = findViewById(R.id.wallpaper_author);
         wallpaperSource = findViewById(R.id.wallpaper_source);
+        wallpaperResolution = findViewById(R.id.wallpaper_resolution);
         backButton = findViewById(R.id.back_button);
         favButton = findViewById(R.id.fav_button);
         shareBtn = findViewById(R.id.share_btn);
@@ -233,6 +235,18 @@ public class WallpaperDetailsActivity extends BaseActivity {
         deepLinkHandler.updateUIWithWallpaper(wallpaper);
         actionsHandler.setupButtonListeners(wallpaper);
         slideToSetHandler.setupSlideToSet(wallpaper);
+        RecentWallpapersManager.addRecent(this, wallpaper);
+
+        if (wallpaperResolution != null) {
+            int w = wallpaper.getWidth();
+            int h = wallpaper.getHeight();
+            if (w > 0 && h > 0) {
+                wallpaperResolution.setText(w + "×" + h + " px");
+                wallpaperResolution.setVisibility(View.VISIBLE);
+            } else {
+                wallpaperResolution.setVisibility(View.GONE);
+            }
+        }
 
         // =========================
         // 📥 LOAD IMAGE (BLUR-UP EFFECT) — FIXED

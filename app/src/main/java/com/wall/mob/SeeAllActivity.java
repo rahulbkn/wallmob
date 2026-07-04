@@ -104,7 +104,21 @@ public class SeeAllActivity extends BaseActivity implements WallpaperAdapter.OnW
         
         adapter = new WallpaperAdapter(this, wallpapers, this, true);
         recyclerView.setAdapter(adapter);
+
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView rv, int dx, int dy) {
+                GridLayoutManager lm = (GridLayoutManager) rv.getLayoutManager();
+                if (lm != null && !isLoading && lm.findLastVisibleItemPosition() >= lm.getItemCount() - 6) {
+                    isLoading = true;
+                    paginationProgressBar.setVisibility(View.VISIBLE);
+                    apiManager.loadNextPage();
+                }
+            }
+        });
     }
+
+    private boolean isLoading = false;
 
     private void loadData() {
         progressBar.setVisibility(View.VISIBLE);
@@ -133,14 +147,18 @@ public class SeeAllActivity extends BaseActivity implements WallpaperAdapter.OnW
             public void onMoreWallpapersLoaded(List<Wallpaper> newWallpapers) {
                 runOnUiThread(() -> {
                     paginationProgressBar.setVisibility(View.GONE);
-                    // Append newWallpapers to adapter/list
-                    // TODO: Implement append logic
+                    isLoading = false;
+                    if (newWallpapers != null && !newWallpapers.isEmpty()) {
+                        wallpapers.addAll(newWallpapers);
+                        adapter.addData(newWallpapers);
+                    }
                 });
             }
 
             @Override
             public void onError(String message) {
                 runOnUiThread(() -> {
+                    isLoading = false;
                     progressBar.setVisibility(View.GONE);
                     paginationProgressBar.setVisibility(View.GONE);
                     emptyText.setVisibility(View.VISIBLE);

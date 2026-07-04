@@ -38,7 +38,7 @@
             android:paddingStart="8dp"
             android:paddingEnd="8dp"
             android:paddingTop="4dp"
-            android:paddingBottom="16dp"
+            android:paddingBottom="80dp"
             android:nestedScrollingEnabled="true"
             android:overScrollMode="never"/>
 

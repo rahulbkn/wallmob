@@ -117,6 +117,9 @@ public class SketchApplication extends MultiDexApplication implements Applicatio
 
         registerNetworkCallback();
 
+        // Initialize wallpaper repository
+        WallpaperRepository.getInstance().init(this);
+
         // Initialize crash handler to catch and log all uncaught exceptions
         CrashHandler.initialize(this);
         Log.d(TAG, "CrashHandler initialized");

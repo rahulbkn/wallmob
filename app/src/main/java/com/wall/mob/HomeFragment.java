@@ -94,6 +94,12 @@ public class HomeFragment extends Fragment {
     private ColorToneAdapter colorToneAdapter;
     private CategoryGridAdapter categoryGridAdapter;
     private BestMonthAdapter premiumAdapter;
+    private BestMonthAdapter recentAdapter;
+
+    // UI - Recent Section
+    private View recentSection;
+    private RecyclerView recyclerRecent;
+    private TextView tvClearRecent;
 
     // Data
     private ApiManager apiManager;
@@ -161,6 +167,7 @@ public class HomeFragment extends Fragment {
         updateCategoriesSection();
 
         loadAllWallpapers();
+        updateRecentSection();
         return view;
     }
 
@@ -204,6 +211,9 @@ public class HomeFragment extends Fragment {
         if (tvSeeAllTrending != null) tvSeeAllTrending.setOnClickListener(v ->
                 SeeAllActivity.start(requireContext(), getString(R.string.trending_now), SeeAllActivity.TYPE_TRENDING));
 
+        TextView tvShuffle = view.findViewById(R.id.tv_shuffle);
+        if (tvShuffle != null) tvShuffle.setOnClickListener(v -> shuffleTrending());
+
         apiManager = new ApiManager(requireContext());
         retryButton.setOnClickListener(v -> {
             errorView.setVisibility(View.GONE);
@@ -216,6 +226,11 @@ public class HomeFragment extends Fragment {
         // NASA APOD
         recyclerNasa = view.findViewById(R.id.recycler_nasa);
         nasaSectionView = view.findViewById(R.id.nasa_section);
+
+        // Recent Section
+        recentSection = view.findViewById(R.id.recent_section);
+        recyclerRecent = view.findViewById(R.id.recycler_recent);
+        tvClearRecent = view.findViewById(R.id.tv_clear_recent);
     }
     
    
@@ -274,6 +289,22 @@ public class HomeFragment extends Fragment {
         List<String> colors = Arrays.asList("#FF0000", "#FF7F00", "#FFD700", "#32CD32", "#40E0D0", "#4169E1", "#4B0082", "#8B00FF", "#FF1493", "#2C2C2C");
         colorToneAdapter = new ColorToneAdapter(mContext, colors, this::onColorClick);
         recyclerColorTone.setAdapter(colorToneAdapter);
+
+        // Recent Section Setup
+        if (recyclerRecent != null) {
+            LinearLayoutManager recentLayout = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
+            recyclerRecent.setLayoutManager(recentLayout);
+            recyclerRecent.setNestedScrollingEnabled(false);
+            recentAdapter = new BestMonthAdapter(mContext, new ArrayList<>(), this::onWallpaperClick);
+            recyclerRecent.setAdapter(recentAdapter);
+        }
+
+        if (tvClearRecent != null) {
+            tvClearRecent.setOnClickListener(v -> {
+                RecentWallpapersManager.clearRecents(requireContext());
+                updateRecentSection();
+            });
+        }
 
         // Categories Setup
         int span = 2;
@@ -375,6 +406,14 @@ public class HomeFragment extends Fragment {
 
         List<Wallpaper> heroMix = new ArrayList<>();
         Set<String> heroUrls = new HashSet<>();
+
+        // Add Wallpaper of the Day first if available
+        Wallpaper wotd = WallpaperOfTheDayManager.getDailyWallpaper(requireContext());
+        if (wotd != null && wotd.getImageUrl() != null) {
+            heroUrls.add(wotd.getImageUrl());
+            heroMix.add(wotd);
+        }
+
         for (Wallpaper w : premiumWallpapers) {
             if (w != null && w.getImageUrl() != null && !heroUrls.contains(w.getImageUrl())) {
                 heroUrls.add(w.getImageUrl());
@@ -382,8 +421,16 @@ public class HomeFragment extends Fragment {
                 if (heroMix.size() >= 6) break;
             }
         }
+        if (heroMix.isEmpty() && !portraitList.isEmpty()) {
+            Wallpaper first = portraitList.get(0);
+            if (first != null && first.getImageUrl() != null) {
+                WallpaperOfTheDayManager.setDailyWallpaper(requireContext(), first);
+                heroMix.add(first);
+            }
+        }
         setupHeroCarousel(heroMix);
         updateCategoriesSection();
+        updateRecentSection();
     }
 
     private void loadAllWallpapers() {
@@ -412,6 +459,7 @@ public class HomeFragment extends Fragment {
                 }
                 tempWallpapers.addAll(wallpapers);
                 isLoadingApiData = false;
+                isLoadingMore = false;
                 if (loadingTasks.decrementAndGet() == 0) onAllWallpapersLoaded(tempWallpapers);
             }
 
@@ -440,7 +488,6 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onMoreWallpapersLoaded(List<Wallpaper> newWallpapers) {
-                isLoadingMore = false;
                 handleMoreWallpapers(newWallpapers);
             }
         });
@@ -567,6 +614,24 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private void shuffleTrending() {
+        if (allPortraitWallpapers.size() > 1) {
+            List<Wallpaper> shuffled = new ArrayList<>(allPortraitWallpapers);
+            Collections.shuffle(shuffled);
+            if (bestMonthAdapter != null) bestMonthAdapter.updateData(shuffled);
+            Toast.makeText(mContext, "Trending shuffled!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateRecentSection() {
+        if (mContext == null) return;
+        List<Wallpaper> recents = RecentWallpapersManager.getRecents(mContext);
+        if (recentAdapter != null) recentAdapter.updateData(recents);
+        if (recentSection != null) {
+            recentSection.setVisibility(recents.isEmpty() ? View.GONE : View.VISIBLE);
+        }
+    }
+
     private void updateCategoriesSection() {
         List<CategoryItem> categories = new ArrayList<>();
 
@@ -607,6 +672,7 @@ public class HomeFragment extends Fragment {
     }
 
     private void handleMoreWallpapers(List<Wallpaper> newWallpapers) {
+        isLoadingMore = false;
         if (newWallpapers == null || newWallpapers.isEmpty()) return;
         List<Wallpaper> filtered = new ArrayList<>();
         synchronized (loadedWallpaperIds) {

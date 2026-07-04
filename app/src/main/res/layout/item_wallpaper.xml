@@ -49,6 +49,25 @@
     android:layout_alignParentTop="true"
     android:layout_alignParentEnd="true" />
 
+        <TextView
+            android:id="@+id/resolution_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:background="@drawable/pill_black"
+            android:backgroundTint="#B3000000"
+            android:textSize="10sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:elevation="4dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true" />
+
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lottie_loader"
             android:layout_width="wrap_content"

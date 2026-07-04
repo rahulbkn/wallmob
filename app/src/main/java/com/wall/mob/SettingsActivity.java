@@ -27,9 +27,10 @@ import java.util.Locale;
 public class SettingsActivity extends BaseActivity {
 
     private ImageView ivThemeIcon;
-    private TextView tvThemeDesc, tvLanguageDesc, tvCacheSize;
+    private TextView tvThemeDesc, tvLanguageDesc, tvCacheSize, tvChangerInterval;
     private LinearLayout btnTheme, btnLanguage, btnClearCache, btnNotifications, btnFeedback, btnRateUs, btnTelegram, btnAbout;
-    private SwitchCompat switchNotifications;
+    private LinearLayout btnChangerToggle, btnChangerInterval;
+    private SwitchCompat switchNotifications, switchChanger;
     
     private SharedPreferences sharedPreferences;
     private static final String PREF_NAME = "settings_prefs";
@@ -71,6 +72,10 @@ public class SettingsActivity extends BaseActivity {
         
         ivThemeIcon = findViewById(R.id.iv_theme_icon);
         switchNotifications = findViewById(R.id.switch_notifications);
+        switchChanger = findViewById(R.id.switch_changer);
+        tvChangerInterval = findViewById(R.id.tv_changer_interval);
+        btnChangerToggle = findViewById(R.id.btn_changer_toggle);
+        btnChangerInterval = findViewById(R.id.btn_changer_interval);
 
         // Load Initial Data
         updateUI();
@@ -105,6 +110,49 @@ public class SettingsActivity extends BaseActivity {
         btnTelegram.setOnClickListener(v -> {
             startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/your_telegram_channel")));
         });
+
+        // Wallpaper Changer
+        boolean changerEnabled = WallpaperChangerScheduler.isEnabled(this);
+        switchChanger.setChecked(changerEnabled);
+        updateChangerIntervalText();
+
+        switchChanger.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            WallpaperChangerScheduler.setEnabled(this, isChecked);
+        });
+
+        btnChangerToggle.setOnClickListener(v -> {
+            switchChanger.setChecked(!switchChanger.isChecked());
+        });
+
+        btnChangerInterval.setOnClickListener(v -> showChangerIntervalDialog());
+    }
+
+    private void showChangerIntervalDialog() {
+        String[] options = {"Every 6 hours", "Every 12 hours", "Every 24 hours", "Every 48 hours"};
+        int[] values = {6, 12, 24, 48};
+        int current = WallpaperChangerScheduler.getIntervalHours(this);
+        int checked = 2;
+        for (int i = 0; i < values.length; i++) {
+            if (values[i] == current) { checked = i; break; }
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Change Interval")
+                .setSingleChoiceItems(options, checked, (dialog, which) -> {
+                    WallpaperChangerScheduler.setIntervalHours(this, values[which]);
+                    if (switchChanger.isChecked()) {
+                        WallpaperChangerScheduler.schedule(this);
+                    }
+                    updateChangerIntervalText();
+                    dialog.dismiss();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+    }
+
+    private void updateChangerIntervalText() {
+        int hours = WallpaperChangerScheduler.getIntervalHours(this);
+        tvChangerInterval.setText("Every " + hours + " hours");
     }
     
     @Override

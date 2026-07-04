@@ -108,6 +108,10 @@ public class ApiManager {
         loadFromUnifiedAPI(currentQuery, 1, DEFAULT_PAGE_SIZE, false);
     }
 
+    public void setSourceFilter(String source) {
+        this.currentSourceFilter = source != null ? source.toLowerCase() : "all";
+    }
+
     public void loadNextPage() {
         if (isLoadingMore || currentQuery == null || currentQuery.isEmpty()) return;
         isLoadingMore = true;

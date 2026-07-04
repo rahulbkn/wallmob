@@ -27,6 +27,9 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,6 +65,11 @@ public class CategoryActivity extends BaseActivity implements WallpaperAdapter.O
     // Color filter state
     private boolean isColorFilter = false;
     private String colorHex;
+
+    // Source filter state
+    private String currentSourceFilter = "all";
+    private static final String[] SOURCE_OPTIONS = {"All", "Unsplash", "Pexels", "Pixabay", "Wallhaven"};
+    private static final String[] SOURCE_VALUES = {"all", "unsplash", "pexels", "pixabay", "wallhaven"};
 
     // Pagination state
     private int currentPage = 1;
@@ -191,14 +199,36 @@ public class CategoryActivity extends BaseActivity implements WallpaperAdapter.O
         }
 
         if (filterButton != null) {
-            filterButton.setOnClickListener(v ->
-                    Toast.makeText(this, getString(R.string.filter_options_coming_soon), Toast.LENGTH_SHORT).show());
+            filterButton.setOnClickListener(v -> showFilterDialog());
         }
 
         if (fabScrollTop != null) {
             fabScrollTop.setOnClickListener(v ->
                     wallpapersRecycler.smoothScrollToPosition(0));
         }
+    }
+
+    private void showFilterDialog() {
+        int checkedItem = 0;
+        for (int i = 0; i < SOURCE_VALUES.length; i++) {
+            if (SOURCE_VALUES[i].equals(currentSourceFilter)) {
+                checkedItem = i;
+                break;
+            }
+        }
+
+        new AlertDialog.Builder(this)
+                .setTitle("Filter by Source")
+                .setSingleChoiceItems(SOURCE_OPTIONS, checkedItem, (dialog, which) -> {
+                    String selectedSource = SOURCE_VALUES[which];
+                    if (!selectedSource.equals(currentSourceFilter)) {
+                        currentSourceFilter = selectedSource;
+                        loadFirstPage();
+                    }
+                    dialog.dismiss();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void setupToolbar() {
@@ -274,6 +304,7 @@ public class CategoryActivity extends BaseActivity implements WallpaperAdapter.O
     }
 
     private void loadCategoryWallpapers() {
+        apiManager.setSourceFilter(currentSourceFilter);
         apiManager.loadWallpapersByQuery(categoryName, PAGE_SIZE, currentPage, new ApiManager.ApiCallback() {
             @Override
             public void onWallpapersLoaded(List<Wallpaper> loadedWallpapers) {
@@ -290,6 +321,7 @@ public class CategoryActivity extends BaseActivity implements WallpaperAdapter.O
 
     private void loadColorWallpapers() {
         String colorQuery = createColorQuery();
+        apiManager.setSourceFilter(currentSourceFilter);
         apiManager.loadWallpapersByQuery(colorQuery, PAGE_SIZE, currentPage, new ApiManager.ApiCallback() {
             @Override
             public void onWallpapersLoaded(List<Wallpaper> loadedWallpapers) {

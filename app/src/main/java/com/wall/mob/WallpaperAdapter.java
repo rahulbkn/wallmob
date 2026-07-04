@@ -181,6 +181,7 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
         TextView title;
         LottieAnimationView lottieLoader;
         ImageView premiumBadge, favoriteIcon;
+        TextView resolutionBadge;
 
         public WallpaperViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -189,6 +190,7 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
             lottieLoader = itemView.findViewById(R.id.lottie_loader);
             premiumBadge = itemView.findViewById(R.id.premium_badge);
             favoriteIcon = itemView.findViewById(R.id.favorite_icon);
+            resolutionBadge = itemView.findViewById(R.id.resolution_badge);
         }
 
         void bindWallpaper(Wallpaper wallpaper) {
@@ -265,6 +267,17 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
                         @Override public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) { lottieLoader.setVisibility(View.GONE); removeBlurLikeFilter(imageView); return false; }
                         @Override public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) { lottieLoader.setVisibility(View.GONE); removeBlurLikeFilter(imageView); return false; }
                     }).into(imageView);
+
+            if (resolutionBadge != null) {
+                int w = wallpaper.getWidth();
+                int h = wallpaper.getHeight();
+                if (w > 0 && h > 0) {
+                    resolutionBadge.setText(w + "×" + h);
+                    resolutionBadge.setVisibility(View.VISIBLE);
+                } else {
+                    resolutionBadge.setVisibility(View.GONE);
+                }
+            }
 
             if (title != null) title.setText(wallpaper.getTitle() == null ? context.getString(R.string.wallpaper) : wallpaper.getTitle());
             itemView.setOnClickListener(v -> { if (listener != null) listener.onWallpaperClick(wallpaper); });
