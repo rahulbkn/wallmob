@@ -983,12 +983,12 @@ public class HomeFragment extends Fragment {
 
         // Set container height for portrait cards
         ViewGroup.LayoutParams lp = heroContainer.getLayoutParams();
-        lp.height = cardHeight;
+        lp.height = cardHeight - dpToPx(10);
         heroContainer.setLayoutParams(lp);
 
         // Also set ViewPager2 height to match
         ViewGroup.LayoutParams vlp = heroCarousel.getLayoutParams();
-        vlp.height = cardHeight;
+        vlp.height = cardHeight - dpToPx(10);
         heroCarousel.setLayoutParams(vlp);
 
         // Configure ViewPager2
