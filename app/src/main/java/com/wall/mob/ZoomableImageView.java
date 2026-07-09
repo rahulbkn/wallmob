@@ -3,12 +3,12 @@ package com.wall.mob;
 import android.content.Context;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.GestureDetector;
-import android.widget.ImageView;
 
 public class ZoomableImageView extends androidx.appcompat.widget.AppCompatImageView {
 
@@ -52,8 +52,78 @@ public class ZoomableImageView extends androidx.appcompat.widget.AppCompatImageV
     }
 
     @Override
+    protected boolean setFrame(int l, int t, int r, int b) {
+        boolean changed = super.setFrame(l, t, r, b);
+        if (changed) {
+            applyCenterCrop();
+        }
+        return changed;
+    }
+
+    private void applyCenterCrop() {
+        Drawable drawable = getDrawable();
+        if (drawable == null || getWidth() == 0 || getHeight() == 0) return;
+
+        float viewWidth = getWidth();
+        float viewHeight = getHeight();
+        float drawableWidth = drawable.getIntrinsicWidth();
+        float drawableHeight = drawable.getIntrinsicHeight();
+
+        float scale;
+        float dx = 0, dy = 0;
+
+        if (drawableWidth * viewHeight > viewWidth * drawableHeight) {
+            scale = viewHeight / drawableHeight;
+            dx = (viewWidth - drawableWidth * scale) * 0.5f;
+        } else {
+            scale = viewWidth / drawableWidth;
+            dy = (viewHeight - drawableHeight * scale) * 0.5f;
+        }
+
+        matrix.setScale(scale, scale);
+        matrix.postTranslate(dx, dy);
+        setImageMatrix(matrix);
+        minScale = scale;
+    }
+
+    private RectF getImageBounds() {
+        Drawable drawable = getDrawable();
+        if (drawable == null) return new RectF();
+        RectF bounds = new RectF(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        matrix.mapRect(bounds);
+        bounds.sort();
+        return bounds;
+    }
+
+    private void clampTranslation() {
+        RectF bounds = getImageBounds();
+        float viewWidth = getWidth();
+        float viewHeight = getHeight();
+        float dx = 0, dy = 0;
+
+        if (bounds.width() <= viewWidth) {
+            dx = (viewWidth - bounds.width()) * 0.5f - bounds.left;
+        } else {
+            if (bounds.left > 0) dx = -bounds.left;
+            else if (bounds.right < viewWidth) dx = viewWidth - bounds.right;
+        }
+
+        if (bounds.height() <= viewHeight) {
+            dy = (viewHeight - bounds.height()) * 0.5f - bounds.top;
+        } else {
+            if (bounds.top > 0) dy = -bounds.top;
+            else if (bounds.bottom < viewHeight) dy = viewHeight - bounds.bottom;
+        }
+
+        if (dx != 0 || dy != 0) {
+            matrix.postTranslate(dx, dy);
+            setImageMatrix(matrix);
+        }
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (gestureDetector.onTouchEvent(event)) return true;
+        gestureDetector.onTouchEvent(event);
         scaleDetector.onTouchEvent(event);
 
         switch (event.getActionMasked()) {
@@ -64,9 +134,11 @@ public class ZoomableImageView extends androidx.appcompat.widget.AppCompatImageV
                 if (!scaleDetector.isInProgress()) {
                     float dx = event.getX() - last.x;
                     float dy = event.getY() - last.y;
-                    matrix.postTranslate(dx, dy);
+                    if (getCurrentScale() > minScale) {
+                        matrix.postTranslate(dx, dy);
+                        setImageMatrix(matrix);
+                    }
                     last.set(event.getX(), event.getY());
-                    setImageMatrix(matrix);
                 }
                 return true;
             case MotionEvent.ACTION_UP:
@@ -85,8 +157,13 @@ public class ZoomableImageView extends androidx.appcompat.widget.AppCompatImageV
             if (currentScale * scale > maxScale) scale = maxScale / currentScale;
             matrix.postScale(scale, scale, detector.getFocusX(), detector.getFocusY());
             setImageMatrix(matrix);
-            isZoomed = getCurrentScale() > 1.1f;
+            isZoomed = getCurrentScale() > minScale * 1.1f;
             return true;
+        }
+
+        @Override
+        public void onScaleEnd(ScaleGestureDetector detector) {
+            clampTranslation();
         }
     }
 
@@ -94,13 +171,15 @@ public class ZoomableImageView extends androidx.appcompat.widget.AppCompatImageV
         @Override
         public boolean onDoubleTap(MotionEvent e) {
             if (isZoomed) {
-                matrix.reset();
-                setImageMatrix(matrix);
+                applyCenterCrop();
                 isZoomed = false;
             } else {
-                matrix.postScale(2.5f, 2.5f, e.getX(), e.getY());
+                float targetScale = Math.min(minScale * 2.5f, maxScale);
+                float scale = targetScale / getCurrentScale();
+                matrix.postScale(scale, scale, e.getX(), e.getY());
                 setImageMatrix(matrix);
                 isZoomed = true;
+                clampTranslation();
             }
             if (onDoubleTapListener != null) onDoubleTapListener.onDoubleTap();
             return true;
@@ -119,30 +198,28 @@ public class ZoomableImageView extends androidx.appcompat.widget.AppCompatImageV
     }
 
     private void clampToBounds() {
-        matrix.getValues(m);
-        float currentScale = m[Matrix.MSCALE_X];
+        float currentScale = getCurrentScale();
         if (currentScale < minScale) {
-            float scale = minScale / currentScale;
-            matrix.postScale(scale, scale, getWidth() / 2f, getHeight() / 2f);
-            setImageMatrix(matrix);
+            applyCenterCrop();
+        } else {
+            clampTranslation();
         }
     }
 
     public void resetZoom() {
-        matrix.reset();
-        setImageMatrix(matrix);
+        applyCenterCrop();
         isZoomed = false;
     }
 
     @Override
     public void setImageDrawable(Drawable drawable) {
         super.setImageDrawable(drawable);
-        resetZoom();
+        post(this::resetZoom);
     }
 
     @Override
     public void setImageResource(int resId) {
         super.setImageResource(resId);
-        resetZoom();
+        post(this::resetZoom);
     }
 }

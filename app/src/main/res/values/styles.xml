@@ -3,10 +3,11 @@
 
     <!-- App theme switched to DayNight Material Components -->
     <style name="AppTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="android:fontFamily">@font/appfont</item>
+
+              <!--   <item name="android:fontFamily">@font/appfont</item>
         <item name="fontFamily">@font/appfont</item>
 
-        <!-- Allow system bar background drawing -->
+         Allow system bar background drawing -->
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
@@ -59,7 +60,6 @@
     <item name="android:textColorHint">@color/gray_dark</item>
 
 
-    <item name="fontFamily">@font/appfont</item>
 </style>
 
 
@@ -67,7 +67,7 @@
         <item name="backgroundTint">@color/colorPrimary</item>
         <item name="android:textColor">@color/white</item>
         <item name="cornerRadius">8dp</item>
-        <item name="android:fontFamily">@font/appfont</item>
+       
     </style>
 
     <style name="Widget.App.MaterialCardView" parent="Widget.MaterialComponents.CardView">

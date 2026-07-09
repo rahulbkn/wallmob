@@ -94,7 +94,7 @@ public class SettingsActivity extends BaseActivity {
         
         btnFeedback.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SENDTO);
-            intent.setData(Uri.parse("mailto:your-email@example.com"));
+            intent.setData(Uri.parse("mailto:wallmobofficial@gmail.com"));
             intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.feedback_email_subject));
             startActivity(intent);
         });
@@ -108,7 +108,7 @@ public class SettingsActivity extends BaseActivity {
         });
 
         btnTelegram.setOnClickListener(v -> {
-            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/your_telegram_channel")));
+            startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/wallmobofficial")));
         });
 
         // Wallpaper Changer

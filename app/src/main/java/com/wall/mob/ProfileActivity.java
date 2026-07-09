@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Toast;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,6 +21,8 @@ import android.os.Build;
 import android.view.Window;
 import android.view.WindowManager;
 import androidx.core.content.ContextCompat;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.wall.mob.User;
 
 public class ProfileActivity extends BaseActivity {
@@ -28,8 +31,9 @@ public class ProfileActivity extends BaseActivity {
     private TextView welcomeText;
     private TextView userInfoText;
     private Button logoutButton;
-    private ImageView backButton;
+    private ImageView avatarImage;
     private LinearLayout settingsButton;
+    private MaterialToolbar toolbar;
     // Firebase Database reference
     private DatabaseReference databaseReference;
     private SessionManager sessionManager;
@@ -77,8 +81,24 @@ public class ProfileActivity extends BaseActivity {
         welcomeText = findViewById(R.id.welcomeText);
         userInfoText = findViewById(R.id.userInfoText);
         logoutButton = findViewById(R.id.logoutButton);
-        backButton = findViewById(R.id.backButton);
         settingsButton = findViewById(R.id.settingsButton);
+        avatarImage = findViewById(R.id.imageview8);
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        loadAvatarImage();
+    }
+
+    private void loadAvatarImage() {
+        String photoUrl = sessionManager.getPhotoUrl();
+        if (photoUrl != null && !photoUrl.isEmpty() && avatarImage != null) {
+            avatarImage.setImageTintList(null);
+            avatarImage.setColorFilter(null);
+            avatarImage.setPadding(0, 0, 0, 0);
+            Glide.with(this)
+                    .load(photoUrl)
+                    .transform(new CircleCrop())
+                    .into(avatarImage);
+        }
     }
 
     private void setUserInfo() {
@@ -111,32 +131,29 @@ public class ProfileActivity extends BaseActivity {
         }
     }
 
-   private void setClickListeners() {
-    logoutButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            logout();
-        }
-    });
+    private void setClickListeners() {
+     logoutButton.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             logout();
+         }
+     });
 
-    backButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            finish();
-        }
-    });
+     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             finish();
+         }
+     });
 
-    settingsButton.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            Intent intent = new Intent(ProfileActivity.this, SettingsActivity.class);
-            startActivity(intent);
-        }
-    });
-
-
-    
-}
+     settingsButton.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             Intent intent = new Intent(ProfileActivity.this, SettingsActivity.class);
+             startActivity(intent);
+         }
+     });
+ }
     private void logout() {
         sessionManager.logoutUser();
         Toast.makeText(this, getString(R.string.logged_out_successfully), Toast.LENGTH_SHORT).show();

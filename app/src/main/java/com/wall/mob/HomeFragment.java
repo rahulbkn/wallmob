@@ -211,7 +211,7 @@ public class HomeFragment extends Fragment {
         if (tvSeeAllTrending != null) tvSeeAllTrending.setOnClickListener(v ->
                 SeeAllActivity.start(requireContext(), getString(R.string.trending_now), SeeAllActivity.TYPE_TRENDING));
 
-        TextView tvShuffle = view.findViewById(R.id.tv_shuffle);
+        ImageView tvShuffle = view.findViewById(R.id.tv_shuffle);
         if (tvShuffle != null) tvShuffle.setOnClickListener(v -> shuffleTrending());
 
         apiManager = new ApiManager(requireContext());

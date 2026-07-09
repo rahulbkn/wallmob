@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.android.material.appbar.MaterialToolbar;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,8 +36,7 @@ public class RegisterActivity extends BaseActivity {
     private CheckBox termsCheckbox;
     private Button registerButton;
     private TextView loginText;
-    private ImageView backButton;
-    
+    private MaterialToolbar toolbar;
     // Firebase Database reference
     private DatabaseReference databaseReference;
 
@@ -64,7 +64,7 @@ public class RegisterActivity extends BaseActivity {
         termsCheckbox = findViewById(R.id.termsCheckbox);
         registerButton = findViewById(R.id.registerButton);
         loginText = findViewById(R.id.loginText);
-        backButton = findViewById(R.id.backButton);
+        toolbar = findViewById(R.id.toolbar);
     }
 
     private void setClickListeners() {
@@ -82,12 +82,9 @@ public class RegisterActivity extends BaseActivity {
             }
         });
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        toolbar.setNavigationOnClickListener(
+        v -> getOnBackPressedDispatcher().onBackPressed()
+);
     }
 
     private void performRegistration() {

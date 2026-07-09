@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-
+import com.google.android.material.appbar.MaterialToolbar;
 import android.os.Build;
 import android.view.Window;
 import android.view.WindowManager;
@@ -28,7 +27,7 @@ public class ForgetActivity extends BaseActivity {
     private EditText emailInput;
     private Button sendResetButton;
     private TextView backToLoginText;
-    private ImageView backButton;
+private MaterialToolbar toolbar;
     private FirebaseAuth mAuth;
 
     @Override
@@ -47,11 +46,11 @@ public class ForgetActivity extends BaseActivity {
     }
 
     private void initViews() {
-        emailInput = findViewById(R.id.emailInput);
-        sendResetButton = findViewById(R.id.sendResetButton);
-        backToLoginText = findViewById(R.id.backToLoginText);
-        backButton = findViewById(R.id.backButton);
-    }
+    toolbar = findViewById(R.id.toolbar);
+    emailInput = findViewById(R.id.emailInput);
+    sendResetButton = findViewById(R.id.sendResetButton);
+    backToLoginText = findViewById(R.id.backToLoginText);
+}
 
     private void setClickListeners() {
         sendResetButton.setOnClickListener(new View.OnClickListener() {
@@ -67,13 +66,12 @@ public class ForgetActivity extends BaseActivity {
                 finish();
             }
         });
+        
+        toolbar.setNavigationOnClickListener(
+        v -> getOnBackPressedDispatcher().onBackPressed()
+);
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+       
     }
 
     private void sendPasswordReset() {

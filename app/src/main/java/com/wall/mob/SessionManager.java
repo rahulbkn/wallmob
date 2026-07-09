@@ -9,6 +9,7 @@ public class SessionManager {
     private static final String KEY_EMAIL = "email";
     private static final String KEY_FULL_NAME = "fullName";
     private static final String KEY_IS_GUEST = "isGuest";
+    private static final String KEY_PHOTO_URL = "photoUrl";
     
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
@@ -25,6 +26,16 @@ public class SessionManager {
         editor.putString(KEY_EMAIL, email);
         editor.putString(KEY_FULL_NAME, fullName);
         editor.putBoolean(KEY_IS_GUEST, isGuest);
+        editor.putString(KEY_PHOTO_URL, null);
+        editor.commit();
+    }
+
+    public void createLoginSession(String email, String fullName, boolean isGuest, String photoUrl) {
+        editor.putBoolean(KEY_IS_LOGGED_IN, true);
+        editor.putString(KEY_EMAIL, email);
+        editor.putString(KEY_FULL_NAME, fullName);
+        editor.putBoolean(KEY_IS_GUEST, isGuest);
+        editor.putString(KEY_PHOTO_URL, photoUrl);
         editor.commit();
     }
     
@@ -42,6 +53,15 @@ public class SessionManager {
     
     public boolean isGuest() {
         return pref.getBoolean(KEY_IS_GUEST, false);
+    }
+
+    public String getPhotoUrl() {
+        return pref.getString(KEY_PHOTO_URL, null);
+    }
+
+    public boolean hasPhotoUrl() {
+        String url = getPhotoUrl();
+        return url != null && !url.isEmpty();
     }
     
     public void logoutUser() {

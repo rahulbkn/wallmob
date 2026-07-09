@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">WallMob</string>
-    <string name="default_web_client_id" translatable="false">346741807438-je3e636phe7ap03t3h82clj858m6mp1q.apps.googleusercontent.com</string>
+    <string name="default_web_client_id" translatable="false">346741807438-rg62kjki7cr25ktvk9cp3bjdap4ie36m.apps.googleusercontent.com</string>
     <string name="version_json_url" translatable="false">https://api.github.com/repos/rahulbkn/Wallmob_wallpaperApp/releases/latest</string>
     <string name="current_version" translatable="false">2.1.0</string>
     <string name="wallpaper">Wallpaper</string>
@@ -77,11 +77,12 @@
     <string name="cache_cleared">Cache cleared</string>
     <string name="about">About</string>
     <string name="privacy_policy">Privacy Policy</string>
+    <string name="profile">Profile</string>
 
     <string name="section_featured">FEATURED</string>
     <string name="section_discover">Discover\nMasterpieces</string>
     <string name="section_hot">HOT</string>
-    <string name="section_see_all">See All →</string>
+    <string name="section_see_all">See All</string>
     <string name="section_trending_now">Trending Now</string>
     <string name="section_trending_desc">The most popular downloads today</string>
     <string name="section_colors">COLORS</string>
@@ -94,7 +95,7 @@
     <string name="section_categories">Categories</string>
     <string name="section_categories_desc">Explore our extensive collections</string>
     <string name="section_premium_badge">✦  PREMIUM</string>
-    <string name="section_unlock_all">Unlock All →</string>
+    <string name="section_unlock_all">Unlock All</string>
     <string name="section_premium_collection">Premium Collection</string>
     <string name="section_premium_desc">Curated exclusively for members</string>
 
@@ -107,6 +108,8 @@
     <string name="password">Password</string>
     <string name="forgot_password">Forgot Password?</string>
     <string name="sign_in">Sign In</string>
+    <string name="sign_in_with_google">Continue with Google</string>
+    <string name="sign_in_with_facebook">Continue with Facebook</string>
     <string name="full_name">Full Name</string>
     <string name="phone_number">Phone Number</string>
     <string name="confirm_password">Confirm Password</string>
@@ -279,6 +282,10 @@ Phone: %2$s
 You have full access to all features.</string>
 
     <string name="trending_now">Trending Now</string>
+    <string name="facebook_app_id" translatable="false">1573326364496807</string>
+    <string name="facebook_client_token" translatable="false">67c841304ad008b70a6045171bea98c7</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb1573326364496807</string>
+
     <string name="firebase_source">Firebase</string>
     <string name="category_abstract">Abstract</string>
     <string name="category_amoled">Amoled</string>
@@ -316,9 +323,27 @@ You have full access to all features.</string>
     <string name="shared_wallpaper_format">Shared %1$s Wallpaper</string>
     <string name="downloaded_wallpaper_format">Downloaded %1$s Wallpaper</string>
     <string name="no_results">No results</string>
-
-    <plurals name="wallpaper_count">
-        <item quantity="one">%d wallpaper</item>
-        <item quantity="other">%d wallpapers</item>
-    </plurals>
+<string name="crash_log_title">App Crashed</string>
+<string name="crash_log_message">The app encountered an unexpected error. Details below:</string>
+<string name="copy_log_to_clipboard">Copy Log to Clipboard</string>
+<string name="view_all_crash_logs">View All Crash Logs</string>
+<string name="restart_app">Restart App</string>
+<string name="select_language">Select Language</string>
+<string name="select_theme">Select Theme</string>
+<string name="auto_wallpaper">Auto Wallpaper</string>
+<string name="auto_change">Auto Change</string>
+<string name="change_interval">Change Interval</string>
+<string name="every_24_hours">Every 24 hours</string>
+<string name="select_all">Select All</string>
+<string name="delete">Delete</string>
+<string name="recent">Recent</string>
+<string name="clear">Clear</string>
+<string name="blur_min">0</string>
+<string name="blur_max">25</string>
+<string name="zero">0</string>
+<string name="or">OR LOGIN WITH</string>
+<plurals name="wallpaper_count">
+    <item quantity="one">%d wallpaper</item>
+    <item quantity="other">%d wallpapers</item>
+</plurals>
 </resources>

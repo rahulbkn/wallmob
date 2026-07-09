@@ -145,13 +145,7 @@ public class WallpaperDeepLinkHandler {
         }
 
         // Custom font (safe)
-        try {
-            wallpaperTitle.setTypeface(
-                    ResourcesCompat.getFont(activity, R.font.myfont)
-            );
-        } catch (Exception e) {
-            Log.w(TAG, "Custom font not applied", e);
-        }
+
 
         // Image
         if (wallpaper.getImageUrl() != null) {

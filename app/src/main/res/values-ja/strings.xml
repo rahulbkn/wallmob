@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WallMob</string>
-    <string name="select_theme">テーマを選択</string>
-    <string name="select_language">言語を選択</string>
+    
+    
     <string name="system_default">システムのデフォルト</string>
     <string name="light">ライト</string>
     <string name="dark">ダーク</string>
@@ -314,4 +314,22 @@
         <item quantity="one">%d 件の壁紙</item>
         <item quantity="other">%d 件の壁紙</item>
     </plurals>
+    <string name="crash_log_title">アプリがクラッシュしました</string>
+    <string name="crash_log_message">アプリで予期しないエラーが発生しました。詳細は以下です：</string>
+    <string name="copy_log_to_clipboard">ログをクリップボードにコピー</string>
+    <string name="view_all_crash_logs">すべてのクラッシュログを表示</string>
+    <string name="restart_app">アプリを再起動</string>
+    <string name="select_language">言語を選択</string>
+    <string name="select_theme">テーマを選択</string>
+    <string name="auto_wallpaper">自動壁紙設定</string>
+    <string name="auto_change">自動変更</string>
+    <string name="change_interval">変更間隔</string>
+    <string name="every_24_hours">24時間ごと</string>
+    <string name="select_all">すべて選択</string>
+    <string name="delete">削除</string>
+    <string name="recent">最近</string>
+    <string name="clear">クリア</string>
+    <string name="blur_min">0</string>
+    <string name="blur_max">25</string>
+    <string name="zero">0</string>
 </resources>

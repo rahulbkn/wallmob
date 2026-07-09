@@ -195,9 +195,11 @@ public class DownloadsFragment extends Fragment implements WallpaperAdapter.OnWa
 
     @Override
     public void onWallpaperLongClick(Wallpaper wallpaper, int position) {
+        android.util.Log.d("DownloadsFragment", "onWallpaperLongClick called. Current isSelectionMode: " + isSelectionMode);
         if (!isSelectionMode) {
             toggleSelectionMode();
         }
+        android.util.Log.d("DownloadsFragment", "After toggle, isSelectionMode: " + isSelectionMode);
         if (isSelectionMode) {
             if (selectedPositions.contains(position)) selectedPositions.remove(position);
             else selectedPositions.add(position);

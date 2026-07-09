@@ -176,7 +176,7 @@
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
                 android:paddingBottom="8dp"
-                android:text="Auto Wallpaper"
+                android:text="@string/auto_wallpaper"
                 android:textColor="@color/onSurface"
                 android:textSize="14sp"
                 android:textStyle="bold" />
@@ -191,7 +191,7 @@
                 android:gravity="center_vertical"
                 android:padding="20dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_auto" app:tint="@color/onSurface" />
-                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="Auto Change" android:textColor="@color/onSurface" android:textSize="16sp" />
+                <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="@string/auto_change" android:textColor="@color/onSurface" android:textSize="16sp" />
                 <androidx.appcompat.widget.SwitchCompat android:id="@+id/switch_changer" android:layout_width="wrap_content" android:layout_height="wrap_content" />
             </LinearLayout>
 
@@ -206,8 +206,8 @@
                 android:padding="20dp">
                 <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_time" app:tint="@color/onSurface" />
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Change Interval" android:textColor="@color/onSurface" android:textSize="16sp" />
-                    <TextView android:id="@+id/tv_changer_interval" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Every 24 hours" android:textColor="?android:attr/textColorSecondary" android:textSize="13sp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/change_interval" android:textColor="@color/onSurface" android:textSize="16sp" />
+                    <TextView android:id="@+id/tv_changer_interval" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/every_24_hours" android:textColor="?android:attr/textColorSecondary" android:textSize="13sp" />
                 </LinearLayout>
             </LinearLayout>
 

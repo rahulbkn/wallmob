@@ -145,7 +145,7 @@
             android:layout_weight="1"
             android:layout_marginEnd="4dp"
             android:backgroundTint="@color/colorPrimary"
-            android:text="Select All"
+            android:text="@string/select_all"
             android:textColor="@color/colorOnPrimary"
             android:textSize="12sp"
             android:textStyle="bold" />
@@ -158,7 +158,7 @@
             android:layout_marginStart="4dp"
             android:layout_marginEnd="4dp"
             android:backgroundTint="#FF4444"
-            android:text="Delete"
+            android:text="@string/delete"
             android:textColor="@color/white"
             android:textSize="12sp"
             android:textStyle="bold" />
@@ -170,7 +170,7 @@
             android:layout_weight="1"
             android:layout_marginStart="4dp"
             android:backgroundTint="@color/subtle_on_surface"
-            android:text="Cancel"
+            android:text="@string/cancel"
             android:textColor="@color/onSurface"
             android:textSize="12sp"
             android:textStyle="bold" />

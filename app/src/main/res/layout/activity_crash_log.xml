@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="App Crashed"
+        android:text="@string/crash_log_title"
         android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="@color/error_color"
@@ -20,7 +20,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="The app encountered an unexpected error. Details below:"
+        android:text="@string/crash_log_message"
         android:textSize="14sp"
         android:textColor="@color/text_secondary"
         android:gravity="center"
@@ -56,7 +56,7 @@
             android:id="@+id/btn_copy_log"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Copy Log to Clipboard"
+            android:text="@string/copy_log_to_clipboard"
             android:background="@drawable/button_outline"
             android:textColor="@color/text_primary"
             android:layout_marginBottom="8dp" />
@@ -65,7 +65,7 @@
             android:id="@+id/btn_view_all_logs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="View All Crash Logs"
+            android:text="@string/view_all_crash_logs"
             android:background="@drawable/button_outline"
             android:textColor="@color/text_primary"
             android:layout_marginBottom="8dp" />
@@ -74,7 +74,7 @@
             android:id="@+id/btn_restart_app"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Restart App"
+            android:text="@string/restart_app"
             android:background="@drawable/button_primary"
             android:textColor="@android:color/white" />
     </LinearLayout>

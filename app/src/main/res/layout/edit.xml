@@ -127,7 +127,7 @@
                          android:textColor="@color/onImage"
                          android:minWidth="24dp"
                          android:id="@+id/textview50"
-                         android:text="0" />
+                         android:text="@string/blur_min" />
 
                     <SeekBar
                          android:layout_height="wrap_content"
@@ -146,7 +146,7 @@
                          android:textColor="@color/onImage"
                          android:minWidth="24dp"
                          android:id="@+id/textview51"
-                         android:text="25" />
+                         android:text="@string/blur_max" />
 
                 </LinearLayout>
 

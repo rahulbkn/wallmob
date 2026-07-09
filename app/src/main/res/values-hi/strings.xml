@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">WallMob</string>
-    <string name="select_theme">थीम चुनें</string>
-    <string name="select_language">भाषा चुनें</string>
+    
+    
     <string name="system_default">सिस्टम डिफ़ॉल्ट</string>
     <string name="light">लाइट</string>
     <string name="dark">डार्क</string>
@@ -74,11 +74,11 @@
     <string name="section_featured">विशेष</string>
     <string name="section_discover">बेहतरीन\nवॉलपेपर</string>
     <string name="section_hot">लोकप्रिय</string>
-    <string name="section_see_all">सभी देखें →</string>
+    <string name="section_see_all">सभी देखें</string>
     <string name="section_trending_now">अभी ट्रेंडिंग</string>
     <string name="section_colors">रंग</string>
     <string name="section_categories">श्रेणियां</string>
-    <string name="section_unlock_all">सभी अनलॉक करें →</string>
+    <string name="section_unlock_all">सभी अनलॉक करें</string>
     <string name="search">खोजें</string>
     <string name="no_wallpapers_found">कोई वॉलपेपर नहीं मिला</string>
     <string name="failed_to_load_wallpapers">वॉलपेपर लोड नहीं हो सके</string>
@@ -318,4 +318,22 @@
         <item quantity="one">%d वॉलपेपर</item>
         <item quantity="other">%d वॉलपेपर</item>
     </plurals>
+    <string name="crash_log_title">ऐप क्रैश हो गया</string>
+    <string name="crash_log_message">ऐप को एक अप्रत्याशित त्रुटि का सामना करना पड़ा। विवरण नीचे दिए गए हैं:</string>
+    <string name="copy_log_to_clipboard">लॉग को क्लिपबोर्ड पर कॉपी करें</string>
+    <string name="view_all_crash_logs">सभी क्रैश लॉग देखें</string>
+    <string name="restart_app">ऐप को पुनरारंभ करें</string>
+    <string name="select_language">भाषा चुनें</string>
+    <string name="select_theme">थीम चुनें</string>
+    <string name="auto_wallpaper">ऑटो वॉलपेपर</string>
+    <string name="auto_change">ऑटो बदलें</string>
+    <string name="change_interval">बदलने का अंतराल</string>
+    <string name="every_24_hours">हर 24 घंटे</string>
+    <string name="select_all">सभी चुनें</string>
+    <string name="delete">हटाएं</string>
+    <string name="recent">हालिया</string>
+    <string name="clear">साफ़ करें</string>
+    <string name="blur_min">0</string>
+    <string name="blur_max">25</string>
+    <string name="zero">0</string>
 </resources>

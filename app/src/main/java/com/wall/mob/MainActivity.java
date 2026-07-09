@@ -45,6 +45,8 @@ import android.net.Uri;
 import android.app.NotificationManager;
 import android.app.NotificationChannel;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -88,6 +90,9 @@ public class MainActivity extends BaseActivity {
 
     // SwipeRefreshLayout
     private SwipeRefreshLayout swipeRefresh;
+    
+    // Profile photo state
+    private boolean hasProfilePhoto = false;
     
 
     // Coin update receiver
@@ -318,7 +323,7 @@ public class MainActivity extends BaseActivity {
 
         if (btn_menu != null) btn_menu.setColorFilter(currentIconColor);
         if (notificationButton != null) notificationButton.setColorFilter(currentIconColor);
-        if (profileButton != null) profileButton.setColorFilter(currentIconColor);
+        if (profileButton != null && !hasProfilePhoto) profileButton.setColorFilter(currentIconColor);
         if (settingsButton != null) settingsButton.setColorFilter(currentIconColor);
         if (textview1 != null) textview1.setTextColor(currentIconColor);
 
@@ -478,11 +483,27 @@ public class MainActivity extends BaseActivity {
     protected void onResume() {
         super.onResume();
         refreshCoins();
+        loadProfilePhoto();
     }
 
     private void refreshCoins() {
         currentCoins = sharedPrefs.getInt(COINS_KEY, 0);
         updateToolbarCoinsDisplay();
+    }
+
+    private void loadProfilePhoto() {
+        String photoUrl = sessionManager.getPhotoUrl();
+        hasProfilePhoto = photoUrl != null && !photoUrl.isEmpty();
+        if (hasProfilePhoto && profileButton != null) {
+            profileButton.setImageTintList(null);
+            profileButton.setColorFilter(null);
+            Glide.with(this)
+                    .load(photoUrl)
+                    .transform(new CircleCrop())
+                    .into(profileButton);
+        } else if (profileButton != null) {
+            profileButton.setImageResource(R.drawable.ic_profile);
+        }
     }
 
     public void updateCoins(int newCoins) {
@@ -683,7 +704,7 @@ public class MainActivity extends BaseActivity {
 
         if (btn_menu != null) btn_menu.setColorFilter(goldColor);
         if (notificationButton != null) notificationButton.setColorFilter(goldColor);
-        if (profileButton != null) profileButton.setColorFilter(goldColor);
+        if (profileButton != null && !hasProfilePhoto) profileButton.setColorFilter(goldColor);
         if (textview1 != null) textview1.setTextColor(whiteColor);
 
         if (searchLayout != null) {
@@ -753,7 +774,7 @@ public class MainActivity extends BaseActivity {
 
         if (btn_menu != null) btn_menu.setColorFilter(onSurfaceColor);
         if (notificationButton != null) notificationButton.setColorFilter(onSurfaceColor);
-        if (profileButton != null) profileButton.setColorFilter(onSurfaceColor);
+        if (profileButton != null && !hasProfilePhoto) profileButton.setColorFilter(onSurfaceColor);
         if (textview1 != null) textview1.setTextColor(onSurfaceColor);
 
         if (searchLayout != null) {

@@ -8,14 +8,22 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:346741807438:android:3c1a3ccffa25050593e61f",
+        "mobilesdk_app_id": "1:346741807438:android:670ffb582f31c3b593e61f",
         "android_client_info": {
           "package_name": "com.wall.mob"
         }
       },
       "oauth_client": [
         {
-          "client_id": "346741807438-3qk62nke2eq5nsga940o5cnsn6attt8n.apps.googleusercontent.com",
+          "client_id": "346741807438-fshqtr8jmchk73rfps55e83mghjcn6jn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.wall.mob",
+            "certificate_hash": "4fef0259b477002ab9361f01b11b9ba7e4f48e67"
+          }
+        },
+        {
+          "client_id": "346741807438-rg62kjki7cr25ktvk9cp3bjdap4ie36m.apps.googleusercontent.com",
           "client_type": 3
         }
       ],

@@ -148,9 +148,11 @@ public class FavoriteFragment extends Fragment implements WallpaperAdapter.OnWal
 
     @Override
     public void onWallpaperLongClick(Wallpaper wallpaper, int position) {
+        android.util.Log.d("FavoriteFragment", "onWallpaperLongClick called. Current isSelectionMode: " + isSelectionMode);
         if (!isSelectionMode) {
             toggleSelectionMode();
         }
+        android.util.Log.d("FavoriteFragment", "After toggle, isSelectionMode: " + isSelectionMode);
         if (isSelectionMode) {
             if (selectedPositions.contains(position)) selectedPositions.remove(position);
             else selectedPositions.add(position);

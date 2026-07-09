@@ -35,7 +35,7 @@
             style="@style/PrimaryButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Select Language" />
+            android:text="@string/select_language" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_welcome_theme"
@@ -43,7 +43,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Select Theme" />
+            android:text="@string/select_theme" />
     </LinearLayout>
 
     <LinearLayout
