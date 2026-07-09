@@ -97,6 +97,10 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
     
+    <style name="CustomTabTextAppearance" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textAllCaps">true</item>
+    </style>
+    
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/background</item> 
         

@@ -193,7 +193,8 @@ if (nestedScrollView != null) {
     
     
     private void updateStickyTab(MainActivity activity, int scrollY) {
-    if (activity == null) return;
+    if (activity == null || getView() == null) return;
+    
 
     if (cachedTabLayout == null || cachedTabPlaceholder == null) {
         if (sectionsFragment == null || sectionsFragment.getView() == null) return;
@@ -830,19 +831,26 @@ if (nestedScrollView != null) {
         autoScrollHandler.postDelayed(autoScrollRunnable, AUTO_SCROLL_INTERVAL_MS);
     }
 
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-tabIsSticky = false;
-stickyTabContainer = null;
-cachedTabLayout = null;
-cachedTabPlaceholder = null;
-        autoScrollHandler.removeCallbacks(autoScrollRunnable);
-        if (premiumValueListener != null) {
-            firebasePremiumRef.removeEventListener(premiumValueListener);
-            premiumValueListener = null;
-        }
+@Override
+public void onDestroyView() {
+    super.onDestroyView();
+    autoScrollHandler.removeCallbacks(autoScrollRunnable);
+    if (premiumValueListener != null) {
+        firebasePremiumRef.removeEventListener(premiumValueListener);
+        premiumValueListener = null;
     }
+
+    if (tabIsSticky && stickyTabContainer != null && cachedTabLayout != null) {
+        stickyTabContainer.removeView(cachedTabLayout);
+        stickyTabContainer.setVisibility(View.GONE);
+    }
+    tabIsSticky = false;
+    stickyTabContainer = null;
+    cachedTabLayout = null;
+    cachedTabPlaceholder = null;
+    tabOriginalParent = null;
+    tabOriginalIndex = -1;
+}
 
     @Override
     public void onPause() {

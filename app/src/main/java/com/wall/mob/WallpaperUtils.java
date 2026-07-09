@@ -325,10 +325,14 @@ public class WallpaperUtils {
         Wallpaper wallpaper
     ) {
         String originalUrl = buildOriginalUrlWithDetails(wallpaper);
-
-shortenUrlWithBitly(originalUrl, shortUrl -> {
-    createShareIntentWithUrl(activity, shareUri, shortUrl, wallpaper);
-});
+        
+        // Show share dialog immediately with original URL (no delay)
+        createShareIntentWithUrl(activity, shareUri, originalUrl, wallpaper);
+        
+        // Optionally shorten URL in background for future use (non-blocking)
+        // shortenUrlWithBitly(originalUrl, shortUrl -> {
+        //     // Could cache shortened URL for next time
+        // });
     }
 
     private static void createShareIntentWithUrl(WallpaperDetailsActivity activity, Uri shareUri, String shortUrl, Wallpaper wallpaper) {

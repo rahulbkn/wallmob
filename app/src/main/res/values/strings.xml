@@ -346,4 +346,10 @@ You have full access to all features.</string>
     <item quantity="one">%d wallpaper</item>
     <item quantity="other">%d wallpapers</item>
 </plurals>
+    <string name="tab_for_you">For You</string>
+    <string name="tab_trending">Trending</string>
+    <string name="tab_premium">Premium</string>
+    <string name="tab_categories">Categories</string>
+    <string name="section_recent_title">RECENT</string>
+    <string name="section_recent_desc">Your recently viewed wallpapers</string>
 </resources>

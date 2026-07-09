@@ -3,7 +3,7 @@
     android:shape="rectangle">
     
     <!-- 20% Black - balanced opacity for scrolling visibility -->
-    <solid android:color="#33000000" /> 
+    <solid android:color="@color/gray_light" /> 
     
     <!-- Subtle white border to enhance the glass effect -->
     <stroke android:width="1dp" android:color="#50FFFFFF" />
