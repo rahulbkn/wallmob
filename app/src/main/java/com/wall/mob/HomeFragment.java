@@ -24,22 +24,20 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.palette.graphics.Palette;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.core.widget.NestedScrollView;
 import androidx.viewpager2.widget.ViewPager2;
 import androidx.viewpager2.widget.CompositePageTransformer;
-import androidx.viewpager2.widget.MarginPageTransformer;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.target.CustomTarget;
 import com.bumptech.glide.request.transition.Transition;
-import com.google.android.material.tabs.TabLayout;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,39 +45,16 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class HomeFragment extends Fragment {
     private static final String TAG = "HomeFragment";
     private static final int PREMIUM_WALLPAPER_LIMIT = 10;
-    
     private FrameLayout heroContainer;
     private TextView heroTitle;
-    
-
-    // UI Components
-    private RecyclerView recyclerBestMonth;
-    private RecyclerView recyclerLandscape;
-    private RecyclerView recyclerColorTone;
-    private RecyclerView recyclerCategories;
-    private List<Wallpaper> allPortraitWallpapers = new ArrayList<>();
-
-    private View premiumSectionView;
-    private TextView premiumSectionTitle;
-    private RecyclerView recyclerPremium;
-    private LinearLayout mainContentContainer;
-
-    private View landscapeSectionView;
-    private TextView tvSeeAllTrending;
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private ProgressBar progressBar;
@@ -87,33 +62,19 @@ public class HomeFragment extends Fragment {
     private View errorView;
     private Button retryButton;
     private TextView errorMessage;
+    private FrameLayout sectionsContainer;
 
-    // Adapters
-    private BestMonthAdapter bestMonthAdapter;
-    private LandscapeAdapter landscapeAdapter;
-    private ColorToneAdapter colorToneAdapter;
-    private CategoryGridAdapter categoryGridAdapter;
-    private BestMonthAdapter premiumAdapter;
-    private BestMonthAdapter recentAdapter;
-
-    // UI - Recent Section
-    private View recentSection;
-    private RecyclerView recyclerRecent;
-    private TextView tvClearRecent;
-
-    // Data
     private ApiManager apiManager;
     private List<Wallpaper> allWallpapers = new ArrayList<>();
     private List<Wallpaper> premiumWallpapers = new ArrayList<>();
-    private Map<String, List<Wallpaper>> categoryWallpapers = new HashMap<>();
+    private Map<String, List<Wallpaper>> categoryWallpapers;
     private Set<String> loadedWallpaperIds = new HashSet<>();
     private Context mContext;
 
-    // Firebase
     private DatabaseReference firebasePremiumRef;
     private ValueEventListener premiumValueListener;
+    private LinearLayout mainContentContainer;
 
-    // Loading states
     private boolean isLoadingApiData = false;
     private boolean isLoadingPremiumData = false;
     private boolean isLoadingMore = false;
@@ -125,12 +86,14 @@ public class HomeFragment extends Fragment {
     private int currentHeroPage = 0;
     private static final int AUTO_SCROLL_INTERVAL_MS = 5000;
 
-    // NASA APOD
-    private static final String NASA_API_KEY = "6QPKzAjSBthigZmCIBTrtHgEPXHTr95ECW1f3r5m";
-    private RecyclerView recyclerNasa;
-    private View nasaSectionView;
-    private NasaApodAdapter nasaApodAdapter;
-    private List<Wallpaper> nasaWallpapers = new ArrayList<>();
+    private HomeSectionsFragment sectionsFragment;
+    private NestedScrollView nestedScrollView;
+    private View cachedTabLayout;
+private View cachedTabPlaceholder;
+    private ViewGroup stickyTabContainer;
+private ViewGroup tabOriginalParent;
+private int tabOriginalIndex = -1;
+private boolean tabIsSticky = false;
 
     private final Runnable autoScrollRunnable = new Runnable() {
         @Override
@@ -154,65 +117,41 @@ public class HomeFragment extends Fragment {
         mContext = null;
     }
 
-// ... inside HomeFragment class ...
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.home, container, false);
         initializeViews(view);
-        setupRecyclerViews();
         setupSwipeRefresh(view);
         firebasePremiumRef = FirebaseDatabase.getInstance().getReference("wallpapers/premium");
 
-        // Populate static categories immediately so the UI doesn't look empty
-        updateCategoriesSection();
-
         loadAllWallpapers();
-        updateRecentSection();
         return view;
     }
 
     private void initializeViews(View view) {
-        NestedScrollView scrollView = view.findViewById(R.id.main_scroll_view);
-        if (scrollView != null) {
-            scrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-                MainActivity activity = (MainActivity) getActivity();
-                if (activity != null) {
-                    activity.updateToolbarOnScroll(scrollY);
-                    activity.handleScrollDirection(scrollY - oldScrollY);
-                }
-            });
-        }
-
-        recyclerBestMonth = view.findViewById(R.id.recycler_best_month);
-        recyclerLandscape = view.findViewById(R.id.recycler_landscape);
-        landscapeSectionView = view.findViewById(R.id.landscape_section);
-        recyclerColorTone = view.findViewById(R.id.recycler_color_tone);
-        recyclerCategories = view.findViewById(R.id.recycler_categories);
-        premiumSectionView = view.findViewById(R.id.premium_section);
-        premiumSectionTitle = view.findViewById(R.id.premium_section_title);
-        recyclerPremium = view.findViewById(R.id.recycler_premium);
-        mainContentContainer = view.findViewById(R.id.main_content_container);
+        nestedScrollView = view.findViewById(R.id.main_scroll_view);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         progressBar = view.findViewById(R.id.progress_bar);
         shimmerViewContainer = view.findViewById(R.id.shimmer_view_container);
         errorView = view.findViewById(R.id.error_view);
         retryButton = view.findViewById(R.id.retry_button);
         errorMessage = view.findViewById(R.id.error_message);
-        tvSeeAllTrending = view.findViewById(R.id.tv_see_all_trending);
-        TextView tvUnlockAll = view.findViewById(R.id.tv_unlock_all_premium);
-        
         heroContainer = view.findViewById(R.id.hero_container);
         heroTitle = view.findViewById(R.id.hero_title);
-         
+        heroCarousel = view.findViewById(R.id.hero_carousel);
+        heroDots = view.findViewById(R.id.hero_dots);
+        mainContentContainer = view.findViewById(R.id.main_content_container);
 
-        if (tvUnlockAll != null) tvUnlockAll.setOnClickListener(v -> {
-            if (getActivity() instanceof MainActivity) ((MainActivity) getActivity()).navigateToPremium();
-        });
-
-        if (tvSeeAllTrending != null) tvSeeAllTrending.setOnClickListener(v ->
-                SeeAllActivity.start(requireContext(), getString(R.string.trending_now), SeeAllActivity.TYPE_TRENDING));
-
-        ImageView tvShuffle = view.findViewById(R.id.tv_shuffle);
-        if (tvShuffle != null) tvShuffle.setOnClickListener(v -> shuffleTrending());
+if (nestedScrollView != null) {
+    nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+        MainActivity activity = (MainActivity) getActivity();
+        if (activity != null) {
+            activity.updateToolbarOnScroll(scrollY);
+            activity.handleScrollDirection(scrollY - oldScrollY);
+        }
+        updateStickyTab(activity, scrollY);
+    });
+}
 
         apiManager = new ApiManager(requireContext());
         retryButton.setOnClickListener(v -> {
@@ -220,132 +159,23 @@ public class HomeFragment extends Fragment {
             loadAllWallpapers();
         });
 
-        heroCarousel = view.findViewById(R.id.hero_carousel);
-        heroDots = view.findViewById(R.id.hero_dots);
+        sectionsContainer = view.findViewById(R.id.sections_container);
 
-        // NASA APOD
-        recyclerNasa = view.findViewById(R.id.recycler_nasa);
-        nasaSectionView = view.findViewById(R.id.nasa_section);
-
-        // Recent Section
-        recentSection = view.findViewById(R.id.recent_section);
-        recyclerRecent = view.findViewById(R.id.recycler_recent);
-        tvClearRecent = view.findViewById(R.id.tv_clear_recent);
-    }
-    
-   
-    private void setupRecyclerViews() {
-        if (mContext == null) return;
-
-        // Trending Now Setup
-        LinearLayoutManager bestMonthLayout = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
-        recyclerBestMonth.setLayoutManager(bestMonthLayout);
-        recyclerBestMonth.setNestedScrollingEnabled(false);
-        bestMonthAdapter = new BestMonthAdapter(mContext, new ArrayList<>(), this::onWallpaperClick);
-        recyclerBestMonth.setAdapter(bestMonthAdapter);
-        recyclerBestMonth.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
-                if (lm != null && !isLoadingMore && lm.findLastVisibleItemPosition() >= lm.getItemCount() - 3) {
-                    isLoadingMore = true;
-                    apiManager.loadNextPage();
-                }
-            }
-        });
-
-        // Premium Setup
-        LinearLayoutManager premiumLayout = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
-        recyclerPremium.setLayoutManager(premiumLayout);
-        recyclerPremium.setNestedScrollingEnabled(false);
-        premiumAdapter = new BestMonthAdapter(mContext, new ArrayList<>(), this::onWallpaperClick);
-        recyclerPremium.setAdapter(premiumAdapter);
-
-        // Landscape Setup
-        LinearLayoutManager landscapeLayout = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
-        recyclerLandscape.setLayoutManager(landscapeLayout);
-        recyclerLandscape.setNestedScrollingEnabled(false);
-        landscapeAdapter = new LandscapeAdapter(mContext, new ArrayList<>(), this::onWallpaperClick);
-        recyclerLandscape.setAdapter(landscapeAdapter);
-        recyclerLandscape.addOnScrollListener(new RecyclerView.OnScrollListener() {
-            @Override
-            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                applyParallax(recyclerView);
-                LinearLayoutManager lm = (LinearLayoutManager) recyclerView.getLayoutManager();
-                if (lm != null && !isLoadingMore && lm.findLastVisibleItemPosition() >= lm.getItemCount() - 3) {
-                    isLoadingMore = true;
-                    apiManager.loadNextPage();
-                }
-            }
-        });
-        recyclerLandscape.post(() -> applyParallax(recyclerLandscape));
-
-        // Color Palettes Setup
-        LinearLayoutManager colorToneLayout = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
-        recyclerColorTone.setLayoutManager(colorToneLayout);
-        recyclerColorTone.setNestedScrollingEnabled(false);
-        List<String> colors = Arrays.asList("#FF0000", "#FF7F00", "#FFD700", "#32CD32", "#40E0D0", "#4169E1", "#4B0082", "#8B00FF", "#FF1493", "#2C2C2C");
-        colorToneAdapter = new ColorToneAdapter(mContext, colors, this::onColorClick);
-        recyclerColorTone.setAdapter(colorToneAdapter);
-
-        // Recent Section Setup
-        if (recyclerRecent != null) {
-            LinearLayoutManager recentLayout = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
-            recyclerRecent.setLayoutManager(recentLayout);
-            recyclerRecent.setNestedScrollingEnabled(false);
-            recentAdapter = new BestMonthAdapter(mContext, new ArrayList<>(), this::onWallpaperClick);
-            recyclerRecent.setAdapter(recentAdapter);
+        FragmentManager childFm = getChildFragmentManager();
+        sectionsFragment = (HomeSectionsFragment) childFm.findFragmentByTag("home_sections");
+        if (sectionsFragment == null) {
+            sectionsFragment = new HomeSectionsFragment();
+            childFm.beginTransaction()
+                    .add(R.id.sections_container, sectionsFragment, "home_sections")
+                    .commit();
+            childFm.executePendingTransactions();
         }
-
-        if (tvClearRecent != null) {
-            tvClearRecent.setOnClickListener(v -> {
-                RecentWallpapersManager.clearRecents(requireContext());
-                updateRecentSection();
-            });
-        }
-
-        // Categories Setup
-        int span = 2;
-        GridLayoutManager categoryLayout = new GridLayoutManager(mContext, span);
-        recyclerCategories.setLayoutManager(categoryLayout);
-        recyclerCategories.setNestedScrollingEnabled(false);
-        recyclerCategories.addItemDecoration(new GridSpacingItemDecoration(span, dpToPx(2)));
-        categoryGridAdapter = new CategoryGridAdapter(mContext, new ArrayList<>(), this::onCategoryClick);
-        recyclerCategories.setAdapter(categoryGridAdapter);
-
-        // NASA APOD Setup
-        if (recyclerNasa != null) {
-            LinearLayoutManager nasaLayout = new LinearLayoutManager(mContext, LinearLayoutManager.HORIZONTAL, false);
-            recyclerNasa.setLayoutManager(nasaLayout);
-            recyclerNasa.setNestedScrollingEnabled(false);
-            nasaApodAdapter = new NasaApodAdapter(mContext, new ArrayList<>(), this::onWallpaperClick);
-            recyclerNasa.setAdapter(nasaApodAdapter);
-        }
-    }
-
-    private void applyParallax(RecyclerView recyclerView) {
-        if (recyclerView == null || recyclerView.getChildCount() == 0) return;
-        float rvCenter = recyclerView.getWidth() / 2f;
-        for (int i = 0; i < recyclerView.getChildCount(); i++) {
-            View child = recyclerView.getChildAt(i);
-            ImageView image = child.findViewById(R.id.wallpaper_image);
-            if (image == null) continue;
-            int containerW = child.getWidth();
-            int imageW = image.getWidth();
-            if (containerW <= 0 || imageW <= containerW) continue;
-            float initialOffset = -(imageW - containerW) / 2f;
-            float childCenter = child.getX() + containerW / 2f;
-            float distance = childCenter - rvCenter;
-            float maxParallax = (imageW - containerW) / 2f * 0.7f;
-            float parallaxOffset = -(distance / rvCenter) * maxParallax;
-            image.setTranslationX(initialOffset + parallaxOffset);
+        if (sectionsFragment != null) {
+            sectionsFragment.setApiManager(apiManager);
         }
     }
 
     private void setupSwipeRefresh(View view) {
-        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         if (swipeRefreshLayout != null) {
             swipeRefreshLayout.setOnRefreshListener(this::refreshData);
             swipeRefreshLayout.setColorSchemeResources(
@@ -360,18 +190,56 @@ public class HomeFragment extends Fragment {
     private int dpToPx(int dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);
     }
+    
+    
+    private void updateStickyTab(MainActivity activity, int scrollY) {
+    if (activity == null) return;
 
-    private boolean isLandscapeWallpaper(Wallpaper w) {
-        if (w == null) return false;
-        int width = w.getWidth();
-        int height = w.getHeight();
-        if (width > 0 && height > 0) {
-            return width > height;
-        }
-        if (w.getCategory() != null && w.getCategory().toLowerCase().contains("landscape")) return true;
-        if (w.getTitle() != null && w.getTitle().toLowerCase().contains("landscape")) return true;
-        return false;
+    if (cachedTabLayout == null || cachedTabPlaceholder == null) {
+        if (sectionsFragment == null || sectionsFragment.getView() == null) return;
+        cachedTabLayout = sectionsFragment.getView().findViewById(R.id.tab_layout);
+        cachedTabPlaceholder = sectionsFragment.getView().findViewById(R.id.tab_placeholder);
     }
+    if (cachedTabLayout == null || cachedTabPlaceholder == null) return;
+
+    View tabLayout = cachedTabLayout;
+    View tabPlaceholder = cachedTabPlaceholder;
+
+    if (stickyTabContainer == null) {
+        stickyTabContainer = activity.findViewById(R.id.sticky_tab_container);
+    }
+    if (stickyTabContainer == null) return;
+
+    int toolbarH = 0;
+    View tb = activity.findViewById(R.id.toolbar);
+    if (tb != null) toolbarH = tb.getHeight();
+
+    int heroH = heroContainer != null ? heroContainer.getHeight() : 0;
+    if (heroH == 0) return;
+
+    boolean shouldStick = scrollY > (heroH - toolbarH);
+
+    if (shouldStick && !tabIsSticky) {
+        tabIsSticky = true;
+        tabOriginalParent = (ViewGroup) tabLayout.getParent();
+        tabOriginalIndex = tabOriginalParent.indexOfChild(tabLayout);
+        tabPlaceholder.getLayoutParams().height = tabLayout.getHeight();
+        tabPlaceholder.setVisibility(View.VISIBLE);
+        tabOriginalParent.removeView(tabLayout);
+        stickyTabContainer.removeAllViews();
+        stickyTabContainer.addView(tabLayout);
+        stickyTabContainer.setVisibility(View.VISIBLE);
+    } else if (!shouldStick && tabIsSticky) {
+        tabIsSticky = false;
+        stickyTabContainer.removeView(tabLayout);
+        stickyTabContainer.setVisibility(View.GONE);
+        tabPlaceholder.setVisibility(View.GONE);
+        if (tabOriginalParent != null) {
+            int index = Math.min(tabOriginalIndex, tabOriginalParent.getChildCount());
+            tabOriginalParent.addView(tabLayout, index);
+        }
+    }
+}
 
     private void refreshAllSections() {
         List<Wallpaper> portraitList = new ArrayList<>();
@@ -382,32 +250,15 @@ public class HomeFragment extends Fragment {
             if (w == null || w.getImageUrl() == null || w.isPremium()) continue;
             if (!uniqueUrls.contains(w.getImageUrl())) {
                 uniqueUrls.add(w.getImageUrl());
-                if (isLandscapeWallpaper(w)) {
-                    landscapeList.add(w);
-                } else {
-                    portraitList.add(w);
-                }
+                boolean isLandscape = w.getWidth() > 0 && w.getHeight() > 0 && w.getWidth() > w.getHeight();
+                if (!isLandscape) portraitList.add(w);
+                else landscapeList.add(w);
             }
-        }
-
-        allPortraitWallpapers = portraitList;
-        if (bestMonthAdapter != null) bestMonthAdapter.updateData(portraitList);
-
-        if (landscapeAdapter != null) landscapeAdapter.updateData(landscapeList);
-
-        if (premiumAdapter != null) premiumAdapter.updateData(premiumWallpapers);
-        if (premiumSectionView != null) {
-            premiumSectionView.setVisibility(premiumWallpapers.isEmpty() ? View.GONE : View.VISIBLE);
-        }
-
-        if (landscapeSectionView != null) {
-            landscapeSectionView.setVisibility(landscapeList.isEmpty() ? View.GONE : View.VISIBLE);
         }
 
         List<Wallpaper> heroMix = new ArrayList<>();
         Set<String> heroUrls = new HashSet<>();
 
-        // Add Wallpaper of the Day first if available
         Wallpaper wotd = WallpaperOfTheDayManager.getDailyWallpaper(requireContext());
         if (wotd != null && wotd.getImageUrl() != null) {
             heroUrls.add(wotd.getImageUrl());
@@ -429,8 +280,12 @@ public class HomeFragment extends Fragment {
             }
         }
         setupHeroCarousel(heroMix);
-        updateCategoriesSection();
-        updateRecentSection();
+
+        if (sectionsFragment != null) {
+            sectionsFragment.setAllWallpapers(allWallpapers);
+            sectionsFragment.setPremiumWallpapers(premiumWallpapers);
+            sectionsFragment.refreshAllSectionsPublic();
+        }
     }
 
     private void loadAllWallpapers() {
@@ -442,13 +297,10 @@ public class HomeFragment extends Fragment {
         isLoadingPremiumData = false;
         loadApiWallpapers();
         loadPremiumWallpapersFromFirebase();
-        loadNasaApod();
     }
 
     private void loadApiWallpapers() {
         isLoadingApiData = true;
-        AtomicInteger loadingTasks = new AtomicInteger(1);
-        List<Wallpaper> tempWallpapers = Collections.synchronizedList(new ArrayList<>());
 
         apiManager.loadWallpapersFromAllSources(new ApiManager.ApiCallback() {
             @Override
@@ -457,10 +309,17 @@ public class HomeFragment extends Fragment {
                     for (Wallpaper w : wallpapers)
                         if (w != null && w.getId() != null) loadedWallpaperIds.add(w.getId());
                 }
-                tempWallpapers.addAll(wallpapers);
+                allWallpapers.clear();
+                allWallpapers.addAll(wallpapers);
                 isLoadingApiData = false;
                 isLoadingMore = false;
-                if (loadingTasks.decrementAndGet() == 0) onAllWallpapersLoaded(tempWallpapers);
+
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> {
+                        refreshAllSections();
+                        checkAllDataLoaded();
+                    });
+                }
             }
 
             @Override
@@ -571,106 +430,6 @@ public class HomeFragment extends Fragment {
         }
     }
 
-    private void onAllWallpapersLoaded(List<Wallpaper> loadedWallpapers) {
-        if (getActivity() == null) return;
-        getActivity().runOnUiThread(() -> {
-            if (loadedWallpapers != null && !loadedWallpapers.isEmpty()) {
-                allWallpapers.clear();
-                allWallpapers.addAll(loadedWallpapers);
-                organizeWallpapersByCategory(allWallpapers);
-            }
-            refreshAllSections();
-            checkAllDataLoaded();
-        });
-    }
-
-    private void organizeWallpapersByCategory(List<Wallpaper> wallpapers) {
-        categoryWallpapers.clear();
-        for (Wallpaper wallpaper : wallpapers) {
-            String category = wallpaper.getCategory();
-            // Replace 'Premium' check with a generic logic, ensuring it goes into 'Others' if needed or is ignored
-            if (category != null && !category.trim().isEmpty() && !category.equalsIgnoreCase("Premium")) {
-                categoryWallpapers.computeIfAbsent(category, k -> new ArrayList<>()).add(wallpaper);
-            } else {
-                categoryWallpapers.computeIfAbsent("Others", k -> new ArrayList<>()).add(wallpaper);
-            }
-        }
-    }
-
-    private String getLocalizedCategoryName(String apiName) {
-        if (apiName == null || !isAdded()) return apiName;
-        switch (apiName.toLowerCase()) {
-            case "abstract": return getString(R.string.category_abstract);
-            case "amoled": return getString(R.string.category_amoled);
-            case "nature": return getString(R.string.category_nature);
-            case "space": return getString(R.string.category_space);
-            case "cities": return getString(R.string.category_cities);
-            case "animals": return getString(R.string.category_animals);
-            case "cars": return getString(R.string.category_cars);
-            case "anime": return getString(R.string.category_anime);
-            case "landscape": return getString(R.string.category_landscape);
-            case "premium": return getString(R.string.others);
-            default: return apiName.substring(0, 1).toUpperCase() + apiName.substring(1).toLowerCase();
-        }
-    }
-
-    private void shuffleTrending() {
-        if (allPortraitWallpapers.size() > 1) {
-            List<Wallpaper> shuffled = new ArrayList<>(allPortraitWallpapers);
-            Collections.shuffle(shuffled);
-            if (bestMonthAdapter != null) bestMonthAdapter.updateData(shuffled);
-            Toast.makeText(mContext, "Trending shuffled!", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private void updateRecentSection() {
-        if (mContext == null) return;
-        List<Wallpaper> recents = RecentWallpapersManager.getRecents(mContext);
-        if (recentAdapter != null) recentAdapter.updateData(recents);
-        if (recentSection != null) {
-            recentSection.setVisibility(recents.isEmpty() ? View.GONE : View.VISIBLE);
-        }
-    }
-
-    private void updateCategoriesSection() {
-        List<CategoryItem> categories = new ArrayList<>();
-
-        Map<String, String> masterCategories = new LinkedHashMap<>();
-        masterCategories.put("Abstract", "https://images.unsplash.com/photo-1541701494587-cb58502866ab?w=800&fit=crop");
-        masterCategories.put("Amoled", "https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=800&fit=crop");
-        masterCategories.put("Nature", "https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&fit=crop");
-        masterCategories.put("Space", "https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800&fit=crop");
-        masterCategories.put("Cities", "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=800&fit=crop");
-        masterCategories.put("Animals", "https://images.unsplash.com/photo-1474511320723-9a56873867b5?w=800&fit=crop");
-        masterCategories.put("Cars", "https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=800&fit=crop");
-        masterCategories.put("Anime", "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=800&fit=crop");
-
-        for (Map.Entry<String, List<Wallpaper>> entry : categoryWallpapers.entrySet()) {
-            String rawName = entry.getKey();
-            List<Wallpaper> walls = entry.getValue();
-
-            if (rawName.equalsIgnoreCase("Landscape")) continue;
-
-            if (!walls.isEmpty()) {
-                String displayName = rawName.substring(0, 1).toUpperCase() + rawName.substring(1).toLowerCase();
-
-                if (masterCategories.containsKey(displayName)) {
-                    masterCategories.put(displayName, walls.get(0).getImageUrl());
-                } else {
-                    categories.add(new CategoryItem(getLocalizedCategoryName(displayName), walls.get(0).getImageUrl()));
-                }
-            }
-        }
-
-        for (Map.Entry<String, String> entry : masterCategories.entrySet()) {
-            categories.add(new CategoryItem(getLocalizedCategoryName(entry.getKey()), entry.getValue()));
-        }
-
-        if (categoryGridAdapter != null) {
-            categoryGridAdapter.updateData(categories);
-        }
-    }
-
     private void handleMoreWallpapers(List<Wallpaper> newWallpapers) {
         isLoadingMore = false;
         if (newWallpapers == null || newWallpapers.isEmpty()) return;
@@ -685,26 +444,7 @@ public class HomeFragment extends Fragment {
         }
         if (filtered.isEmpty()) return;
         allWallpapers.addAll(filtered);
-        organizeWallpapersByCategory(allWallpapers);
-        if (getActivity() != null) getActivity().runOnUiThread(this::refreshAllSections);
-    }
-
-    private void onWallpaperClick(Wallpaper wallpaper) {
-        if (wallpaper != null && isAdded() && getActivity() != null) {
-            WallpaperDetailsActivity.start(getActivity(), wallpaper);
-        }
-    }
-
-    private void onColorClick(String color) {
-        if (color != null && isAdded() && getActivity() != null) {
-            CategoryActivity.startWithColorFilter(getActivity(), color, color);
-        }
-    }
-
-    private void onCategoryClick(CategoryItem category) {
-        if (category != null && isAdded() && getActivity() != null) {
-            CategoryActivity.start(getActivity(), category.getName(), category.getImageUrl());
-        }
+        if (getActivity() != null) getActivity().runOnUiThread(() -> refreshAllSections());
     }
 
     private void showLoading(boolean loading) {
@@ -712,7 +452,7 @@ public class HomeFragment extends Fragment {
         Log.d(TAG, "showLoading: loading=" + loading + ", hasExistingData=" + hasExistingData);
 
         if (progressBar != null) {
-            progressBar.setVisibility(View.GONE); // Use shimmer instead
+            progressBar.setVisibility(View.GONE);
         }
 
         if (shimmerViewContainer != null) {
@@ -720,12 +460,12 @@ public class HomeFragment extends Fragment {
                 Log.d(TAG, "Showing shimmer");
                 shimmerViewContainer.setVisibility(View.VISIBLE);
                 shimmerViewContainer.startShimmer();
-                if (mainContentContainer != null) mainContentContainer.setVisibility(View.GONE);
+                if (nestedScrollView != null) nestedScrollView.setVisibility(View.GONE);
             } else {
                 Log.d(TAG, "Hiding shimmer");
                 shimmerViewContainer.stopShimmer();
                 shimmerViewContainer.setVisibility(View.GONE);
-                if (mainContentContainer != null) mainContentContainer.setVisibility(View.VISIBLE);
+                if (nestedScrollView != null) nestedScrollView.setVisibility(View.VISIBLE);
             }
         }
 
@@ -735,8 +475,8 @@ public class HomeFragment extends Fragment {
     public void refreshData() {
         allWallpapers.clear();
         loadedWallpaperIds.clear();
-        nasaWallpapers.clear();
         loadAllWallpapers();
+        if (sectionsFragment != null) sectionsFragment.refreshData();
     }
 
     private static class HeroCarouselAdapter extends RecyclerView.Adapter<HeroCarouselAdapter.VH> {
@@ -774,7 +514,6 @@ public class HomeFragment extends Fragment {
             root.setClipChildren(true);
             root.setClipToPadding(true);
 
-            // Background gradient view (child 0)
             View bgView = new View(ctx);
             bgView.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
             GradientDrawable initialBg = new GradientDrawable();
@@ -783,29 +522,25 @@ public class HomeFragment extends Fragment {
             bgView.setBackground(initialBg);
             root.addView(bgView);
 
-            // Blurred background ImageView (child 1)
             ImageView blurIv = new ImageView(ctx);
             blurIv.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
             blurIv.setScaleType(ImageView.ScaleType.CENTER_CROP);
             root.addView(blurIv);
 
-            // Content container to shift phone frame down
             FrameLayout contentContainer = new FrameLayout(ctx);
             contentContainer.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
-            contentContainer.setPadding(0, (int) (50 * density), 0, 0); // Padding to shift content down
+            contentContainer.setPadding(0, (int) (50 * density), 0, 0);
             root.addView(contentContainer);
 
-            // Calculate 1:1 phone dimensions with padding - smaller size
             android.util.DisplayMetrics dm = ctx.getResources().getDisplayMetrics();
             int containerWidth = dm.widthPixels;
 
             int framePadding = (int) (80 * density);
-            int calculatedWidth = (int) ((containerWidth - 2 * framePadding) * 0.55f); // 55% width
-            int maxWidth = (int) (400 * density); // 400dp max width for tablet
+            int calculatedWidth = (int) ((containerWidth - 2 * framePadding) * 0.55f);
+            int maxWidth = (int) (400 * density);
             int phoneWidth = Math.min(calculatedWidth, maxWidth);
-            int phoneHeight = (int) (phoneWidth * 18f / 9f); // 9:18 phone (taller)
-            
-            // Silver phone frame background (child 2) - 9:18 centered, 2dp larger
+            int phoneHeight = (int) (phoneWidth * 18f / 9f);
+
             ImageView silverFrame = new ImageView(ctx);
             int silverWidth = phoneWidth + (int) (3 * density);
             int silverHeight = phoneHeight + (int) (3 * density);
@@ -815,27 +550,24 @@ public class HomeFragment extends Fragment {
             silverFrame.setScaleType(ImageView.ScaleType.FIT_XY);
             silverFrame.setImageResource(R.drawable.phone_silver_frame);
             contentContainer.addView(silverFrame);
-            
-            // CardView wrapper for rounded corners (child 3) - centered with padding
+
             androidx.cardview.widget.CardView cardView = new androidx.cardview.widget.CardView(ctx);
             FrameLayout.LayoutParams cardLp = new FrameLayout.LayoutParams(phoneWidth, phoneHeight);
             cardLp.gravity = android.view.Gravity.CENTER;
             cardView.setLayoutParams(cardLp);
-            cardView.setRadius(16 * density); // Reduced roundness
+            cardView.setRadius(16 * density);
             cardView.setPreventCornerOverlap(false);
             cardView.setUseCompatPadding(false);
             cardView.setCardElevation(0);
-            cardView.setCardBackgroundColor(0xFF000000); // Set background to black
-            cardView.setContentPadding((int)(1 * density), (int)(1 * density), (int)(1 * density), (int)(1 * density)); // 1dp padding for border effect
-            
-            // Main ImageView inside CardView - FIT_XY to fill frame
+            cardView.setCardBackgroundColor(0xFF000000);
+            cardView.setContentPadding((int)(1 * density), (int)(1 * density), (int)(1 * density), (int)(1 * density));
+
             ImageView iv = new ImageView(ctx);
             iv.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
             iv.setScaleType(ImageView.ScaleType.FIT_XY);
             cardView.addView(iv);
             contentContainer.addView(cardView);
 
-            // Bottom scrim
             View bottomScrim = new View(ctx);
             FrameLayout.LayoutParams bottomLp = new FrameLayout.LayoutParams(-1, (int) (80 * density));
             bottomLp.gravity = android.view.Gravity.BOTTOM;
@@ -845,7 +577,6 @@ public class HomeFragment extends Fragment {
             bottomScrim.setBackground(scrimBg);
             contentContainer.addView(bottomScrim);
 
-            // Top scrim
             View topScrim = new View(ctx);
             FrameLayout.LayoutParams topLp = new FrameLayout.LayoutParams(-1, (int) (64 * density));
             topLp.gravity = android.view.Gravity.TOP;
@@ -853,7 +584,6 @@ public class HomeFragment extends Fragment {
             topScrim.setBackgroundResource(R.drawable.scrim_top);
             root.addView(topScrim);
 
-            // Dummy Status Bar
             LinearLayout statusBar = new LinearLayout(ctx);
             statusBar.setOrientation(LinearLayout.HORIZONTAL);
             FrameLayout.LayoutParams statusLp = new FrameLayout.LayoutParams(phoneWidth, (int) (20 * density));
@@ -862,27 +592,23 @@ public class HomeFragment extends Fragment {
             statusBar.setGravity(android.view.Gravity.CENTER_VERTICAL | android.view.Gravity.END);
             statusBar.setPadding((int) (10 * density), 0, (int) (10 * density), 0);
 
-            // Simple time indicator
             TextView timeTv = new TextView(ctx);
             timeTv.setText("9:41");
-            timeTv.setTextSize(8); // Smaller text size
+            timeTv.setTextSize(8);
             timeTv.setTextColor(0xFFFFFFFF);
             statusBar.addView(timeTv);
 
             cardView.addView(statusBar);
 
-            // App icons container - 8 rounded boxes in 2 rows (4+4)
             LinearLayout appsContainer = new LinearLayout(ctx);
             appsContainer.setOrientation(LinearLayout.VERTICAL);
-            // Set height to MATCH_PARENT so that Gravity.BOTTOM works within the cardView
             FrameLayout.LayoutParams appsLp = new FrameLayout.LayoutParams(phoneWidth, FrameLayout.LayoutParams.MATCH_PARENT);
             appsLp.gravity = android.view.Gravity.CENTER_HORIZONTAL | android.view.Gravity.BOTTOM;
-            appsLp.bottomMargin = (int) (10 * density); // Add 10dp bottom margin
+            appsLp.bottomMargin = (int) (10 * density);
             appsContainer.setLayoutParams(appsLp);
             appsContainer.setGravity(android.view.Gravity.BOTTOM | android.view.Gravity.CENTER_HORIZONTAL);
-            appsContainer.setPadding((int) (2 * density), 0, (int) (2 * density), 0); // 2dp padding
+            appsContainer.setPadding((int) (2 * density), 0, (int) (2 * density), 0);
 
-            // Create 2 rows of 4 app icons each
             for (int row = 0; row < 2; row++) {
                 LinearLayout rowLayout = new LinearLayout(ctx);
                 rowLayout.setOrientation(LinearLayout.HORIZONTAL);
@@ -892,20 +618,18 @@ public class HomeFragment extends Fragment {
                         LinearLayout.LayoutParams.WRAP_CONTENT));
 
                 if (row == 1) {
-                    rowLayout.setPadding(0, (int) (2 * density), 0, 0); // 2dp gap between rows
+                    rowLayout.setPadding(0, (int) (2 * density), 0, 0);
                 }
 
-                for (int i = 0; i < 4; i++) { // 4 icons
-                    // Equal-width container
+                for (int i = 0; i < 4; i++) {
                     LinearLayout holder = new LinearLayout(ctx);
                     holder.setGravity(android.view.Gravity.CENTER);
                     LinearLayout.LayoutParams holderLp = new LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT);
-                    holderLp.setMargins((int) (2 * density), (int) (2 * density), (int) (2 * density), (int) (2 * density)); // 2dp margins
+                    holderLp.setMargins((int) (2 * density), (int) (2 * density), (int) (2 * density), (int) (2 * density));
                     holder.setLayoutParams(holderLp);
 
-                    // 22dp icon
                     View appIcon = new View(ctx);
                     LinearLayout.LayoutParams iconLp =
                             new LinearLayout.LayoutParams(
@@ -915,7 +639,7 @@ public class HomeFragment extends Fragment {
 
                     GradientDrawable iconBg = new GradientDrawable();
                     iconBg.setShape(GradientDrawable.RECTANGLE);
-                    iconBg.setCornerRadius(4 * density); // Reduced roundness
+                    iconBg.setCornerRadius(4 * density);
                     iconBg.setColor(0x40FFFFFF);
                     appIcon.setBackground(iconBg);
 
@@ -927,10 +651,9 @@ public class HomeFragment extends Fragment {
             }
             cardView.addView(appsContainer);
 
-            // Phone frame overlay - ADDED LAST (on top of everything) - 9:18 aspect ratio
             ImageView frameIv = new ImageView(ctx);
             int frameWidth = phoneWidth;
-            int frameHeight = (int) (frameWidth * 18f / 9f); // 9:18 aspect ratio for frame
+            int frameHeight = (int) (frameWidth * 18f / 9f);
             FrameLayout.LayoutParams frameLp = new FrameLayout.LayoutParams(frameWidth, frameHeight);
             frameLp.gravity = android.view.Gravity.CENTER;
             frameIv.setLayoutParams(frameLp);
@@ -951,21 +674,18 @@ public class HomeFragment extends Fragment {
             Glide.with(ctx).clear(holder.imageView);
             Glide.with(ctx).clear(holder.blurImageView);
 
-            // Reset card background to match home background
             int backgroundColor = getThemeColor(android.R.attr.windowBackground);
             GradientDrawable defaultBg = new GradientDrawable();
             defaultBg.setShape(GradientDrawable.RECTANGLE);
             defaultBg.setColor(backgroundColor);
             holder.bgView.setBackground(defaultBg);
 
-            // Load blurred background image
             Glide.with(ctx)
                     .load(url)
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .transform(new jp.wasabeef.glide.transformations.BlurTransformation(25, 3))
                     .into(holder.blurImageView);
 
-            // Load main image with FIT_CENTER
             Glide.with(ctx)
                     .asBitmap()
                     .load(url)
@@ -1041,35 +761,25 @@ public class HomeFragment extends Fragment {
         }
         if (heroWallpapers.isEmpty()) return;
 
-        // Calculate card dimensions
         int screenWidth = getResources().getDisplayMetrics().widthPixels;
         int cardWidth = screenWidth;
-        // Keep 1:1 aspect ratio for container
-        int cardHeight = cardWidth; // 1:1 aspect ratio
+        int cardHeight = cardWidth;
 
-        // Set container height for portrait cards
         ViewGroup.LayoutParams lp = heroContainer.getLayoutParams();
         lp.height = cardHeight - dpToPx(10);
         heroContainer.setLayoutParams(lp);
 
-        // Also set ViewPager2 height to match
         ViewGroup.LayoutParams vlp = heroCarousel.getLayoutParams();
         vlp.height = cardHeight - dpToPx(10);
         heroCarousel.setLayoutParams(vlp);
 
-        // Configure ViewPager2
         heroCarousel.setOffscreenPageLimit(3);
 
-        // Configure inner RecyclerView for carousel effect
         RecyclerView rv = (RecyclerView) heroCarousel.getChildAt(0);
-        rv.setPadding(0, 0, 0, 0); // No padding for edge-to-edge
+        rv.setPadding(0, 0, 0, 0);
         rv.setClipToPadding(false);
 
-        // Simple slide effect (no margin, no scale)
         CompositePageTransformer transformer = new CompositePageTransformer();
-        // Removed MarginPageTransformer and scale transformer
-        
-        // Parallax effect
         transformer.addTransformer((page, position) -> {
             if (page instanceof ViewGroup) {
                 ViewGroup vg = (ViewGroup) page;
@@ -1083,7 +793,6 @@ public class HomeFragment extends Fragment {
         heroCarouselAdapter = new HeroCarouselAdapter(mContext, heroWallpapers);
         heroCarousel.setAdapter(heroCarouselAdapter);
 
-        // Add dark background behind ViewPager so rounded-corner gaps don't show white
         View oldBg = heroContainer.findViewWithTag("hero_dark_bg");
         if (oldBg != null) heroContainer.removeView(oldBg);
         View darkBg = new View(mContext);
@@ -1106,7 +815,6 @@ public class HomeFragment extends Fragment {
             heroDots.addView(dot);
         }
 
-
         heroCarousel.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
             @Override
             public void onPageSelected(int position) {
@@ -1121,82 +829,14 @@ public class HomeFragment extends Fragment {
         autoScrollHandler.removeCallbacks(autoScrollRunnable);
         autoScrollHandler.postDelayed(autoScrollRunnable, AUTO_SCROLL_INTERVAL_MS);
     }
-   
-    private void loadNasaApod() {
-        if (mContext == null) return;
-
-        String url = "https://api.nasa.gov/planetary/apod"
-                + "?api_key=" + NASA_API_KEY
-                + "&count=15"
-                + "&thumbs=true";
-
-        Log.d(TAG, "NASA APOD URL: " + url);
-
-        com.android.volley.toolbox.JsonArrayRequest request = new com.android.volley.toolbox.JsonArrayRequest(
-                com.android.volley.Request.Method.GET, url, null,
-                response -> {
-                    nasaWallpapers.clear();
-                    for (int i = 0; i < response.length(); i++) { 
-                        try {
-                            org.json.JSONObject item = response.getJSONObject(i);
-                            String mediaType = item.optString("media_type", "image");
-                            if (!mediaType.equals("image")) continue; 
-
-                            String imageUrl = item.optString("hdurl", item.optString("url", ""));
-                            String thumbUrl = item.optString("url", imageUrl); 
-                            if (imageUrl.isEmpty()) continue;
-
-                            String date = item.optString("date", "");
-                            String title = item.optString("title", "NASA APOD");
-                            String copyright = item.optString("copyright", "NASA");
-
-                            Wallpaper w = new Wallpaper(
-                                    "nasa-" + date,
-                                    imageUrl,
-                                    thumbUrl,
-                                    title,
-                                    "Space",
-                                    "NASA",
-                                    copyright,
-                                    false
-                            );
-                            nasaWallpapers.add(w);
-                        } catch (org.json.JSONException e) {
-                            Log.e(TAG, "NASA parse error at " + i, e);
-                        }
-                    }
-
-                    if (getActivity() != null) {
-                        getActivity().runOnUiThread(() -> {
-                            if (nasaApodAdapter != null) {
-                                nasaApodAdapter.updateData(nasaWallpapers);
-                            }
-                            if (nasaSectionView != null) {
-                                nasaSectionView.setVisibility(nasaWallpapers.isEmpty() ? View.GONE : View.VISIBLE);
-                            }
-                        });
-                    }
-                },
-                error -> {
-                    Log.e(TAG, "NASA APOD error: " + (error.getMessage() != null ? error.getMessage() : "unknown"));
-                    if (nasaSectionView != null && getActivity() != null) {
-                        getActivity().runOnUiThread(() -> nasaSectionView.setVisibility(View.GONE));
-                    }
-                }
-        ) {
-            @Override
-            public com.android.volley.Request.Priority getPriority() {
-                return com.android.volley.Request.Priority.LOW;
-            }
-        };
-
-        com.android.volley.RequestQueue queue = com.android.volley.toolbox.Volley.newRequestQueue(mContext);
-        queue.add(request);
-    }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+tabIsSticky = false;
+stickyTabContainer = null;
+cachedTabLayout = null;
+cachedTabPlaceholder = null;
         autoScrollHandler.removeCallbacks(autoScrollRunnable);
         if (premiumValueListener != null) {
             firebasePremiumRef.removeEventListener(premiumValueListener);
