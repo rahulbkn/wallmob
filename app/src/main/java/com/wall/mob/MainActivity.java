@@ -479,12 +479,56 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    private void updateMainIconSizes() {
+        SharedPreferences prefs = getSharedPreferences("settings_prefs", MODE_PRIVATE);
+        String currentTextSize = prefs.getString("app_text_size", "small");
+        int iconSizeDimen = R.dimen.icon_size_normal;
+        
+        switch (currentTextSize) {
+            case "small":
+                iconSizeDimen = R.dimen.icon_size_small;
+                break;
+            case "large":
+                iconSizeDimen = R.dimen.icon_size_large;
+                break;
+            case "normal":
+            default:
+                iconSizeDimen = R.dimen.icon_size_normal;
+                break;
+        }
+
+        int iconSize = getResources().getDimensionPixelSize(iconSizeDimen);
+        
+        int[] iconIds = {
+            R.id.btn_menu,
+            R.id.btn_settings,
+            R.id.imageview3,
+            R.id.cardview1
+        };
+        
+        for (int id : iconIds) {
+            View view = findViewById(id);
+            if (view != null) {
+                android.view.ViewGroup.LayoutParams params = view.getLayoutParams();
+                params.width = iconSize;
+                params.height = iconSize;
+                view.setLayoutParams(params);
+            }
+        }
+        
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setItemIconSize(iconSize);
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         refreshCoins();
         loadProfilePhoto();
+        updateMainIconSizes();
     }
+
 
     private void refreshCoins() {
         currentCoins = sharedPrefs.getInt(COINS_KEY, 0);

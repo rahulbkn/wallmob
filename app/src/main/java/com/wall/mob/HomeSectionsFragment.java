@@ -6,9 +6,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-
+import android.widget.ImageView;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
@@ -67,24 +69,30 @@ public class HomeSectionsFragment extends Fragment {
         viewPager.setAdapter(pagerAdapter);
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            View customView = LayoutInflater.from(mContext).inflate(R.layout.custom_tab_item, null);
+            ImageView icon = customView.findViewById(R.id.tab_icon);
+            TextView text = customView.findViewById(R.id.tab_text);
+
             switch (position) {
                 case 0:
-                    tab.setText(getString(R.string.tab_for_you));
-                    tab.setIcon(R.drawable.ic_home);
+                    text.setText(getString(R.string.tab_for_you));
+                    icon.setImageResource(R.drawable.ic_home);
                     break;
                 case 1:
-                    tab.setText(getString(R.string.tab_trending));
-                    tab.setIcon(R.drawable.ic_trending);
+                    text.setText(getString(R.string.tab_trending));
+                    icon.setImageResource(R.drawable.ic_trending);
                     break;
                 case 2:
-                    tab.setText(getString(R.string.tab_premium));
-                    tab.setIcon(R.drawable.ic_premium);
+                    text.setText(getString(R.string.tab_premium));
+                    icon.setImageResource(R.drawable.ic_premium);
                     break;
                 case 3:
-                    tab.setText(getString(R.string.tab_categories));
-                    tab.setIcon(R.drawable.ic_category);
+                    text.setText(getString(R.string.tab_categories));
+                    icon.setImageResource(R.drawable.ic_category);
                     break;
             }
+            icon.setImageTintList(ContextCompat.getColorStateList(mContext, R.color.tab_icon_selector));
+            tab.setCustomView(customView);
         }).attach();
 
         loadNasaApod();
@@ -190,6 +198,17 @@ public class HomeSectionsFragment extends Fragment {
                 String key = (cat != null && !cat.trim().isEmpty() && !cat.equalsIgnoreCase("Premium")) ? cat : "Others";
                 categoryWallpapers.computeIfAbsent(key, k -> new ArrayList<>()).add(wallpaper);
             }
+        }
+    }
+
+    public void setAllWallpapers(List<Wallpaper> wallpapers, Map<String, List<Wallpaper>> preBuiltCategories) {
+        if (wallpapers != null) {
+            allWallpapers.clear();
+            allWallpapers.addAll(wallpapers);
+        }
+        if (preBuiltCategories != null) {
+            categoryWallpapers.clear();
+            categoryWallpapers.putAll(preBuiltCategories);
         }
     }
 

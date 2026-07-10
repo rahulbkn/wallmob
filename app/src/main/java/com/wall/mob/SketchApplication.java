@@ -62,6 +62,13 @@ public class SketchApplication extends MultiDexApplication implements Applicatio
     // Active probe executor
     private final ExecutorService probeExecutor = Executors.newSingleThreadExecutor();
 
+    // Shared IO executor for background tasks (loading data, file I/O, parsing)
+    private static final ExecutorService ioExecutor = Executors.newFixedThreadPool(4);
+
+    public static ExecutorService getIoExecutor() {
+        return ioExecutor;
+    }
+
     // FCM retry
     private static final int FCM_MAX_RETRIES = 5;
 

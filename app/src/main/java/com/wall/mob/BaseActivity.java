@@ -10,7 +10,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(LocaleHelper.setLocale(newBase));
+        Context context = LocaleHelper.setLocale(newBase);
+        super.attachBaseContext(FontHelper.setFontScale(context));
     }
 
     @Override

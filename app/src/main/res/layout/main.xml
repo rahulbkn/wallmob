@@ -51,8 +51,8 @@
 
                         <ImageView
                             android:id="@+id/btn_menu"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="@dimen/icon_size_normal"
+                            android:layout_height="@dimen/icon_size_normal"
                             android:src="@drawable/ic_menu"
                             android:scaleType="centerInside"
                             app:tint="@color/onSurface"
@@ -103,8 +103,8 @@
                         
                         <ImageView
                             android:id="@+id/btn_settings"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="@dimen/icon_size_normal"
+                            android:layout_height="@dimen/icon_size_normal"
                             android:layout_marginEnd="16dp"
                             android:src="@drawable/ic_settings"
                             app:tint="@color/onSurface"
@@ -145,8 +145,8 @@
 
                         <ImageView
                             android:id="@+id/imageview3"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="@dimen/icon_size_normal"
+                            android:layout_height="@dimen/icon_size_normal"
                             android:src="@drawable/ic_notification"
                             android:layout_marginEnd="16dp"
                             android:scaleType="centerInside"
@@ -158,8 +158,8 @@
 
                         <androidx.cardview.widget.CardView
                             android:id="@+id/cardview1"
-                            android:layout_width="24dp"
-                            android:layout_height="24dp"
+                            android:layout_width="@dimen/icon_size_normal"
+                            android:layout_height="@dimen/icon_size_normal"
                            android:elevation="1dp"
                             app:cardBackgroundColor="@android:color/transparent"
                             app:cardCornerRadius="50dp">

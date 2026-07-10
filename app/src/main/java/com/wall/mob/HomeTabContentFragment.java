@@ -145,9 +145,15 @@ public class HomeTabContentFragment extends Fragment {
 
     public void updateRecentSection() {
         if (getContext() == null) return;
-        List<Wallpaper> recents = RecentWallpapersManager.getRecents(getContext());
-        if (recentAdapter != null) recentAdapter.updateData(recents);
-        if (recentSection != null) recentSection.setVisibility(recents.isEmpty() ? View.GONE : View.VISIBLE);
+        Context ctx = getContext();
+        SketchApplication.getIoExecutor().execute(() -> {
+            List<Wallpaper> recents = RecentWallpapersManager.getRecents(ctx);
+            if (getActivity() == null) return;
+            getActivity().runOnUiThread(() -> {
+                if (recentAdapter != null) recentAdapter.updateData(recents);
+                if (recentSection != null) recentSection.setVisibility(recents.isEmpty() ? View.GONE : View.VISIBLE);
+            });
+        });
     }
 
     private void shuffleTrending() {

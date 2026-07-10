@@ -36,6 +36,7 @@ public class SettingsActivity extends BaseActivity {
     private static final String PREF_NAME = "settings_prefs";
     private static final String KEY_THEME = "app_theme";
     private static final String KEY_LANG = "app_lang";
+    private static final String KEY_TEXT_SIZE = "app_text_size";
     private static final String KEY_NOTIFICATIONS = "notifications_enabled";
 
     @Override
@@ -59,10 +60,12 @@ public class SettingsActivity extends BaseActivity {
         // Initialize Views
         tvThemeDesc = findViewById(R.id.tv_theme_desc);
         tvLanguageDesc = findViewById(R.id.tv_language_desc);
+        TextView tvTextSizeDesc = findViewById(R.id.tv_text_size_desc);
         tvCacheSize = findViewById(R.id.tv_cache_size);
         
         btnTheme = findViewById(R.id.btn_theme);
         btnLanguage = findViewById(R.id.btn_language);
+        LinearLayout btnTextSize = findViewById(R.id.btn_text_size);
         btnClearCache = findViewById(R.id.btn_clear_cache);
         btnNotifications = findViewById(R.id.btn_notifications);
         btnFeedback = findViewById(R.id.btn_feedback);
@@ -79,11 +82,22 @@ public class SettingsActivity extends BaseActivity {
 
         // Load Initial Data
         updateUI();
+        
+        // Update Text Size Desc
+        String currentTextSize = sharedPreferences.getString(KEY_TEXT_SIZE, "normal");
+        String[] textSizeValues = getResources().getStringArray(R.array.text_size_values);
+        String[] textSizeOptions = getResources().getStringArray(R.array.text_size_options);
+        int textSizeIndex = Arrays.asList(textSizeValues).indexOf(currentTextSize);
+        if (textSizeIndex >= 0) {
+            tvTextSizeDesc.setText(textSizeOptions[textSizeIndex]);
+        }
+
         calculateCacheSize();
 
         // Click Listeners
         btnTheme.setOnClickListener(v -> showThemeDialog());
         btnLanguage.setOnClickListener(v -> showLanguageDialog());
+        btnTextSize.setOnClickListener(v -> showTextSizeDialog());
         btnClearCache.setOnClickListener(v -> clearAppCache());
 
         // New Click Listeners
@@ -125,6 +139,24 @@ public class SettingsActivity extends BaseActivity {
         });
 
         btnChangerInterval.setOnClickListener(v -> showChangerIntervalDialog());
+    }
+
+    private void showTextSizeDialog() {
+        String[] options = getResources().getStringArray(R.array.text_size_options);
+        String[] values = getResources().getStringArray(R.array.text_size_values);
+
+        String currentSize = sharedPreferences.getString(KEY_TEXT_SIZE, "normal");
+        int checkedItem = Arrays.asList(values).indexOf(currentSize);
+
+        new AlertDialog.Builder(this)
+                .setTitle(getString(R.string.text_size))
+                .setSingleChoiceItems(options, checkedItem, (dialog, which) -> {
+                    String selectedValue = values[which];
+                    sharedPreferences.edit().putString(KEY_TEXT_SIZE, selectedValue).apply();
+                    dialog.dismiss();
+                    restartApp();
+                })
+                .show();
     }
 
     private void showChangerIntervalDialog() {
@@ -208,7 +240,55 @@ public class SettingsActivity extends BaseActivity {
     if (langIndex >= 0) {
         tvLanguageDesc.setText(langOptions[langIndex]);
     }
+    
+    // Update Icon sizes
+    updateIconSizes();
 }
+
+    private void updateIconSizes() {
+        String currentTextSize = sharedPreferences.getString(KEY_TEXT_SIZE, "small");
+        int iconSizeDimen = R.dimen.icon_size_normal;
+        
+        switch (currentTextSize) {
+            case "small":
+                iconSizeDimen = R.dimen.icon_size_small;
+                break;
+            case "large":
+                iconSizeDimen = R.dimen.icon_size_large;
+                break;
+            case "normal":
+            default:
+                iconSizeDimen = R.dimen.icon_size_normal;
+                break;
+        }
+
+        int iconSize = getResources().getDimensionPixelSize(iconSizeDimen);
+        
+        // Find all ImageViews in settings and update their size
+        int[] iconIds = {
+            R.id.iv_theme_icon,
+            R.id.iv_language_icon,
+            R.id.iv_text_size_icon,
+            R.id.iv_cache_icon,
+            R.id.iv_auto_icon,
+            R.id.iv_interval_icon,
+            R.id.iv_notifications_icon,
+            R.id.iv_feedback_icon,
+            R.id.iv_rate_us_icon,
+            R.id.iv_telegram_icon,
+            R.id.iv_about_icon
+        };
+        
+        for (int id : iconIds) {
+            ImageView iv = findViewById(id);
+            if (iv != null) {
+                LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) iv.getLayoutParams();
+                params.width = iconSize;
+                params.height = iconSize;
+                iv.setLayoutParams(params);
+            }
+        }
+    }
 
     // --- THEME LOGIC ---
     private void showThemeDialog() {

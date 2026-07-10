@@ -2,4 +2,14 @@
     <!-- Tab layout dimensions -->
     <dimen name="tab_horizontal_padding">15dp</dimen>
     <dimen name="tab_vertical_padding">4dp</dimen>
+
+    <!-- Text size dimensions -->
+    <dimen name="text_size_normal">16sp</dimen>
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_large">18sp</dimen>
+
+    <!-- Icon size dimensions -->
+    <dimen name="icon_size_small">20dp</dimen>
+    <dimen name="icon_size_normal">24dp</dimen>
+    <dimen name="icon_size_large">28dp</dimen>
 </resources>

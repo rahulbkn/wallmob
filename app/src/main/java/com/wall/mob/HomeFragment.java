@@ -1,6 +1,7 @@
 package com.wall.mob;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
@@ -45,6 +46,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -243,50 +245,69 @@ if (nestedScrollView != null) {
 }
 
     private void refreshAllSections() {
-        List<Wallpaper> portraitList = new ArrayList<>();
-        List<Wallpaper> landscapeList = new ArrayList<>();
-        Set<String> uniqueUrls = new HashSet<>();
+        final List<Wallpaper> ap = new ArrayList<>(allWallpapers);
+        final List<Wallpaper> pp = new ArrayList<>(premiumWallpapers);
+        final Context ctx = mContext != null ? mContext : getContext();
+        if (ctx == null) return;
 
-        for (Wallpaper w : allWallpapers) {
-            if (w == null || w.getImageUrl() == null || w.isPremium()) continue;
-            if (!uniqueUrls.contains(w.getImageUrl())) {
-                uniqueUrls.add(w.getImageUrl());
-                boolean isLandscape = w.getWidth() > 0 && w.getHeight() > 0 && w.getWidth() > w.getHeight();
-                if (!isLandscape) portraitList.add(w);
-                else landscapeList.add(w);
+        SketchApplication.getIoExecutor().execute(() -> {
+            List<Wallpaper> portraitList = new ArrayList<>();
+            List<Wallpaper> landscapeList = new ArrayList<>();
+            Set<String> uniqueUrls = new HashSet<>();
+
+            for (Wallpaper w : ap) {
+                if (w == null || w.getImageUrl() == null || w.isPremium()) continue;
+                if (!uniqueUrls.contains(w.getImageUrl())) {
+                    uniqueUrls.add(w.getImageUrl());
+                    boolean isLandscape = w.getWidth() > 0 && w.getHeight() > 0 && w.getWidth() > w.getHeight();
+                    if (!isLandscape) portraitList.add(w);
+                    else landscapeList.add(w);
+                }
             }
-        }
 
-        List<Wallpaper> heroMix = new ArrayList<>();
-        Set<String> heroUrls = new HashSet<>();
+            List<Wallpaper> heroMix = new ArrayList<>();
+            Set<String> heroUrls = new HashSet<>();
 
-        Wallpaper wotd = WallpaperOfTheDayManager.getDailyWallpaper(requireContext());
-        if (wotd != null && wotd.getImageUrl() != null) {
-            heroUrls.add(wotd.getImageUrl());
-            heroMix.add(wotd);
-        }
-
-        for (Wallpaper w : premiumWallpapers) {
-            if (w != null && w.getImageUrl() != null && !heroUrls.contains(w.getImageUrl())) {
-                heroUrls.add(w.getImageUrl());
-                heroMix.add(w);
-                if (heroMix.size() >= 6) break;
+            Wallpaper wotd = WallpaperOfTheDayManager.getDailyWallpaper(ctx);
+            if (wotd != null && wotd.getImageUrl() != null) {
+                heroUrls.add(wotd.getImageUrl());
+                heroMix.add(wotd);
             }
-        }
-        if (heroMix.isEmpty() && !portraitList.isEmpty()) {
-            Wallpaper first = portraitList.get(0);
-            if (first != null && first.getImageUrl() != null) {
-                WallpaperOfTheDayManager.setDailyWallpaper(requireContext(), first);
-                heroMix.add(first);
-            }
-        }
-        setupHeroCarousel(heroMix);
 
-        if (sectionsFragment != null) {
-            sectionsFragment.setAllWallpapers(allWallpapers);
-            sectionsFragment.setPremiumWallpapers(premiumWallpapers);
-            sectionsFragment.refreshAllSectionsPublic();
-        }
+            for (Wallpaper w : pp) {
+                if (w != null && w.getImageUrl() != null && !heroUrls.contains(w.getImageUrl())) {
+                    heroUrls.add(w.getImageUrl());
+                    heroMix.add(w);
+                    if (heroMix.size() >= 6) break;
+                }
+            }
+            if (heroMix.isEmpty() && !portraitList.isEmpty()) {
+                Wallpaper first = portraitList.get(0);
+                if (first != null && first.getImageUrl() != null) {
+                    WallpaperOfTheDayManager.setDailyWallpaper(ctx, first);
+                    heroMix.add(first);
+                }
+            }
+
+            Map<String, List<Wallpaper>> categoryWallpapers = new HashMap<>();
+            for (Wallpaper wallpaper : ap) {
+                String cat = wallpaper.getCategory();
+                String key = (cat != null && !cat.trim().isEmpty() && !cat.equalsIgnoreCase("Premium")) ? cat : "Others";
+                categoryWallpapers.computeIfAbsent(key, k -> new ArrayList<>()).add(wallpaper);
+            }
+
+            final List<Wallpaper> heroFinal = heroMix;
+            final Map<String, List<Wallpaper>> catFinal = categoryWallpapers;
+
+            new Handler(Looper.getMainLooper()).post(() -> {
+                setupHeroCarousel(heroFinal);
+                if (sectionsFragment != null) {
+                    sectionsFragment.setAllWallpapers(ap, catFinal);
+                    sectionsFragment.setPremiumWallpapers(pp);
+                    sectionsFragment.refreshAllSectionsPublic();
+                }
+            });
+        });
     }
 
     private void loadAllWallpapers() {
@@ -858,11 +879,37 @@ public void onDestroyView() {
         autoScrollHandler.removeCallbacks(autoScrollRunnable);
     }
 
+    private void updateHomeIconSizes() {
+        if (mContext == null) return;
+        SharedPreferences prefs = mContext.getSharedPreferences("settings_prefs", Context.MODE_PRIVATE);
+        String currentTextSize = prefs.getString("app_text_size", "small");
+        int iconSizeDimen = R.dimen.icon_size_normal;
+        
+        switch (currentTextSize) {
+            case "small":
+                iconSizeDimen = R.dimen.icon_size_small;
+                break;
+            case "large":
+                iconSizeDimen = R.dimen.icon_size_large;
+                break;
+            case "normal":
+            default:
+                iconSizeDimen = R.dimen.icon_size_normal;
+                break;
+        }
+
+        int iconSize = getResources().getDimensionPixelSize(iconSizeDimen);
+        
+        // Example: If there were any static icons in the home layout, we would find and scale them here.
+        // Currently, home layout relies heavily on dynamic lists/adapters.
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         if (heroCarouselAdapter != null && heroCarouselAdapter.getItemCount() > 0) {
             autoScrollHandler.postDelayed(autoScrollRunnable, AUTO_SCROLL_INTERVAL_MS);
         }
+        updateHomeIconSizes();
     }
 }

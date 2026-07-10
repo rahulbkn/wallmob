@@ -25,4 +25,17 @@
         <item>hi</item>
         <item>ja</item>
     </string-array>
+
+    <!-- Text Size Options -->
+    <string-array name="text_size_options">
+        <item>@string/text_size_option_small</item>
+        <item>@string/text_size_option_normal</item>
+        <item>@string/text_size_option_large</item>
+    </string-array>
+
+    <string-array name="text_size_values" translatable="false">
+        <item>small</item>
+        <item>normal</item>
+        <item>large</item>
+    </string-array>
 </resources>

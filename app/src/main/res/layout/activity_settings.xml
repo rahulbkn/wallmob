@@ -50,8 +50,8 @@
                 android:padding="20dp">
 <ImageView
     android:id="@+id/iv_theme_icon"
-    android:layout_width="24dp"
-    android:layout_height="24dp"
+    android:layout_width="@dimen/icon_size_normal"
+    android:layout_height="@dimen/icon_size_normal"
     android:src="@drawable/ic_dark"
     app:tint="@color/onSurface" />
     
@@ -89,8 +89,9 @@
                 android:padding="20dp">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:id="@+id/iv_language_icon"
+                    android:layout_width="@dimen/icon_size_normal"
+                    android:layout_height="@dimen/icon_size_normal"
                     android:src="@drawable/ic_language"
                     app:tint="@color/onSurface" />
 
@@ -112,6 +113,46 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/english"
+                        android:textColor="?android:attr/textColorSecondary"
+                        android:textSize="13sp" />
+                </LinearLayout>
+            </LinearLayout>
+            
+            <LinearLayout
+                android:id="@+id/btn_text_size"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:padding="20dp">
+
+                <ImageView
+                    android:id="@+id/iv_text_size_icon"
+                    android:layout_width="@dimen/icon_size_normal"
+                    android:layout_height="@dimen/icon_size_normal"
+                    android:src="@drawable/ic_description"
+                    app:tint="@color/onSurface" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/text_size"
+                        android:textColor="@color/onSurface"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tv_text_size_desc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/text_size_option_normal"
                         android:textColor="?android:attr/textColorSecondary"
                         android:textSize="13sp" />
                 </LinearLayout>
@@ -140,8 +181,9 @@
                 android:padding="20dp">
 
                 <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:id="@+id/iv_cache_icon"
+                    android:layout_width="@dimen/icon_size_normal"
+                    android:layout_height="@dimen/icon_size_normal"
                     android:src="@drawable/ic_delete"
                     app:tint="@color/onSurface" />
 
@@ -190,7 +232,7 @@
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:padding="20dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_auto" app:tint="@color/onSurface" />
+                <ImageView android:id="@+id/iv_auto_icon" android:layout_width="@dimen/icon_size_normal" android:layout_height="@dimen/icon_size_normal" android:src="@drawable/ic_auto" app:tint="@color/onSurface" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="@string/auto_change" android:textColor="@color/onSurface" android:textSize="16sp" />
                 <androidx.appcompat.widget.SwitchCompat android:id="@+id/switch_changer" android:layout_width="wrap_content" android:layout_height="wrap_content" />
             </LinearLayout>
@@ -204,7 +246,7 @@
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:padding="20dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_time" app:tint="@color/onSurface" />
+                <ImageView android:id="@+id/iv_interval_icon" android:layout_width="@dimen/icon_size_normal" android:layout_height="@dimen/icon_size_normal" android:src="@drawable/ic_time" app:tint="@color/onSurface" />
                 <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:orientation="vertical">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/change_interval" android:textColor="@color/onSurface" android:textSize="16sp" />
                     <TextView android:id="@+id/tv_changer_interval" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/every_24_hours" android:textColor="?android:attr/textColorSecondary" android:textSize="13sp" />
@@ -245,7 +287,7 @@
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:padding="20dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_notification" app:tint="@color/onSurface" />
+                <ImageView android:id="@+id/iv_notifications_icon" android:layout_width="@dimen/icon_size_normal" android:layout_height="@dimen/icon_size_normal" android:src="@drawable/ic_notification" app:tint="@color/onSurface" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:layout_marginStart="16dp" android:text="@string/enable_notifications" android:textColor="@color/onSurface" android:textSize="16sp" />
                 <androidx.appcompat.widget.SwitchCompat android:id="@+id/switch_notifications" android:layout_width="wrap_content" android:layout_height="wrap_content" />
             </LinearLayout>
@@ -271,7 +313,7 @@
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:padding="20dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_email" app:tint="@color/onSurface" />
+                <ImageView android:id="@+id/iv_feedback_icon" android:layout_width="@dimen/icon_size_normal" android:layout_height="@dimen/icon_size_normal" android:src="@drawable/ic_email" app:tint="@color/onSurface" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="@string/feedback" android:textColor="@color/onSurface" android:textSize="16sp" />
             </LinearLayout>
 
@@ -284,7 +326,7 @@
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:padding="20dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_star" app:tint="@color/onSurface" />
+                <ImageView android:id="@+id/iv_rate_us_icon" android:layout_width="@dimen/icon_size_normal" android:layout_height="@dimen/icon_size_normal" android:src="@drawable/ic_star" app:tint="@color/onSurface" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="@string/rate_us" android:textColor="@color/onSurface" android:textSize="16sp" />
             </LinearLayout>
 
@@ -297,7 +339,7 @@
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:padding="20dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_telegram" app:tint="@color/onSurface" />
+                <ImageView android:id="@+id/iv_telegram_icon" android:layout_width="@dimen/icon_size_normal" android:layout_height="@dimen/icon_size_normal" android:src="@drawable/ic_telegram" app:tint="@color/onSurface" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="@string/join_telegram" android:textColor="@color/onSurface" android:textSize="16sp" />
             </LinearLayout>
 
@@ -322,7 +364,7 @@
                 android:focusable="true"
                 android:gravity="center_vertical"
                 android:padding="20dp">
-                <ImageView android:layout_width="24dp" android:layout_height="24dp" android:src="@drawable/ic_info" app:tint="@color/onSurface" />
+                <ImageView android:id="@+id/iv_about_icon" android:layout_width="@dimen/icon_size_normal" android:layout_height="@dimen/icon_size_normal" android:src="@drawable/ic_info" app:tint="@color/onSurface" />
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="16dp" android:text="@string/app_version" android:textColor="@color/onSurface" android:textSize="16sp" />
             </LinearLayout>
 

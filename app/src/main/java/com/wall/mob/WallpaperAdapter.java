@@ -37,6 +37,7 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
 
     private List<Wallpaper> wallpaperList;
     private Set<String> displayedIds = new HashSet<>();
+    private Set<String> favoriteIds = new HashSet<>();
     private OnWallpaperClickListener listener;
     private Context context;
     private boolean forceLowQuality = false;
@@ -77,6 +78,7 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
     }
 
     public void updateData(List<Wallpaper> newWallpapers) {
+        refreshFavoriteIds();
         displayedIds.clear();
         wallpaperList.clear();
         if (newWallpapers != null) {
@@ -85,6 +87,17 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
             }
         }
         notifyDataSetChanged();
+    }
+
+    public void refreshFavoriteIds() {
+        SketchApplication.getIoExecutor().execute(() -> {
+            Set<String> ids = FavoriteManager.getFavoriteIds(context);
+            new android.os.Handler(android.os.Looper.getMainLooper()).post(() -> {
+                favoriteIds.clear();
+                favoriteIds.addAll(ids);
+                notifyDataSetChanged();
+            });
+        });
     }
 
     public void addData(List<Wallpaper> moreWallpapers) {
@@ -110,16 +123,18 @@ public class WallpaperAdapter extends RecyclerView.Adapter<WallpaperAdapter.Wall
     }
 
     private boolean isFavorite(Wallpaper wallpaper) {
-        return FavoriteManager.isFavorite(context, wallpaper);
+        return favoriteIds.contains(wallpaper.getId());
     }
 
     private void toggleFavorite(Wallpaper wallpaper) {
         boolean wasAdded;
-        if (FavoriteManager.isFavorite(context, wallpaper)) {
+        if (favoriteIds.contains(wallpaper.getId())) {
             FavoriteManager.removeFromFavorites(context, wallpaper);
+            favoriteIds.remove(wallpaper.getId());
             wasAdded = false;
         } else {
             FavoriteManager.addToFavorites(context, wallpaper);
+            favoriteIds.add(wallpaper.getId());
             wasAdded = true;
         }
         if (listener != null) listener.onFavoriteClick(wallpaper, wasAdded);

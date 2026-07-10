@@ -1,5 +1,6 @@
 package com.wall.mob;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,22 +65,26 @@ public class FavoriteFragment extends Fragment implements WallpaperAdapter.OnWal
     }
 
     private void loadFavorites() {
-        favoriteWallpapers.clear();
-
-        List<Wallpaper> favorites = FavoriteManager.getFavorites(requireContext());
-        if (favorites != null) {
-            favoriteWallpapers.addAll(favorites);
-        }
-
-        adapter.updateData(favoriteWallpapers);
-
-        if (favoriteWallpapers.isEmpty()) {
-            recyclerView.setVisibility(View.GONE);
-            emptyStateView.setVisibility(View.VISIBLE);
-        } else {
-            recyclerView.setVisibility(View.VISIBLE);
-            emptyStateView.setVisibility(View.GONE);
-        }
+        if (getContext() == null) return;
+        final Context ctx = getContext();
+        SketchApplication.getIoExecutor().execute(() -> {
+            List<Wallpaper> favorites = FavoriteManager.getFavorites(ctx);
+            if (getActivity() == null) return;
+            getActivity().runOnUiThread(() -> {
+                favoriteWallpapers.clear();
+                if (favorites != null) {
+                    favoriteWallpapers.addAll(favorites);
+                }
+                adapter.updateData(favoriteWallpapers);
+                if (favoriteWallpapers.isEmpty()) {
+                    recyclerView.setVisibility(View.GONE);
+                    emptyStateView.setVisibility(View.VISIBLE);
+                } else {
+                    recyclerView.setVisibility(View.VISIBLE);
+                    emptyStateView.setVisibility(View.GONE);
+                }
+            });
+        });
     }
 
     private void toggleSelectionMode() {

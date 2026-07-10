@@ -80,49 +80,58 @@ public class DownloadsFragment extends Fragment implements WallpaperAdapter.OnWa
 
     private void loadDownloadedFiles() {
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
-        downloadedWallpapers.clear();
 
-        File storageDir = new File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
-                DOWNLOAD_FOLDER_NAME
-        );
+        SketchApplication.getIoExecutor().execute(() -> {
+            File storageDir = new File(
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),
+                    DOWNLOAD_FOLDER_NAME
+            );
 
-        if (storageDir.exists() && storageDir.isDirectory()) {
-            File[] files = storageDir.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    if (file.getName().toLowerCase().endsWith(".jpg") ||
-                        file.getName().toLowerCase().endsWith(".png") ||
-                        file.getName().toLowerCase().endsWith(".jpeg")) {
+            List<Wallpaper> loaded = new ArrayList<>();
 
-                        String localUri = Uri.fromFile(file).toString();
-                        Wallpaper localWallpaper = new Wallpaper(
-                                file.getName(),
-                                localUri,
-                                localUri,
-                                file.getName(),
-                                "Downloads",
-                                "Device",
-                                false
-                        );
-                        downloadedWallpapers.add(localWallpaper);
+            if (storageDir.exists() && storageDir.isDirectory()) {
+                File[] files = storageDir.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.getName().toLowerCase().endsWith(".jpg") ||
+                            file.getName().toLowerCase().endsWith(".png") ||
+                            file.getName().toLowerCase().endsWith(".jpeg")) {
+
+                            String localUri = Uri.fromFile(file).toString();
+                            Wallpaper localWallpaper = new Wallpaper(
+                                    file.getName(),
+                                    localUri,
+                                    localUri,
+                                    file.getName(),
+                                    "Downloads",
+                                    "Device",
+                                    false
+                            );
+                            loaded.add(localWallpaper);
+                        }
                     }
                 }
             }
-        }
 
-        if (adapter != null) {
-            adapter.updateData(downloadedWallpapers);
-        }
-        if (progressBar != null) progressBar.setVisibility(View.GONE);
+            if (getActivity() == null) return;
+            getActivity().runOnUiThread(() -> {
+                downloadedWallpapers.clear();
+                downloadedWallpapers.addAll(loaded);
 
-        if (downloadedWallpapers.isEmpty()) {
-            if (recyclerView != null) recyclerView.setVisibility(View.GONE);
-            if (emptyStateView != null) emptyStateView.setVisibility(View.VISIBLE);
-        } else {
-            if (recyclerView != null) recyclerView.setVisibility(View.VISIBLE);
-            if (emptyStateView != null) emptyStateView.setVisibility(View.GONE);
-        }
+                if (adapter != null) {
+                    adapter.updateData(downloadedWallpapers);
+                }
+                if (progressBar != null) progressBar.setVisibility(View.GONE);
+
+                if (downloadedWallpapers.isEmpty()) {
+                    if (recyclerView != null) recyclerView.setVisibility(View.GONE);
+                    if (emptyStateView != null) emptyStateView.setVisibility(View.VISIBLE);
+                } else {
+                    if (recyclerView != null) recyclerView.setVisibility(View.VISIBLE);
+                    if (emptyStateView != null) emptyStateView.setVisibility(View.GONE);
+                }
+            });
+        });
     }
 
     private void toggleSelectionMode() {
