@@ -43,6 +43,7 @@ public class UploadWallpaperActivity extends BaseActivity {
 
     private Uri selectedImageUri;
     private DatabaseReference firebaseRef;
+    private SessionManager sessionManager;
 
     private final ActivityResultLauncher<String> pickImageLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
@@ -65,6 +66,7 @@ public class UploadWallpaperActivity extends BaseActivity {
         }
 
         firebaseRef = FirebaseDatabase.getInstance().getReference("wallpapers/trending");
+        sessionManager = new SessionManager(this);
 
         initViews();
         setClickListeners();
@@ -154,13 +156,31 @@ public class UploadWallpaperActivity extends BaseActivity {
                 os.close();
 
                 int responseCode = connection.getResponseCode();
+
+                InputStream errorStream = null;
+                try {
+                    errorStream = connection.getErrorStream();
+                } catch (Exception ignored) {}
+
+                String errorBody = null;
+                if (errorStream != null) {
+                    ByteArrayOutputStream errBuf = new ByteArrayOutputStream();
+                    byte[] buf = new byte[4096];
+                    int n;
+                    while ((n = errorStream.read(buf)) != -1) {
+                        errBuf.write(buf, 0, n);
+                    }
+                    errorBody = errBuf.toString();
+                    errorStream.close();
+                }
+
                 if (responseCode == HttpURLConnection.HTTP_OK) {
                     InputStream is = connection.getInputStream();
                     ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream();
-                    byte[] buf = new byte[4096];
-                    int n;
-                    while ((n = is.read(buf)) != -1) {
-                        responseBuffer.write(buf, 0, n);
+                    byte[] buff = new byte[4096];
+                    int m;
+                    while ((m = is.read(buff)) != -1) {
+                        responseBuffer.write(buff, 0, m);
                     }
                     String responseBody = responseBuffer.toString();
                     is.close();
@@ -173,13 +193,27 @@ public class UploadWallpaperActivity extends BaseActivity {
                         String returnedCategory = json.optString("category", effectiveCategory);
                         saveToFirebase(imageUrl, thumbnailUrl, returnedTitle, returnedCategory);
                     } else {
+                        final String errMsg = json.optString("message", "server error");
                         runOnUiThread(() -> {
-                            Toast.makeText(UploadWallpaperActivity.this, "Upload failed: server error", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UploadWallpaperActivity.this, "Upload failed: " + errMsg, Toast.LENGTH_SHORT).show();
                         });
                     }
-                } else {
+                } else if (responseCode == 422) {
+                    String reason = "Image contains NSFW content";
+                    if (errorBody != null) {
+                        try {
+                            JSONObject errJson = new JSONObject(errorBody);
+                            reason = errJson.optString("message", reason);
+                        } catch (Exception ignored) {}
+                    }
+                    final String displayReason = reason;
                     runOnUiThread(() -> {
-                        Toast.makeText(UploadWallpaperActivity.this, "Upload failed: HTTP " + responseCode, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UploadWallpaperActivity.this, "Rejected: " + displayReason, Toast.LENGTH_LONG).show();
+                    });
+                } else {
+                    final String detail = errorBody != null ? errorBody : "HTTP " + responseCode;
+                    runOnUiThread(() -> {
+                        Toast.makeText(UploadWallpaperActivity.this, "Upload failed: " + detail, Toast.LENGTH_SHORT).show();
                     });
                 }
             } catch (Exception e) {
@@ -207,7 +241,8 @@ public class UploadWallpaperActivity extends BaseActivity {
             category,
             "User Uploaded",
             null,
-            true
+            true,
+            sessionManager.getEmail()
         );
         wallpaper.setAddedAt(System.currentTimeMillis());
 

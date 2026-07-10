@@ -26,7 +26,10 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.wall.mob.User;
 
-import org.json.JSONObject;
+import androidx.recyclerview.widget.RecyclerView;
+import java.util.List;
+import java.util.ArrayList;
+import androidx.annotation.NonNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -91,10 +94,20 @@ public class ProfileActivity extends BaseActivity {
         initViews();
         setUserInfo();
         setClickListeners();
-        
+        fetchUploadedWallpapers();
         
         }
 
+
+    private TextView welcomeText;
+    private TextView userInfoText;
+    private ImageView avatarImage;
+    private ImageView uploadPhotoButton;
+    private ProgressBar uploadProgressBar;
+    private MaterialToolbar toolbar;
+    private RecyclerView uploadedWallpapersGrid;
+    private WallpaperAdapter adapter;
+    private List<Wallpaper> uploadedWallpapers = new ArrayList<>();
 
     private void initViews() {
         welcomeText = findViewById(R.id.welcomeText);
@@ -107,6 +120,40 @@ public class ProfileActivity extends BaseActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         loadAvatarImage();
+
+        uploadedWallpapersGrid = findViewById(R.id.uploadedWallpapersGrid);
+        adapter = new WallpaperAdapter(this, uploadedWallpapers, new WallpaperAdapter.OnWallpaperClickListener() {
+            @Override
+            public void onWallpaperClick(Wallpaper wallpaper) {
+                // Handle click if needed
+            }
+            @Override
+            public void onWallpaperLongClick(Wallpaper wallpaper, int position) {
+                // Handle long click
+            }
+        });
+        uploadedWallpapersGrid.setAdapter(adapter);
+    }
+
+    private void fetchUploadedWallpapers() {
+        FirebaseDatabase.getInstance().getReference("wallpapers/trending")
+            .addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    uploadedWallpapers.clear();
+                    String userEmail = sessionManager.getEmail();
+                    for (DataSnapshot ds : snapshot.getChildren()) {
+                        Wallpaper w = ds.getValue(Wallpaper.class);
+                        if (w != null && userEmail.equals(w.getUploaderId())) {
+                            uploadedWallpapers.add(w);
+                        }
+                    }
+                    adapter.updateData(uploadedWallpapers);
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                }
+            });
     }
 
     private void loadAvatarImage() {

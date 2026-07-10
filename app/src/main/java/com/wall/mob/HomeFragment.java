@@ -220,7 +220,7 @@ if (nestedScrollView != null) {
     int heroH = heroContainer != null ? heroContainer.getHeight() : 0;
     if (heroH == 0) return;
 
-    boolean shouldStick = scrollY > (heroH - toolbarH);
+    boolean shouldStick = scrollY > (heroH - toolbarH - dpToPx(25));
 
     if (shouldStick && !tabIsSticky) {
         tabIsSticky = true;

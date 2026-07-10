@@ -236,6 +236,22 @@
             app:backgroundTint="@null"
             style="@style/PrimaryButton" />
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Uploaded Wallpapers"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/onSurface"
+            android:layout_marginBottom="12dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/uploadedWallpapersGrid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="3" />
+
         </LinearLayout>
 
     </ScrollView>

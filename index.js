@@ -447,6 +447,103 @@ async function handleUpload(request, env) {
   }
 }
 
+function extractCloudinaryPublicId(url) {
+  try {
+    const u = new URL(url);
+    const match = u.pathname.match(/\/upload\/v?\d+\/(.+)/);
+    if (!match) return null;
+    let publicId = match[1];
+    const dot = publicId.lastIndexOf(".");
+    if (dot > 0) publicId = publicId.substring(0, dot);
+    return publicId;
+  } catch { return null; }
+}
+
+async function deleteFromCloudinary(publicId, env) {
+  if (!env.CLOUDINARY_API_KEY || !env.CLOUDINARY_API_SECRET) {
+    console.error("Cloudinary API credentials not configured for deletion");
+    return false;
+  }
+  try {
+    const timestamp = Math.floor(Date.now() / 1000);
+    const params = `public_id=${publicId}&timestamp=${timestamp}${env.CLOUDINARY_API_SECRET}`;
+    const signatureBytes = await crypto.subtle.digest(
+      "SHA-1", new TextEncoder().encode(params)
+    );
+    const signature = Array.from(new Uint8Array(signatureBytes))
+      .map(b => b.toString(16).padStart(2, "0")).join("");
+
+    const body = new FormData();
+    body.append("public_id", publicId);
+    body.append("api_key", env.CLOUDINARY_API_KEY);
+    body.append("timestamp", timestamp.toString());
+    body.append("signature", signature);
+
+    const resp = await fetch(
+      `https://api.cloudinary.com/v1_1/${env.CLOUDINARY_CLOUD_NAME}/image/destroy`,
+      { method: "POST", body }
+    );
+    const result = await resp.json();
+    if (result.result === "ok") {
+      console.log("Cloudinary image deleted:", publicId);
+      return true;
+    }
+    console.error("Cloudinary delete failed:", result);
+    return false;
+  } catch (e) {
+    console.error("Cloudinary delete error:", e);
+    return false;
+  }
+}
+
+async function moderateImage(imageUrl, env) {
+  if (!env.MODERATION_API_URL) return null;
+  try {
+    const resp = await fetch(`${env.MODERATION_API_URL}/moderate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image_url: imageUrl }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!resp.ok) {
+      console.error("Moderation API returned", resp.status);
+      return null;
+    }
+    return await resp.json();
+  } catch (e) {
+    console.error("Moderation API call failed:", e);
+    return null;
+  }
+}
+
+async function writeToFirebase(data, env) {
+  if (!env.FIREBASE_DATABASE_URL || !env.FIREBASE_DATABASE_SECRET) {
+    console.error("Firebase not configured");
+    return null;
+  }
+  try {
+    const ref = `${env.FIREBASE_DATABASE_URL}/wallpapers/premium.json?auth=${env.FIREBASE_DATABASE_SECRET}`;
+    const resp = await fetch(ref, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...data,
+        addedAt: Date.now(),
+        source: "Firebase",
+      }),
+    });
+    if (!resp.ok) {
+      const err = await resp.text();
+      console.error("Firebase write failed:", err);
+      return null;
+    }
+    return await resp.json();
+  } catch (e) {
+    console.error("Firebase write error:", e);
+    return null;
+  }
+}
+
 async function handleWallpaperUpload(request, env) {
   try {
     const contentType = request.headers.get("Content-Type") || "";
@@ -458,6 +555,7 @@ async function handleWallpaperUpload(request, env) {
     const photo = formData.get("photo");
     const title = formData.get("title") || "Untitled";
     const category = formData.get("category") || "General";
+    const photographer = formData.get("photographer") || "";
 
     if (!photo) {
       return createErrorResponse("Missing photo", "No photo file provided in 'photo' field", 400);
@@ -467,7 +565,8 @@ async function handleWallpaperUpload(request, env) {
       return createErrorResponse("Server config error", "Telegram bot not configured", 500);
     }
 
-    // 1. Upload to Cloudinary for thumbnail
+    // 1. Upload to Cloudinary for thumbnail + moderation URL
+    let cloudinaryUrl = "";
     let thumbnailUrl = "";
     if (env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_UPLOAD_PRESET) {
       try {
@@ -482,16 +581,28 @@ async function handleWallpaperUpload(request, env) {
 
         if (cloudResp.ok) {
           const cloudResult = await cloudResp.json();
-          const baseUrl = cloudResult.secure_url;
-          // Add c_fill,w_400 transformation for thumbnail
-          thumbnailUrl = baseUrl.replace("/upload/", "/upload/c_fill,w_400/");
+          cloudinaryUrl = cloudResult.secure_url;
+          thumbnailUrl = cloudinaryUrl.replace("/upload/", "/upload/c_fill,w_400/");
         }
       } catch (e) {
         console.error("Cloudinary upload failed:", e);
       }
     }
 
-    // 2. Upload to Telegram for original image URL
+    // 2. Moderate via Cloudinary URL
+    if (cloudinaryUrl && env.MODERATION_API_URL) {
+      const modResult = await moderateImage(cloudinaryUrl, env);
+      if (modResult && modResult.safe === false) {
+        const publicId = extractCloudinaryPublicId(cloudinaryUrl);
+        if (publicId) {
+          ctx.waitUntil(deleteFromCloudinary(publicId, env));
+        }
+        return createErrorResponse("Content Rejected",
+          `Image contains NSFW content (score: ${modResult.nsfw_score})`, 422);
+      }
+    }
+
+    // 3. Upload to Telegram for original image URL
     const tgFormData = new FormData();
     tgFormData.append("chat_id", env.TELEGRAM_CHAT_ID);
     tgFormData.append("photo", photo);
@@ -529,13 +640,29 @@ async function handleWallpaperUpload(request, env) {
     const filePath = fileResult.result.file_path;
     const imageUrl = `https://api.telegram.org/file/bot${env.TELEGRAM_BOT_TOKEN}/${filePath}`;
 
+    // 4. Write to Firebase Realtime Database
+    const firebasePayload = {
+      imageUrl,
+      thumbnailUrl: thumbnailUrl || imageUrl,
+      title,
+      category,
+      photographer,
+    };
+    let firebaseKey = null;
+    if (env.FIREBASE_DATABASE_URL && env.FIREBASE_DATABASE_SECRET) {
+      const fbResult = await writeToFirebase(firebasePayload, env);
+      if (fbResult && fbResult.name) firebaseKey = fbResult.name;
+    }
+
     return new Response(JSON.stringify({
       success: true,
       imageUrl,
       thumbnailUrl: thumbnailUrl || imageUrl,
       title,
       category,
-      file_id: fileId
+      photographer,
+      file_id: fileId,
+      firebase_id: firebaseKey,
     }), {
       headers: { "Content-Type": "application/json", ...CORS_HEADERS }
     });
