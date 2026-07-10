@@ -357,4 +357,10 @@ You have full access to all features.</string>
 
     <string name="section_recent_title">RECENT</string>
     <string name="section_recent_desc">Your recently viewed wallpapers</string>
+
+    <string name="upload_wallpaper">Upload Wallpaper</string>
+    <string name="upload">Upload</string>
+    <string name="tap_to_select_image">Tap to select image</string>
+    <string name="wallpaper_title_hint">Wallpaper title</string>
+    <string name="wallpaper_category_hint">Category (e.g. Nature, Abstract)</string>
 </resources>

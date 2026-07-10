@@ -63,6 +63,11 @@ public class SessionManager {
         String url = getPhotoUrl();
         return url != null && !url.isEmpty();
     }
+
+    public void savePhotoUrl(String photoUrl) {
+        editor.putString(KEY_PHOTO_URL, photoUrl);
+        editor.commit();
+    }
     
     public void logoutUser() {
         editor.clear();

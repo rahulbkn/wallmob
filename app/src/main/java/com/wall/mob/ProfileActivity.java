@@ -3,12 +3,17 @@ package com.wall.mob;
 import android.content.Context;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Build;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Toast;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -17,29 +22,43 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import android.os.Build;
-import android.view.Window;
-import android.view.WindowManager;
-import androidx.core.content.ContextCompat;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.wall.mob.User;
 
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class ProfileActivity extends BaseActivity {
 
+    private static final String UPLOAD_URL = "https://api-server.rahulkumarbknv.workers.dev/upload";
+    private static final String BOUNDARY = "Boundary-" + System.currentTimeMillis();
 
     private TextView welcomeText;
     private TextView userInfoText;
     private Button logoutButton;
     private ImageView avatarImage;
+    private ImageView uploadPhotoButton;
+    private ProgressBar uploadProgressBar;
     private LinearLayout settingsButton;
     private MaterialToolbar toolbar;
-    // Firebase Database reference
     private DatabaseReference databaseReference;
     private SessionManager sessionManager;
     
     private boolean isGuest;
     private String currentEmail;
+
+    private final ActivityResultLauncher<String> pickImageLauncher =
+            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+                if (uri != null) {
+                    uploadImage(uri);
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +102,8 @@ public class ProfileActivity extends BaseActivity {
         logoutButton = findViewById(R.id.logoutButton);
         settingsButton = findViewById(R.id.settingsButton);
         avatarImage = findViewById(R.id.imageview8);
+        uploadPhotoButton = findViewById(R.id.uploadPhotoButton);
+        uploadProgressBar = findViewById(R.id.uploadProgressBar);
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         loadAvatarImage();
@@ -153,7 +174,118 @@ public class ProfileActivity extends BaseActivity {
              startActivity(intent);
          }
      });
+
+     uploadPhotoButton.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             pickImageLauncher.launch("image/*");
+         }
+     });
  }
+    private void uploadImage(Uri imageUri) {
+        uploadProgressBar.setVisibility(View.VISIBLE);
+        uploadPhotoButton.setEnabled(false);
+
+        new Thread(() -> {
+            try {
+                InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                if (inputStream == null) {
+                    runOnUiThread(() -> {
+                        uploadProgressBar.setVisibility(View.GONE);
+                        uploadPhotoButton.setEnabled(true);
+                        Toast.makeText(ProfileActivity.this, "Failed to read image", Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
+                ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+                byte[] buffer = new byte[4096];
+                int len;
+                while ((len = inputStream.read(buffer)) != -1) {
+                    byteBuffer.write(buffer, 0, len);
+                }
+                byte[] imageBytes = byteBuffer.toByteArray();
+                inputStream.close();
+
+                HttpURLConnection connection = (HttpURLConnection) new URL(UPLOAD_URL).openConnection();
+                connection.setRequestMethod("POST");
+                connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
+                connection.setDoOutput(true);
+                connection.setConnectTimeout(30000);
+                connection.setReadTimeout(30000);
+
+                OutputStream os = connection.getOutputStream();
+                os.write(("--" + BOUNDARY + "\r\n").getBytes());
+                os.write(("Content-Disposition: form-data; name=\"photo\"; filename=\"profile.jpg\"\r\n").getBytes());
+                os.write(("Content-Type: image/jpeg\r\n\r\n").getBytes());
+                os.write(imageBytes);
+                os.write(("\r\n--" + BOUNDARY + "--\r\n").getBytes());
+                os.flush();
+                os.close();
+
+                int responseCode = connection.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    InputStream is = connection.getInputStream();
+                    ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream();
+                    byte[] buf = new byte[4096];
+                    int n;
+                    while ((n = is.read(buf)) != -1) {
+                        responseBuffer.write(buf, 0, n);
+                    }
+                    String responseBody = responseBuffer.toString();
+                    is.close();
+
+                    JSONObject json = new JSONObject(responseBody);
+                    if (json.getBoolean("success")) {
+                        String photoUrl = json.getString("url");
+                        runOnUiThread(() -> onUploadSuccess(photoUrl));
+                    } else {
+                        runOnUiThread(() -> {
+                            Toast.makeText(ProfileActivity.this, "Upload failed: server error", Toast.LENGTH_SHORT).show();
+                        });
+                    }
+                } else {
+                    runOnUiThread(() -> {
+                        Toast.makeText(ProfileActivity.this, "Upload failed: HTTP " + responseCode, Toast.LENGTH_SHORT).show();
+                    });
+                }
+            } catch (Exception e) {
+                runOnUiThread(() -> {
+                    Toast.makeText(ProfileActivity.this, "Upload error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+            } finally {
+                runOnUiThread(() -> {
+                    uploadProgressBar.setVisibility(View.GONE);
+                    uploadPhotoButton.setEnabled(true);
+                });
+            }
+        }).start();
+    }
+
+    private void onUploadSuccess(String photoUrl) {
+        sessionManager.savePhotoUrl(photoUrl);
+
+        if (!isGuest && currentEmail != null && !currentEmail.isEmpty()) {
+            databaseReference.orderByChild("email").equalTo(currentEmail)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                                    userSnapshot.getRef().child("photoUrl").setValue(photoUrl);
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    });
+        }
+
+        loadAvatarImage();
+        Toast.makeText(this, "Profile photo updated", Toast.LENGTH_SHORT).show();
+    }
+
     private void logout() {
         sessionManager.logoutUser();
         Toast.makeText(this, getString(R.string.logged_out_successfully), Toast.LENGTH_SHORT).show();

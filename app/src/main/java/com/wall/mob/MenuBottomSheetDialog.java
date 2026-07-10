@@ -54,6 +54,7 @@ public class MenuBottomSheetDialog extends BottomSheetDialog {
         // Initialize your views
         LinearLayout websiteItem = findViewById(R.id.menu_website);
         LinearLayout updateItem = findViewById(R.id.menu_update);
+        LinearLayout uploadWallpaperItem = findViewById(R.id.menu_upload_wallpaper);
         LinearLayout telegramItem = findViewById(R.id.menu_telegram);
         LinearLayout contactItem = findViewById(R.id.menu_contact);
         LinearLayout privacyItem = findViewById(R.id.menu_privacy);
@@ -69,6 +70,14 @@ public class MenuBottomSheetDialog extends BottomSheetDialog {
         if (updateItem != null) {
             updateItem.setOnClickListener(v -> {
                 Toast.makeText(context, context.getString(R.string.already_latest_version), Toast.LENGTH_SHORT).show();
+                dismiss();
+            });
+        }
+
+        if (uploadWallpaperItem != null) {
+            uploadWallpaperItem.setOnClickListener(v -> {
+                Intent intent = new Intent(context, UploadWallpaperActivity.class);
+                context.startActivity(intent);
                 dismiss();
             });
         }

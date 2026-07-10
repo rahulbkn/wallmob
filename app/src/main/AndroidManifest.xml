@@ -71,6 +71,13 @@
 			android:exported="false" />
 			
 		<activity
+			android:name=".UploadWallpaperActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
+			android:hardwareAccelerated="true"
+			android:supportsPictureInPicture="true"
+			android:exported="false" />
+			
+		<activity
 			android:name=".SearchActivity"
 			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
 			android:hardwareAccelerated="true"

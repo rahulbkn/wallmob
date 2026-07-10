@@ -5,7 +5,7 @@ var src_default = {
 };
 var CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET, OPTIONS",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
 var CONFIG = {
@@ -28,6 +28,21 @@ async function handleRequest(request, env, ctx) {
   }
   try {
     const url = new URL(request.url);
+
+    if (url.pathname === "/upload") {
+      if (request.method !== "POST") {
+        return createErrorResponse("Method Not Allowed", "Use POST to upload images", 405);
+      }
+      return await handleUpload(request, env);
+    }
+
+    if (url.pathname === "/upload-wallpaper") {
+      if (request.method !== "POST") {
+        return createErrorResponse("Method Not Allowed", "Use POST to upload wallpaper", 405);
+      }
+      return await handleWallpaperUpload(request, env);
+    }
+
     if (url.pathname !== "/" && url.pathname !== "") {
       return createErrorResponse("Not Found", "Endpoint not found", 404);
     }
@@ -364,4 +379,170 @@ function createWallpaperObject({ id, source, url, thumb, full, width, height, co
     stats: { downloads: downloads || null, likes: likes || null, favorites: favorites || null }
   };
 }
+async function handleUpload(request, env) {
+  try {
+    const contentType = request.headers.get("Content-Type") || "";
+    if (!contentType.includes("multipart/form-data")) {
+      return createErrorResponse("Bad Request", "Content-Type must be multipart/form-data", 400);
+    }
+
+    const formData = await request.formData();
+    const photo = formData.get("photo");
+
+    if (!photo) {
+      return createErrorResponse("Missing photo", "No photo file provided in 'photo' field", 400);
+    }
+
+    if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) {
+      return createErrorResponse("Server config error", "Telegram bot not configured", 500);
+    }
+
+    const tgFormData = new FormData();
+    tgFormData.append("chat_id", env.TELEGRAM_CHAT_ID);
+    tgFormData.append("photo", photo);
+
+    const tgResponse = await fetch(
+      `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendPhoto`,
+      { method: "POST", body: tgFormData }
+    );
+
+    if (!tgResponse.ok) {
+      const err = await tgResponse.text();
+      console.error("Telegram sendPhoto failed:", err);
+      return createErrorResponse("Telegram upload failed", err.substring(0, 200), 502);
+    }
+
+    const tgResult = await tgResponse.json();
+
+    if (!tgResult.ok) {
+      return createErrorResponse("Telegram error", tgResult.description, 502);
+    }
+
+    const photos = tgResult.result.photo;
+    const largestPhoto = photos[photos.length - 1];
+    const fileId = largestPhoto.file_id;
+
+    const fileResponse = await fetch(
+      `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/getFile?file_id=${fileId}`
+    );
+    const fileResult = await fileResponse.json();
+
+    if (!fileResult.ok) {
+      return createErrorResponse("Telegram file error", fileResult.description, 502);
+    }
+
+    const filePath = fileResult.result.file_path;
+    const fileUrl = `https://api.telegram.org/file/bot${env.TELEGRAM_BOT_TOKEN}/${filePath}`;
+
+    return new Response(JSON.stringify({
+      success: true,
+      url: fileUrl,
+      file_id: fileId
+    }), {
+      headers: { "Content-Type": "application/json", ...CORS_HEADERS }
+    });
+  } catch (error) {
+    console.error("Upload handler error:", error);
+    return createErrorResponse("Upload failed", error.message, 500);
+  }
+}
+
+async function handleWallpaperUpload(request, env) {
+  try {
+    const contentType = request.headers.get("Content-Type") || "";
+    if (!contentType.includes("multipart/form-data")) {
+      return createErrorResponse("Bad Request", "Content-Type must be multipart/form-data", 400);
+    }
+
+    const formData = await request.formData();
+    const photo = formData.get("photo");
+    const title = formData.get("title") || "Untitled";
+    const category = formData.get("category") || "General";
+
+    if (!photo) {
+      return createErrorResponse("Missing photo", "No photo file provided in 'photo' field", 400);
+    }
+
+    if (!env.TELEGRAM_BOT_TOKEN || !env.TELEGRAM_CHAT_ID) {
+      return createErrorResponse("Server config error", "Telegram bot not configured", 500);
+    }
+
+    // 1. Upload to Cloudinary for thumbnail
+    let thumbnailUrl = "";
+    if (env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_UPLOAD_PRESET) {
+      try {
+        const cloudFormData = new FormData();
+        cloudFormData.append("file", photo);
+        cloudFormData.append("upload_preset", env.CLOUDINARY_UPLOAD_PRESET);
+
+        const cloudResp = await fetch(
+          `https://api.cloudinary.com/v1_1/${env.CLOUDINARY_CLOUD_NAME}/image/upload`,
+          { method: "POST", body: cloudFormData }
+        );
+
+        if (cloudResp.ok) {
+          const cloudResult = await cloudResp.json();
+          const baseUrl = cloudResult.secure_url;
+          // Add c_fill,w_400 transformation for thumbnail
+          thumbnailUrl = baseUrl.replace("/upload/", "/upload/c_fill,w_400/");
+        }
+      } catch (e) {
+        console.error("Cloudinary upload failed:", e);
+      }
+    }
+
+    // 2. Upload to Telegram for original image URL
+    const tgFormData = new FormData();
+    tgFormData.append("chat_id", env.TELEGRAM_CHAT_ID);
+    tgFormData.append("photo", photo);
+
+    const tgResponse = await fetch(
+      `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendPhoto`,
+      { method: "POST", body: tgFormData }
+    );
+
+    if (!tgResponse.ok) {
+      const err = await tgResponse.text();
+      console.error("Telegram sendPhoto failed:", err);
+      return createErrorResponse("Telegram upload failed", err.substring(0, 200), 502);
+    }
+
+    const tgResult = await tgResponse.json();
+
+    if (!tgResult.ok) {
+      return createErrorResponse("Telegram error", tgResult.description, 502);
+    }
+
+    const photos = tgResult.result.photo;
+    const largestPhoto = photos[photos.length - 1];
+    const fileId = largestPhoto.file_id;
+
+    const fileResponse = await fetch(
+      `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/getFile?file_id=${fileId}`
+    );
+    const fileResult = await fileResponse.json();
+
+    if (!fileResult.ok) {
+      return createErrorResponse("Telegram file error", fileResult.description, 502);
+    }
+
+    const filePath = fileResult.result.file_path;
+    const imageUrl = `https://api.telegram.org/file/bot${env.TELEGRAM_BOT_TOKEN}/${filePath}`;
+
+    return new Response(JSON.stringify({
+      success: true,
+      imageUrl,
+      thumbnailUrl: thumbnailUrl || imageUrl,
+      title,
+      category,
+      file_id: fileId
+    }), {
+      headers: { "Content-Type": "application/json", ...CORS_HEADERS }
+    });
+  } catch (error) {
+    console.error("Wallpaper upload handler error:", error);
+    return createErrorResponse("Upload failed", error.message, 500);
+  }
+}
+
 export { src_default as default };
