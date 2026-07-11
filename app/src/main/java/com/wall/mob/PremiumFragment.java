@@ -38,7 +38,6 @@ public class PremiumFragment extends Fragment implements WallpaperAdapter.OnWall
     private View errorView;
     private Button retryButton;
     private TextView errorMessage;
-    private DatabaseReference firebasePremiumRef;
 
     private boolean isLoading = false;
 
@@ -58,8 +57,6 @@ public class PremiumFragment extends Fragment implements WallpaperAdapter.OnWall
         progressBar = view.findViewById(R.id.progress_bar);
         shimmerViewContainer = view.findViewById(R.id.shimmer_view_container);
 
-        firebasePremiumRef = FirebaseDatabase.getInstance().getReference("wallpapers/premium");
-
         GridLayoutManager layoutManager = new GridLayoutManager(requireContext(), 2);
         recyclerView.setLayoutManager(layoutManager);
         wallpaperAdapter = new WallpaperAdapter(requireContext(), premiumWallpapers, this);
@@ -77,40 +74,56 @@ public class PremiumFragment extends Fragment implements WallpaperAdapter.OnWall
         showMainLoading();
         premiumWallpapers.clear();
 
-        // 🔥 FIXED: Direct single-fetch logic for data to ensure it populates
-        firebasePremiumRef.orderByChild("addedAt").limitToLast(100).addListenerForSingleValueEvent(new ValueEventListener() {
+        DatabaseReference premiumRef = FirebaseDatabase.getInstance().getReference("wallpapers/premium");
+        DatabaseReference newlyRef = FirebaseDatabase.getInstance().getReference("wallpapers/newly_added");
+
+        // Use a counter to know when both are loaded
+        final int[] completedTasks = {0};
+        final Set<String> uniqueIds = new HashSet<>();
+        final List<Wallpaper> tempList = new ArrayList<>();
+
+        ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Set<String> uniqueIds = new HashSet<>();
-                List<Wallpaper> tempList = new ArrayList<>();
-
                 for (DataSnapshot child : snapshot.getChildren()) {
                     Wallpaper w = parseWallpaperManually(child);
-                    if (w != null && !uniqueIds.contains(w.getId())) {
+                    // Filter: Must be premium.
+                    if (w != null && w.isPremium() && !uniqueIds.contains(w.getId())) {
                         uniqueIds.add(w.getId());
                         tempList.add(0, w); // Add Latest at the top
                     }
                 }
-                
-                premiumWallpapers.addAll(tempList);
-                wallpaperAdapter.updateData(premiumWallpapers);
-                
-                isLoading = false;
-                hideMainLoading();
-                
-                if (premiumWallpapers.isEmpty()) {
-                    showError("No premium wallpapers available right now.");
-                } else {
-                    showContent();
+                completedTasks[0]++;
+                if (completedTasks[0] == 2) {
+                    processMergedData(tempList);
                 }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                isLoading = false;
-                showError("Failed to load premium wallpapers. Check your connection.");
+                completedTasks[0]++;
+                if (completedTasks[0] == 2) {
+                    processMergedData(tempList);
+                }
             }
-        });
+        };
+
+        premiumRef.orderByChild("addedAt").limitToLast(100).addListenerForSingleValueEvent(listener);
+        newlyRef.orderByChild("addedAt").limitToLast(100).addListenerForSingleValueEvent(listener);
+    }
+
+    private void processMergedData(List<Wallpaper> mergedList) {
+        premiumWallpapers.addAll(mergedList);
+        wallpaperAdapter.updateData(premiumWallpapers);
+
+        isLoading = false;
+        hideMainLoading();
+
+        if (premiumWallpapers.isEmpty()) {
+            showError("No premium wallpapers available right now.");
+        } else {
+            showContent();
+        }
     }
 
     private Wallpaper parseWallpaperManually(DataSnapshot snapshot) {

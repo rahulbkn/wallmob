@@ -27,25 +27,25 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class TrendingTabFragment extends Fragment implements WallpaperAdapter.OnWallpaperClickListener {
+public class NewlyTabFragment extends Fragment implements WallpaperAdapter.OnWallpaperClickListener {
 
-    private static final String TAG = "TrendingTabFragment";
+    private static final String TAG = "NewlyTabFragment";
 
     private RecyclerView recyclerView;
     private WallpaperAdapter wallpaperAdapter;
-    private List<Wallpaper> trendingWallpapers = new ArrayList<>();
+    private List<Wallpaper> NewlyWallpapers = new ArrayList<>();
     private ProgressBar progressBar;
     private View errorView;
     private Button retryButton;
     private TextView errorMessage;
-    private DatabaseReference firebaseTrendingRef;
+    private DatabaseReference firebaseNewlyRef;
 
     private boolean isLoading = false;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.trending_tab, container, false);
+        View view = inflater.inflate(R.layout.newly_tab, container, false);
         initializeViews(view);
         loadInitialData();
         return view;
@@ -58,11 +58,11 @@ public class TrendingTabFragment extends Fragment implements WallpaperAdapter.On
         errorMessage = view.findViewById(R.id.error_message);
         progressBar = view.findViewById(R.id.progress_bar);
 
-        firebaseTrendingRef = FirebaseDatabase.getInstance().getReference("wallpapers/trending");
+        firebaseNewlyRef = FirebaseDatabase.getInstance().getReference("wallpapers/newly_added");
 
         GridLayoutManager layoutManager = new GridLayoutManager(requireContext(), 2);
         recyclerView.setLayoutManager(layoutManager);
-        wallpaperAdapter = new WallpaperAdapter(requireContext(), trendingWallpapers, this);
+        wallpaperAdapter = new WallpaperAdapter(requireContext(), NewlyWallpapers, this);
         recyclerView.setAdapter(wallpaperAdapter);
 
         retryButton.setOnClickListener(v -> {
@@ -75,9 +75,9 @@ public class TrendingTabFragment extends Fragment implements WallpaperAdapter.On
         if (isLoading) return;
         isLoading = true;
         showLoading();
-        trendingWallpapers.clear();
+        NewlyWallpapers.clear();
 
-        firebaseTrendingRef.orderByChild("addedAt").limitToLast(100).addListenerForSingleValueEvent(new ValueEventListener() {
+        firebaseNewlyRef.orderByChild("addedAt").limitToLast(100).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 Set<String> uniqueIds = new HashSet<>();
@@ -91,13 +91,13 @@ public class TrendingTabFragment extends Fragment implements WallpaperAdapter.On
                     }
                 }
 
-                trendingWallpapers.addAll(tempList);
-                wallpaperAdapter.updateData(trendingWallpapers);
+                NewlyWallpapers.addAll(tempList);
+                wallpaperAdapter.updateData(NewlyWallpapers);
 
                 isLoading = false;
                 hideLoading();
 
-                if (trendingWallpapers.isEmpty()) {
+                if (NewlyWallpapers.isEmpty()) {
                     showError(getString(R.string.no_wallpapers_found));
                 } else {
                     showContent();

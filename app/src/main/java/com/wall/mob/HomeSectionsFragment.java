@@ -76,11 +76,11 @@ public class HomeSectionsFragment extends Fragment {
             switch (position) {
                 case 0:
                     text.setText(getString(R.string.tab_for_you));
-                    icon.setImageResource(R.drawable.ic_home);
+                    icon.setImageResource(R.drawable.ic_foryou);
                     break;
                 case 1:
-                    text.setText(getString(R.string.tab_trending));
-                    icon.setImageResource(R.drawable.ic_trending);
+                    text.setText(getString(R.string.tab_newlyadded));
+                    icon.setImageResource(R.drawable.ic_recent);
                     break;
                 case 2:
                     text.setText(getString(R.string.tab_premium));
@@ -253,7 +253,7 @@ public class HomeSectionsFragment extends Fragment {
                     homeTabContentFragment = new HomeTabContentFragment();
                     return homeTabContentFragment;
                 case 1:
-                    return new TrendingTabFragment(); // Replace with your standalone layouts later
+                    return new NewlyTabFragment(); // Replace with your standalone layouts later
                 case 2:
                     return new PremiumTabFragment();  // Replace with your standalone layouts later
                 default:

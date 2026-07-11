@@ -207,7 +207,7 @@ public class SeeAllActivity extends BaseActivity implements WallpaperAdapter.OnW
             if (value instanceof Map) {
                 Map<String, Object> map = (Map<String, Object>) value;
                 String id = snapshot.getKey();
-                String imageUrl = (String) map.get("thumbnailUrl");
+                String imageUrl = (String) map.get("imageUrl");
                 String title = (String) map.get("title");
                 String category = (String) map.get("category");
                 String source = (String) map.get("source");

@@ -347,7 +347,7 @@ You have full access to all features.</string>
     <item quantity="other">%d wallpapers</item>
 </plurals>
     <string name="tab_for_you">For You</string>
-    <string name="tab_trending">Trending</string>
+    <string name="tab_newlyadded">Newly Added</string>
     <string name="tab_premium">Premium</string>
     <string name="tab_categories">Categories</string>
     <string name="text_size">Text Size</string>

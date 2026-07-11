@@ -3,11 +3,13 @@ var src_default = {
     return await handleRequest(request, env, ctx);
   }
 };
+
 var CORS_HEADERS = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   "Access-Control-Allow-Headers": "Content-Type"
 };
+
 var CONFIG = {
   DEFAULT_PAGE: 1,
   DEFAULT_PER_PAGE: 100,
@@ -40,7 +42,7 @@ async function handleRequest(request, env, ctx) {
       if (request.method !== "POST") {
         return createErrorResponse("Method Not Allowed", "Use POST to upload wallpaper", 405);
       }
-      return await handleWallpaperUpload(request, env);
+      return await handleWallpaperUpload(request, env, ctx);
     }
 
     if (url.pathname !== "/" && url.pathname !== "") {
@@ -151,6 +153,7 @@ function parseQueryParams(url) {
   const orientation = url.searchParams.get("orientation") || "all";
   return { page, perPage, source, keyword, orientation };
 }
+
 function validateApiKeys(env, sourceFilter) {
   const sources = ["Unsplash", "Pexels", "Pixabay", "Wallhaven"];
   const activeSources = sourceFilter === "all" ? sources : sources.filter((s) => s.toLowerCase() === sourceFilter.toLowerCase());
@@ -164,6 +167,7 @@ function validateApiKeys(env, sourceFilter) {
   }
   return { valid: true };
 }
+
 function createErrorResponse(error, message, status, additionalData = {}) {
   return new Response(JSON.stringify({ success: false, error, message, ...additionalData }, null, 2), {
     status,
@@ -276,6 +280,7 @@ async function fetchAllWallpapers(page, perPage, sourceFilter, keyword, orientat
     totalAvailable
   };
 }
+
 async function fetchFromAPI(api, minWidth, minHeight) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), CONFIG.REQUEST_TIMEOUT);
@@ -295,6 +300,7 @@ async function fetchFromAPI(api, minWidth, minHeight) {
     throw error;
   }
 }
+
 function normalizeData(source, data, minWidth, minHeight) {
   const wallpapers = [];
   let total = 0;
@@ -360,6 +366,7 @@ function normalizeData(source, data, minWidth, minHeight) {
   }
   return { items: wallpapers, total };
 }
+
 function createWallpaperObject({ id, source, url, thumb, full, width, height, color, title, author, author_url, downloads, likes, favorites }) {
   const is4K = (width >= 3840 && height >= 2160) || (width >= 2560 && height >= 1440);
   const aspectRatio = width && height ? width / height : null;
@@ -379,6 +386,7 @@ function createWallpaperObject({ id, source, url, thumb, full, width, height, co
     stats: { downloads: downloads || null, likes: likes || null, favorites: favorites || null }
   };
 }
+
 async function handleUpload(request, env) {
   try {
     const contentType = request.headers.get("Content-Type") || "";
@@ -522,7 +530,7 @@ async function writeToFirebase(data, env) {
     return null;
   }
   try {
-    const ref = `${env.FIREBASE_DATABASE_URL}/wallpapers/premium.json?auth=${env.FIREBASE_DATABASE_SECRET}`;
+    const ref = `${env.FIREBASE_DATABASE_URL}/wallpapers/newly_added.json?auth=${env.FIREBASE_DATABASE_SECRET}`;
     const resp = await fetch(ref, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -544,7 +552,7 @@ async function writeToFirebase(data, env) {
   }
 }
 
-async function handleWallpaperUpload(request, env) {
+async function handleWallpaperUpload(request, env, ctx) {
   try {
     const contentType = request.headers.get("Content-Type") || "";
     if (!contentType.includes("multipart/form-data")) {
@@ -556,6 +564,8 @@ async function handleWallpaperUpload(request, env) {
     const title = formData.get("title") || "Untitled";
     const category = formData.get("category") || "General";
     const photographer = formData.get("photographer") || "";
+    // NAYA: uploaderId catch kar rahe hain
+    const uploaderId = formData.get("uploader_id") || ""; 
 
     if (!photo) {
       return createErrorResponse("Missing photo", "No photo file provided in 'photo' field", 400);
@@ -568,11 +578,15 @@ async function handleWallpaperUpload(request, env) {
     // 1. Upload to Cloudinary for thumbnail + moderation URL
     let cloudinaryUrl = "";
     let thumbnailUrl = "";
+    let cloudinaryError = "Not attempted"; 
+
     if (env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_UPLOAD_PRESET) {
       try {
         const cloudFormData = new FormData();
         cloudFormData.append("file", photo);
         cloudFormData.append("upload_preset", env.CLOUDINARY_UPLOAD_PRESET);
+        // Added transformation parameter to ensure smaller image upload
+        cloudFormData.append("transformation", "c_fill,w_480");
 
         const cloudResp = await fetch(
           `https://api.cloudinary.com/v1_1/${env.CLOUDINARY_CLOUD_NAME}/image/upload`,
@@ -582,11 +596,18 @@ async function handleWallpaperUpload(request, env) {
         if (cloudResp.ok) {
           const cloudResult = await cloudResp.json();
           cloudinaryUrl = cloudResult.secure_url;
-          thumbnailUrl = cloudinaryUrl.replace("/upload/", "/upload/c_fill,w_400/");
+          thumbnailUrl = cloudinaryUrl;
+          cloudinaryError = null;
+        } else {
+          cloudinaryError = await cloudResp.text();
+          console.error("Cloudinary upload failed with status:", cloudResp.status, cloudinaryError);
         }
       } catch (e) {
-        console.error("Cloudinary upload failed:", e);
+        cloudinaryError = e.message;
+        console.error("Cloudinary catch error:", e);
       }
+    } else {
+      cloudinaryError = "Missing CLOUDINARY_CLOUD_NAME or CLOUDINARY_UPLOAD_PRESET in env variables";
     }
 
     // 2. Moderate via Cloudinary URL
@@ -627,42 +648,56 @@ async function handleWallpaperUpload(request, env) {
     const photos = tgResult.result.photo;
     const largestPhoto = photos[photos.length - 1];
     const fileId = largestPhoto.file_id;
+    // NAYA: Telegram result se width aur height automatically nikal li
+    const imgWidth = largestPhoto.width || 0;
+    const imgHeight = largestPhoto.height || 0;
 
-    const fileResponse = await fetch(
-      `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/getFile?file_id=${fileId}`
-    );
-    const fileResult = await fileResponse.json();
-
-    if (!fileResult.ok) {
-      return createErrorResponse("Telegram file error", fileResult.description, 502);
-    }
-
-    const filePath = fileResult.result.file_path;
-    const imageUrl = `https://api.telegram.org/file/bot${env.TELEGRAM_BOT_TOKEN}/${filePath}`;
+    const finalImageUrl = `https://server.rahulkumarbknv.workers.dev/proxy-image?file_id=${encodeURIComponent(fileId)}&quality=full`;
+    const finalThumbnailUrl = thumbnailUrl ? thumbnailUrl : `https://server.rahulkumarbknv.workers.dev/proxy-image?file_id=${encodeURIComponent(fileId)}&quality=low`;
 
     // 4. Write to Firebase Realtime Database
-    const firebasePayload = {
-      imageUrl,
-      thumbnailUrl: thumbnailUrl || imageUrl,
+    const initialPayload = {
+      telegramFileId: fileId,
+      thumbnailUrl: finalThumbnailUrl,
       title,
       category,
       photographer,
+      addedAt: Date.now(),
+      source: "User Uploaded",
+      premium: true,
+      width: imgWidth,
+      height: imgHeight,
+      uploaderId: uploaderId // NAYA: App se received email id add kar diya
     };
+    
     let firebaseKey = null;
+
     if (env.FIREBASE_DATABASE_URL && env.FIREBASE_DATABASE_SECRET) {
-      const fbResult = await writeToFirebase(firebasePayload, env);
-      if (fbResult && fbResult.name) firebaseKey = fbResult.name;
+      const fbResult = await writeToFirebase(initialPayload, env);
+      
+      if (fbResult && fbResult.name) {
+        firebaseKey = fbResult.name;
+        
+        const updateRef = `${env.FIREBASE_DATABASE_URL}/wallpapers/newly_added/${firebaseKey}.json?auth=${env.FIREBASE_DATABASE_SECRET}`;
+        
+        await fetch(updateRef, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            id: firebaseKey, 
+            imageUrl: finalImageUrl 
+          }),
+        });
+      }
     }
 
     return new Response(JSON.stringify({
       success: true,
-      imageUrl,
-      thumbnailUrl: thumbnailUrl || imageUrl,
-      title,
-      category,
-      photographer,
-      file_id: fileId,
-      firebase_id: firebaseKey,
+      id: firebaseKey,
+      telegramFileId: fileId,
+      imageUrl: finalImageUrl,
+      thumbnailUrl: finalThumbnailUrl,
+      debug_cloudinary_error: cloudinaryError
     }), {
       headers: { "Content-Type": "application/json", ...CORS_HEADERS }
     });

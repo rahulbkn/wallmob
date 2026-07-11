@@ -333,7 +333,7 @@
     <string name="blur_max">25</string>
     <string name="zero">0</string>
     <string name="tab_for_you">おすすめ</string>
-    <string name="tab_trending">トレンド</string>
+    <string name="tab_newlyadded">新着</string>
     <string name="tab_premium">プレミアム</string>
     <string name="tab_categories">カテゴリー</string>
     <string name="section_recent_title">最近</string>

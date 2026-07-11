@@ -16,8 +16,6 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONObject;
 
@@ -42,7 +40,6 @@ public class UploadWallpaperActivity extends BaseActivity {
     private View imagePreviewContainer;
 
     private Uri selectedImageUri;
-    private DatabaseReference firebaseRef;
     private SessionManager sessionManager;
 
     private final ActivityResultLauncher<String> pickImageLauncher =
@@ -65,8 +62,6 @@ public class UploadWallpaperActivity extends BaseActivity {
             ThemeUtils.applySystemBars(this);
         }
 
-        // Target path modified to target user submissions appropriately
-        firebaseRef = FirebaseDatabase.getInstance().getReference("wallpapers/trending");
         sessionManager = new SessionManager(this);
 
         initViews();
@@ -100,7 +95,7 @@ public class UploadWallpaperActivity extends BaseActivity {
                 }
                 
                 try {
-                    Thread.sleep(4000); // Wait 4 seconds between polls
+                    Thread.sleep(4000); 
                 } catch (InterruptedException e) {
                     break;
                 }
@@ -187,20 +182,37 @@ public class UploadWallpaperActivity extends BaseActivity {
                 connection.setReadTimeout(30000);
 
                 OutputStream os = connection.getOutputStream();
+                
                 // Photo field
                 os.write(("--" + BOUNDARY + "\r\n").getBytes());
                 os.write(("Content-Disposition: form-data; name=\"photo\"; filename=\"wallpaper.jpg\"\r\n").getBytes());
                 os.write(("Content-Type: image/jpeg\r\n\r\n").getBytes());
                 os.write(imageBytes);
                 os.write(("\r\n").getBytes());
+                
                 // Title field
                 os.write(("--" + BOUNDARY + "\r\n").getBytes());
                 os.write(("Content-Disposition: form-data; name=\"title\"\r\n\r\n").getBytes());
                 os.write((effectiveTitle + "\r\n").getBytes());
+                
                 // Category field
                 os.write(("--" + BOUNDARY + "\r\n").getBytes());
                 os.write(("Content-Disposition: form-data; name=\"category\"\r\n\r\n").getBytes());
                 os.write((effectiveCategory + "\r\n").getBytes());
+                
+                // Photographer field
+                os.write(("--" + BOUNDARY + "\r\n").getBytes());
+                os.write(("Content-Disposition: form-data; name=\"photographer\"\r\n\r\n").getBytes());
+                os.write(("User Uploaded\r\n").getBytes());
+
+                // NAYA: Uploader ID field send karna Cloudflare ko
+                String uEmail = sessionManager.getEmail();
+                if (uEmail == null) uEmail = "";
+                android.util.Log.d("UploadWallpaper", "Uploading wallpaper with uploaderId: " + uEmail);
+                os.write(("--" + BOUNDARY + "\r\n").getBytes());
+                os.write(("Content-Disposition: form-data; name=\"uploader_id\"\r\n\r\n").getBytes());
+                os.write((uEmail + "\r\n").getBytes());
+
                 os.write(("--" + BOUNDARY + "--\r\n").getBytes());
                 os.flush();
                 os.close();
@@ -237,11 +249,13 @@ public class UploadWallpaperActivity extends BaseActivity {
 
                     JSONObject json = new JSONObject(responseBody);
                     if (json.getBoolean("success")) {
-                        String imageUrl = json.getString("imageUrl");
-                        String thumbnailUrl = json.getString("thumbnailUrl");
-                        String returnedTitle = json.optString("title", effectiveTitle);
-                        String returnedCategory = json.optString("category", effectiveCategory);
-                        saveToFirebase(imageUrl, thumbnailUrl, returnedTitle, returnedCategory);
+                        
+                        // NAYA: Ab worker database handle kar raha hai, so no saveToFirebase call.
+                        runOnUiThread(() -> {
+                            Toast.makeText(UploadWallpaperActivity.this, "Wallpaper uploaded successfully!", Toast.LENGTH_LONG).show();
+                            finish(); // Activity close
+                        });
+
                     } else {
                         final String errMsg = json.optString("message", "server error");
                         runOnUiThread(() -> {
@@ -277,32 +291,5 @@ public class UploadWallpaperActivity extends BaseActivity {
                 });
             }
         }).start();
-    }
-
-    private void saveToFirebase(String imageUrl, String thumbnailUrl, String title, String category) {
-        DatabaseReference newRef = firebaseRef.push();
-        String wallpaperId = newRef.getKey();
-
-        Wallpaper wallpaper = new Wallpaper(
-            wallpaperId,
-            imageUrl,
-            thumbnailUrl,
-            title,
-            category,
-            "User Uploaded",
-            null,
-            true,
-            sessionManager.getEmail()
-        );
-        wallpaper.setAddedAt(System.currentTimeMillis());
-
-        newRef.setValue(wallpaper)
-            .addOnSuccessListener(aVoid -> runOnUiThread(() -> {
-                Toast.makeText(UploadWallpaperActivity.this, "Wallpaper uploaded successfully!", Toast.LENGTH_LONG).show();
-                finish();
-            }))
-            .addOnFailureListener(e -> runOnUiThread(() -> {
-                Toast.makeText(UploadWallpaperActivity.this, "Failed to save to database", Toast.LENGTH_SHORT).show();
-            }));
     }
 }
