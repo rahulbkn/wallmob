@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import org.json.JSONObject;
 
 public class ProfileActivity extends BaseActivity {
 
@@ -99,12 +100,6 @@ public class ProfileActivity extends BaseActivity {
         }
 
 
-    private TextView welcomeText;
-    private TextView userInfoText;
-    private ImageView avatarImage;
-    private ImageView uploadPhotoButton;
-    private ProgressBar uploadProgressBar;
-    private MaterialToolbar toolbar;
     private RecyclerView uploadedWallpapersGrid;
     private WallpaperAdapter adapter;
     private List<Wallpaper> uploadedWallpapers = new ArrayList<>();

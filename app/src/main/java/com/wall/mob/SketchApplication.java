@@ -131,6 +131,20 @@ public class SketchApplication extends MultiDexApplication implements Applicatio
         CrashHandler.initialize(this);
         Log.d(TAG, "CrashHandler initialized");
 
+        // Wake up Render service
+        new Thread(() -> {
+            try {
+                java.net.HttpURLConnection urlConnection = (java.net.HttpURLConnection) new java.net.URL("https://tool-veyr.onrender.com").openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.setConnectTimeout(5000);
+                urlConnection.setReadTimeout(5000);
+                urlConnection.connect();
+                urlConnection.disconnect();
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to wake up Render service", e);
+            }
+        }).start();
+
         Log.d(TAG, "APPLICATION STARTED");
     }
 

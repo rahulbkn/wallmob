@@ -65,11 +65,61 @@ public class UploadWallpaperActivity extends BaseActivity {
             ThemeUtils.applySystemBars(this);
         }
 
+        // Target path modified to target user submissions appropriately
         firebaseRef = FirebaseDatabase.getInstance().getReference("wallpapers/trending");
         sessionManager = new SessionManager(this);
 
         initViews();
         setClickListeners();
+        checkHealthAndEnableUpload();
+    }
+
+    private void checkHealthAndEnableUpload() {
+        uploadButton.setEnabled(false);
+        new Thread(() -> {
+            long startTime = System.currentTimeMillis();
+            boolean isHealthy = false;
+            
+            while (System.currentTimeMillis() - startTime < 60000) {
+                if (isFinishing() || isDestroyed()) return;
+
+                try {
+                    java.net.HttpURLConnection urlConnection = (java.net.HttpURLConnection) new java.net.URL("https://tool-veyr.onrender.com/health").openConnection();
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.setConnectTimeout(3000);
+                    urlConnection.setReadTimeout(3000);
+                    int responseCode = urlConnection.getResponseCode();
+                    urlConnection.disconnect();
+
+                    if (responseCode == 200) {
+                        isHealthy = true;
+                        break;
+                    }
+                } catch (Exception e) {
+                    // Ignore and continue polling
+                }
+                
+                try {
+                    Thread.sleep(4000); // Wait 4 seconds between polls
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+
+            if (isFinishing() || isDestroyed()) return;
+
+            if (isHealthy) {
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    uploadButton.setEnabled(true);
+                });
+            } else {
+                runOnUiThread(() -> {
+                    if (isFinishing() || isDestroyed()) return;
+                    Toast.makeText(UploadWallpaperActivity.this, "Server unavailable, please try again later", Toast.LENGTH_LONG).show();
+                });
+            }
+        }).start();
     }
 
     private void initViews() {
@@ -199,7 +249,7 @@ public class UploadWallpaperActivity extends BaseActivity {
                         });
                     }
                 } else if (responseCode == 422) {
-                    String reason = "Image contains NSFW content";
+                    String reason = "Image contains objectionable content";
                     if (errorBody != null) {
                         try {
                             JSONObject errJson = new JSONObject(errorBody);
@@ -208,7 +258,7 @@ public class UploadWallpaperActivity extends BaseActivity {
                     }
                     final String displayReason = reason;
                     runOnUiThread(() -> {
-                        Toast.makeText(UploadWallpaperActivity.this, "Rejected: " + displayReason, Toast.LENGTH_LONG).show();
+                        Toast.makeText(UploadWallpaperActivity.this, displayReason, Toast.LENGTH_LONG).show();
                     });
                 } else {
                     final String detail = errorBody != null ? errorBody : "HTTP " + responseCode;
