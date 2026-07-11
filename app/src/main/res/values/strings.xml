@@ -348,7 +348,7 @@ You have full access to all features.</string>
 </plurals>
     <string name="tab_for_you">For You</string>
     <string name="tab_newlyadded">Newly Added</string>
-    <string name="tab_premium">Premium</string>
+    <string name="tab_popular">Popular</string>
     <string name="tab_categories">Categories</string>
     <string name="text_size">Text Size</string>
     <string name="text_size_option_small">Small</string>
@@ -363,4 +363,21 @@ You have full access to all features.</string>
     <string name="tap_to_select_image">Tap to select image</string>
     <string name="wallpaper_title_hint">Wallpaper title</string>
     <string name="wallpaper_category_hint">Category (e.g. Nature, Abstract)</string>
+    
+    <!-- Ye naye keys apne existing values/strings.xml me merge karo -->
+<string name="server_unavailable">Server unavailable, please try again later</string>
+<string name="select_image_first">Please select an image first</string>
+<string name="failed_to_read_image">Failed to read image</string>
+<string name="default_title">Untitled</string>
+<string name="default_category">General</string>
+<string name="upload_success">Wallpaper uploaded successfully!</string>
+<string name="server_error">server error</string>
+<string name="upload_failed_with_reason">Upload failed: %1$s</string>
+<string name="image_objectionable_content">Image contains objectionable content</string>
+<string name="upload_error_with_reason">Upload error: %1$s</string>
+<string name="uploading_label">Uploading your wallpaper…</string>
+<string name="processing_label">Verifying and finalizing…</string>
+<string name="processing_percent">…</string>
+<string name="upload_timeout">Upload is taking longer than usual. Please check your connection and try again.</string>
+
 </resources>

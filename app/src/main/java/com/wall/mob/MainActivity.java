@@ -56,6 +56,8 @@ public class MainActivity extends BaseActivity {
     
     // Material Bottom Navigation
     private BottomNavigationView bottomNavigationView;
+    private View bottomNavigationContainer;
+    private com.google.android.material.floatingactionbutton.FloatingActionButton fabUpload;
     
     private int currentPosition = -1;
 
@@ -350,13 +352,13 @@ public class MainActivity extends BaseActivity {
         if (currentPosition != 0) return;
         if (dy > 0 && !uiElementsHidden) {
             uiElementsHidden = true;
-            if (bottomNavigationView != null) {
-                bottomNavigationView.animate().translationY(bottomNavigationView.getHeight()).setDuration(200);
+            if (bottomNavigationContainer != null) {
+                bottomNavigationContainer.animate().translationY(bottomNavigationContainer.getHeight()).setDuration(200);
             }
         } else if (dy < 0 && uiElementsHidden) {
             uiElementsHidden = false;
-            if (bottomNavigationView != null) {
-                bottomNavigationView.animate().translationY(0).setDuration(200);
+            if (bottomNavigationContainer != null) {
+                bottomNavigationContainer.animate().translationY(0).setDuration(200);
             }
         }
     }
@@ -381,7 +383,9 @@ public class MainActivity extends BaseActivity {
             });
         }
 
+        bottomNavigationContainer = findViewById(R.id.bottomNavigationContainer);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        fabUpload = findViewById(R.id.fab_upload);
         notificationButton = findViewById(R.id.imageview3);
         contentFrame = findViewById(R.id.content_frame);
         searchLayout = findViewById(R.id.searchLayout);
@@ -446,6 +450,11 @@ public class MainActivity extends BaseActivity {
         
         settingsButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        });
+
+        fabUpload.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, UploadWallpaperActivity.class);
             startActivity(intent);
         });
 
@@ -717,8 +726,8 @@ public class MainActivity extends BaseActivity {
         if (appBarLayout != null) {
             appBarLayout.animate().translationY(0).setDuration(200);
         }
-        if (bottomNavigationView != null) {
-            bottomNavigationView.animate().translationY(0).setDuration(200);
+        if (bottomNavigationContainer != null) {
+            bottomNavigationContainer.animate().translationY(0).setDuration(200);
         }
     }
     

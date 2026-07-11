@@ -12,14 +12,18 @@
         android:title="@string/premium"/>
 
     <item
+        android:id="@+id/nav_spacer"
+        android:title=""
+        android:enabled="false"/>
+
+    <item
         android:id="@+id/nav_favorite"
         android:icon="@drawable/ic_favorite_selector_bottom"
         android:title="@string/favorites"/>
         
-        <item
+    <item
         android:id="@+id/nav_downloads"
         android:icon="@drawable/ic_download_selector"
         android:title="@string/downloads"/>
-        
 
 </menu>

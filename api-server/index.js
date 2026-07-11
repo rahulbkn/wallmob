@@ -585,8 +585,6 @@ async function handleWallpaperUpload(request, env, ctx) {
         const cloudFormData = new FormData();
         cloudFormData.append("file", photo);
         cloudFormData.append("upload_preset", env.CLOUDINARY_UPLOAD_PRESET);
-        // Added transformation parameter to ensure smaller image upload
-        cloudFormData.append("transformation", "c_fill,w_480");
 
         const cloudResp = await fetch(
           `https://api.cloudinary.com/v1_1/${env.CLOUDINARY_CLOUD_NAME}/image/upload`,

@@ -376,36 +376,52 @@ if (nestedScrollView != null) {
 
     private void loadPremiumWallpapersFromFirebase() {
         isLoadingPremiumData = true;
-        if (premiumValueListener != null) firebasePremiumRef.removeEventListener(premiumValueListener);
+        
+        DatabaseReference premiumRef = FirebaseDatabase.getInstance().getReference("wallpapers/premium");
+        DatabaseReference newlyRef = FirebaseDatabase.getInstance().getReference("wallpapers/newly_added");
 
-        premiumValueListener = new ValueEventListener() {
+        final int[] completedTasks = {0};
+        final Set<String> uniqueIds = new HashSet<>();
+        final List<Wallpaper> tempList = new ArrayList<>();
+
+        ValueEventListener listener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                premiumWallpapers.clear();
-                Set<String> uniqueIds = new HashSet<>();
                 for (DataSnapshot child : snapshot.getChildren()) {
-                    Wallpaper wallpaper = parseWallpaperManually(child);
-                    if (wallpaper != null && wallpaper.getId() != null) {
-                        if (!uniqueIds.contains(wallpaper.getId())) {
-                            uniqueIds.add(wallpaper.getId());
-                            premiumWallpapers.add(0, wallpaper);
-                        }
+                    Wallpaper w = parseWallpaperManually(child);
+                    if (w != null && w.isPremium() && !uniqueIds.contains(w.getId())) {
+                        uniqueIds.add(w.getId());
+                        tempList.add(0, w);
                     }
                 }
-                if (getActivity() != null) getActivity().runOnUiThread(() -> {
-                    refreshAllSections();
-                    isLoadingPremiumData = false;
-                    checkAllDataLoaded();
-                });
+                completedTasks[0]++;
+                if (completedTasks[0] == 2) {
+                    processMergedPremiumData(tempList);
+                }
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                isLoadingPremiumData = false;
-                checkAllDataLoaded();
+                completedTasks[0]++;
+                if (completedTasks[0] == 2) {
+                    processMergedPremiumData(tempList);
+                }
             }
         };
-        firebasePremiumRef.orderByChild("addedAt").addValueEventListener(premiumValueListener);
+
+        premiumRef.orderByChild("addedAt").limitToLast(100).addListenerForSingleValueEvent(listener);
+        newlyRef.orderByChild("addedAt").limitToLast(100).addListenerForSingleValueEvent(listener);
+    }
+
+    private void processMergedPremiumData(List<Wallpaper> mergedList) {
+        premiumWallpapers.clear();
+        premiumWallpapers.addAll(mergedList);
+        
+        if (getActivity() != null) getActivity().runOnUiThread(() -> {
+            refreshAllSections();
+            isLoadingPremiumData = false;
+            checkAllDataLoaded();
+        });
     }
 
     private Wallpaper parseWallpaperManually(DataSnapshot snapshot) {
@@ -435,7 +451,10 @@ if (nestedScrollView != null) {
                 if (source == null && isAdded()) source = getString(R.string.firebase_source);
                 else if (source == null) source = "Firebase";
 
-                return new Wallpaper(id, imageUrl, thumbnailUrl, title, category, source, photographer, true);
+                Boolean isPremium = (Boolean) map.get("premium");
+                if (isPremium == null) isPremium = false;
+
+                return new Wallpaper(id, imageUrl, thumbnailUrl, title, category, source, photographer, isPremium);
             }
         } catch (Exception e) {
             Log.e(TAG, "Parse error for ID: " + snapshot.getKey());

@@ -39,7 +39,10 @@ public class ApiManager {
     private int currentPage = 1;
     private boolean isLoadingMore = false;
     private String currentSourceFilter = "all";
+    private String currentSort = "popular"; // Default sorting
+    private String currentOrientation = "all"; // ✅ NAYA: Default orientation
 
+    // Random queries ab use nahi hongi, lekin future custom use ke liye array rakha hai
     private static final String[] SEARCH_QUERIES = {
             "nature", "abstract", "landscape", "animals", "city",
             "space", "beach", "minimal", "dark", "colorful",
@@ -81,7 +84,8 @@ public class ApiManager {
     public void loadWallpapersFromAllSources(ApiCallback callback) {
         this.callback = callback;
         resetPagination();
-        currentQuery = SEARCH_QUERIES[random.nextInt(SEARCH_QUERIES.length)];
+        // NAYA: Random keyword hata diya gaya hai, ab hamesha broad fetch karega
+        currentQuery = "wallpapers";
         loadFromUnifiedAPI(currentQuery, 1, DEFAULT_PAGE_SIZE, false);
     }
 
@@ -103,13 +107,32 @@ public class ApiManager {
         currentSourceFilter = source.toLowerCase();
 
         if (currentQuery == null || currentQuery.isEmpty()) {
-            currentQuery = SEARCH_QUERIES[random.nextInt(SEARCH_QUERIES.length)];
+            currentQuery = "wallpapers"; // NAYA: Default broad keyword
         }
         loadFromUnifiedAPI(currentQuery, 1, DEFAULT_PAGE_SIZE, false);
     }
 
     public void setSourceFilter(String source) {
         this.currentSourceFilter = source != null ? source.toLowerCase() : "all";
+    }
+    
+    public void setSortOrder(String sort) {
+        this.currentSort = sort != null ? sort.toLowerCase() : "popular";
+        resetPagination();
+    }
+    
+    public String getSortOrder() {
+        return this.currentSort;
+    }
+
+    // ✅ NAYA: Orientation filter set karne ka method
+    public void setOrientation(String orientation) {
+        this.currentOrientation = orientation != null ? orientation.toLowerCase() : "all";
+        resetPagination();
+    }
+    
+    public String getOrientation() {
+        return this.currentOrientation;
     }
 
     public void loadNextPage() {
@@ -122,11 +145,12 @@ public class ApiManager {
     private void resetPagination() {
         currentPage = 1;
         isLoadingMore = false;
-        currentSourceFilter = "all";
+        // Note: Sort aur Orientation filters reset nahi kiye, taaki inka state bana rahe
     }
 
     private void loadFromUnifiedAPI(String query, int page, int perPage, boolean isPagination) {
-        String cacheKey = query + "|" + page + "|" + perPage + "|" + currentSourceFilter;
+        // ✅ NAYA: Cache key me orientation ko bhi add kiya gaya hai
+        String cacheKey = query + "|" + page + "|" + perPage + "|" + currentSourceFilter + "|" + currentSort + "|" + currentOrientation;
 
         if (!isPagination) {
             CachedResponse cached = responseCache.get(cacheKey);
@@ -137,11 +161,14 @@ public class ApiManager {
             }
         }
 
+        // ✅ NAYA: URL me orientation parameter append kiya
         String url = UNIFIED_API_URL
                 + "?query=" + query.replace(" ", "+")
                 + "&page=" + page
                 + "&per_page=" + perPage
-                + "&source=" + currentSourceFilter;
+                + "&source=" + currentSourceFilter
+                + "&sort=" + currentSort
+                + "&orientation=" + currentOrientation;
 
         Log.d(TAG, "Fetching URL: " + url);
 
@@ -262,6 +289,14 @@ public class ApiManager {
                     height = meta.optInt("height", 0);
                 }
 
+                JSONObject stats = item.optJSONObject("stats");
+                int likes = 0, downloads = 0, views = 0;
+                if (stats != null) {
+                    likes = stats.optInt("likes", 0);
+                    downloads = stats.optInt("downloads", 0);
+                    views = stats.optInt("views", 0);
+                }
+
                 if (!currentSourceFilter.equals("all") && !source.toLowerCase().equals(currentSourceFilter)) continue;
 
                 Wallpaper wallpaper = new Wallpaper(
@@ -273,6 +308,11 @@ public class ApiManager {
 
                 wallpaper.setWidth(width);
                 wallpaper.setHeight(height);
+                
+                // NAYA: Agar Wallpaper.java model me setters available hain to inko uncomment kar sakte hain
+                // wallpaper.setLikes(likes);
+                // wallpaper.setDownloads(downloads);
+                // wallpaper.setViews(views);
 
                 wallpapers.add(wallpaper);
 

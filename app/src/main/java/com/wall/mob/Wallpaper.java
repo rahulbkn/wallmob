@@ -12,7 +12,7 @@ public class Wallpaper implements Parcelable, Serializable {
     private String category;
     private String source;
     private String photographer;
-    private boolean isPremium;
+    private boolean isPremium; // ✅ RESTORED (Kyunki dusre fragments ispe depend karte hain)
     private long addedAt;
     private int width;   // ✅ NEW
     private int height;  // ✅ NEW
@@ -26,8 +26,8 @@ public class Wallpaper implements Parcelable, Serializable {
     public void setWidth(int width) { this.width = width; }
     public int getHeight() { return height; }
     public void setHeight(int height) { this.height = height; }
-    public String getUploaderId() { return uploaderId; } // ✅ NEW
-    public void setUploaderId(String uploaderId) { this.uploaderId = uploaderId; } // ✅ NEW
+    public String getUploaderId() { return uploaderId; } 
+    public void setUploaderId(String uploaderId) { this.uploaderId = uploaderId; } 
 
     public Wallpaper(String id, String imageUrl, String thumbnailUrl, String title, String category, String source, String photographer, boolean isPremium) {
         this.id = id;
@@ -80,9 +80,9 @@ public class Wallpaper implements Parcelable, Serializable {
         photographer = in.readString();
         isPremium = in.readByte() != 0;
         addedAt = in.readLong();
-        width = in.readInt();   // ✅ NEW
-        height = in.readInt();  // ✅ NEW
-        uploaderId = in.readString(); // ✅ NEW
+        width = in.readInt();   
+        height = in.readInt();  
+        uploaderId = in.readString(); 
     }
 
     public static final Creator<Wallpaper> CREATOR = new Creator<Wallpaper>() {
@@ -113,9 +113,9 @@ public class Wallpaper implements Parcelable, Serializable {
         dest.writeString(photographer);
         dest.writeByte((byte) (isPremium ? 1 : 0));
         dest.writeLong(addedAt);
-        dest.writeInt(width);   // ✅ NEW
-        dest.writeInt(height);  // ✅ NEW
-        dest.writeString(uploaderId); // ✅ NEW
+        dest.writeInt(width);   
+        dest.writeInt(height);  
+        dest.writeString(uploaderId); 
     }
 
     public String getId() { return id; }
@@ -152,5 +152,5 @@ public class Wallpaper implements Parcelable, Serializable {
                 ", height=" + height +
                 ", uploaderId='" + uploaderId + '\'' +
                 '}';
-                }
-                }
+    }
+}
