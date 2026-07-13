@@ -69,6 +69,12 @@ public class UploadWallpaperActivity extends BaseActivity {
 
         sessionManager = new SessionManager(this);
 
+        if (!sessionManager.isLoggedIn() || sessionManager.isGuest()) {
+            Toast.makeText(this, "Please login to upload wallpapers", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
         initViews();
         setClickListeners();
         checkHealthAndEnableUpload();

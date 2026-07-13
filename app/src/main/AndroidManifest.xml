@@ -168,6 +168,10 @@
 			android:theme="@style/AppTheme" />
 			
 			
+			<activity android:name=".AdminActivity"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
+			android:exported="false" />
+
 			<activity android:name=".SettingsActivity"
 			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
 			android:exported="false" />

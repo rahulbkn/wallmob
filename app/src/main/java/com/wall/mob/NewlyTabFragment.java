@@ -125,6 +125,9 @@ public class NewlyTabFragment extends Fragment implements WallpaperAdapter.OnWal
                 thumbnailUrl = imageUrl;
             }
 
+            Boolean isPremium = (Boolean) map.get("premium");
+            if (isPremium == null) isPremium = false;
+
             return new Wallpaper(
                 id,
                 imageUrl,
@@ -133,7 +136,7 @@ public class NewlyTabFragment extends Fragment implements WallpaperAdapter.OnWal
                 (String) map.get("category"),
                 (String) map.get("source"),
                 (String) map.get("photographer"),
-                false
+                isPremium
             );
         } catch (Exception e) {
             Log.e(TAG, "Error parsing wallpaper", e);

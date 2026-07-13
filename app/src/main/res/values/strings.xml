@@ -296,6 +296,28 @@ You have full access to all features.</string>
     <string name="category_cars">Cars</string>
     <string name="category_anime">Anime</string>
     <string name="category_landscape">Landscape</string>
+    <string name="category_cartoons">Cartoons</string>
+    <string name="category_cyberpunk">Cyberpunk</string>
+    <string name="category_mountains">Mountains</string>
+    <string name="category_flowers">Flowers</string>
+    <string name="category_dark">Dark</string>
+    <string name="category_neon">Neon</string>
+    <string name="category_minimal">Minimal</string>
+    <string name="category_beach">Beach</string>
+    <string name="category_ocean">Ocean</string>
+    <string name="category_galaxy">Galaxy</string>
+    <string name="category_fantasy">Fantasy</string>
+    <string name="category_gaming">Gaming</string>
+    <string name="category_music">Music</string>
+    <string name="category_food">Food</string>
+    <string name="category_forest">Forest</string>
+    <string name="category_architecture">Architecture</string>
+    <string name="category_art">Art</string>
+    <string name="category_sports">Sports</string>
+    <string name="category_travel">Travel</string>
+    <string name="category_technology">Technology</string>
+    <string name="category_vintage">Vintage</string>
+    <string name="category_aesthetic">Aesthetic</string>
     <string name="share_via_wallmob">Share Wallpaper via WallMob</string>
     <string name="share_subject_prefix">Check out this amazing wallpaper: %1$s</string>
     <string name="wallpaper_set_home_success">Home screen wallpaper set successfully!</string>
@@ -378,6 +400,9 @@ You have full access to all features.</string>
 <string name="uploading_label">Uploading your wallpaper…</string>
 <string name="processing_label">Verifying and finalizing…</string>
 <string name="processing_percent">…</string>
-<string name="upload_timeout">Upload is taking longer than usual. Please check your connection and try again.</string>
+    <string name="upload_timeout">Upload is taking longer than usual. Please check your connection and try again.</string>
+
+    <string name="admin_panel">Admin Panel</string>
+    <string name="admin_only">Admin Only</string>
 
 </resources>

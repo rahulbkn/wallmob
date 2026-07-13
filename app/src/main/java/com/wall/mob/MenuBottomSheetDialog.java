@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.FrameLayout;
@@ -54,11 +55,29 @@ public class MenuBottomSheetDialog extends BottomSheetDialog {
         // Initialize your views
         LinearLayout websiteItem = findViewById(R.id.menu_website);
         LinearLayout updateItem = findViewById(R.id.menu_update);
-        LinearLayout uploadWallpaperItem = findViewById(R.id.menu_upload_wallpaper);
+        
         LinearLayout telegramItem = findViewById(R.id.menu_telegram);
         LinearLayout contactItem = findViewById(R.id.menu_contact);
         LinearLayout privacyItem = findViewById(R.id.menu_privacy);
         LinearLayout termsItem = findViewById(R.id.menu_terms);
+        LinearLayout adminItem = findViewById(R.id.menu_admin);
+
+        SessionManager sessionManager = new SessionManager(context);
+        boolean isLoggedIn = sessionManager.isLoggedIn() && !sessionManager.isGuest();
+
+        // Show admin item only for logged-in users
+        if (adminItem != null) {
+            if (isLoggedIn) {
+                adminItem.setVisibility(View.VISIBLE);
+                adminItem.setOnClickListener(v -> {
+                    Intent intent = new Intent(context, AdminActivity.class);
+                    context.startActivity(intent);
+                    dismiss();
+                });
+            }
+        }
+
+        // Show upload wallpaper item only for logged-in users
 
         if (websiteItem != null) {
             websiteItem.setOnClickListener(v -> {
@@ -70,14 +89,6 @@ public class MenuBottomSheetDialog extends BottomSheetDialog {
         if (updateItem != null) {
             updateItem.setOnClickListener(v -> {
                 Toast.makeText(context, context.getString(R.string.already_latest_version), Toast.LENGTH_SHORT).show();
-                dismiss();
-            });
-        }
-
-        if (uploadWallpaperItem != null) {
-            uploadWallpaperItem.setOnClickListener(v -> {
-                Intent intent = new Intent(context, UploadWallpaperActivity.class);
-                context.startActivity(intent);
                 dismiss();
             });
         }

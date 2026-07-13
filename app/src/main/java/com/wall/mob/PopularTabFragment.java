@@ -37,7 +37,7 @@ public class PopularTabFragment extends Fragment implements WallpaperAdapter.OnW
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Layout newly_tab ko hi reuse kar rahe hain kyunki IDs ek jaisi hain
-        View view = inflater.inflate(R.layout.newly_tab, container, false);
+        View view = inflater.inflate(R.layout.popular_tab, container, false);
         initializeViews(view);
         loadInitialData();
         return view;

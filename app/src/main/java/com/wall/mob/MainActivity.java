@@ -705,6 +705,16 @@ public class MainActivity extends BaseActivity {
         currentPosition = position;
         updateNavigationSelection(position);
 
+        // Toggle sticky tab container when switching between Home and other tabs
+        FrameLayout stickyContainer = findViewById(R.id.sticky_tab_container);
+        if (stickyContainer != null) {
+            if (position == 0) {
+                stickyContainer.setVisibility(View.VISIBLE);
+            } else {
+                stickyContainer.setVisibility(View.GONE);
+            }
+        }
+
         // THEME SWITCHING LOGIC
         if (position == 1) {
             enablePremiumTheme();

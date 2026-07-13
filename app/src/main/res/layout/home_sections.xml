@@ -2,8 +2,8 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_height="match_parent"
     android:layout_width="match_parent"
+android:layout_height="wrap_content"
     android:orientation="vertical"
     android:id="@+id/main_content_container">
 
@@ -33,9 +33,16 @@
         android:layout_height="48dp"
         android:visibility="gone" />
 
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/sections_viewpager"
+    <com.wall.mob.WrapContentFrameLayout
+        android:id="@+id/viewpager_wrapper"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="wrap_content">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/sections_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.wall.mob.WrapContentFrameLayout>
 
 </LinearLayout>

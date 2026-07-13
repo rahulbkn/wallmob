@@ -1,5 +1,20 @@
 {
   "name": "api-server",
   "main": "index.js",
-  "compatibility_date": "2026-07-10"
+  "compatibility_date": "2026-07-10",
+  "ai": {
+    "binding": "AI"
+  },
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  },
+  "services": [
+    { "binding": "PROXY_WORKER", "service": "server" }
+  ],
+  "triggers": {
+    "crons": ["* * * * *"]
+  }
 }

@@ -131,21 +131,29 @@ public class SketchApplication extends MultiDexApplication implements Applicatio
         CrashHandler.initialize(this);
         Log.d(TAG, "CrashHandler initialized");
 
-        // Wake up Render service
+        // Wake up backend services
         new Thread(() -> {
-            try {
-                java.net.HttpURLConnection urlConnection = (java.net.HttpURLConnection) new java.net.URL("https://tool-veyr.onrender.com").openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.setConnectTimeout(5000);
-                urlConnection.setReadTimeout(5000);
-                urlConnection.connect();
-                urlConnection.disconnect();
-            } catch (Exception e) {
-                Log.e(TAG, "Failed to wake up Render service", e);
+            String[] wakeUrls = {
+                "https://tool-veyr.onrender.com/health",
+                "https://api-server.rahulkumarbknv.workers.dev/?query=nature&page=1&per_page=1"
+            };
+            for (String url : wakeUrls) {
+                try {
+                    java.net.HttpURLConnection urlConnection =
+                            (java.net.HttpURLConnection) new java.net.URL(url).openConnection();
+                    urlConnection.setRequestMethod("GET");
+                    urlConnection.setConnectTimeout(15000);
+                    urlConnection.setReadTimeout(60000);
+                    int code = urlConnection.getResponseCode();
+                    Log.d(TAG, "Wake response for " + url + ": " + code);
+                    urlConnection.disconnect();
+                } catch (Exception e) {
+                    Log.e(TAG, "Failed to wake " + url, e);
+                }
             }
         }).start();
 
-        Log.d(TAG, "APPLICATION STARTED");
+Log.d(TAG, "APPLICATION STARTED");
     }
 
     private void registerNetworkCallback() {
