@@ -20,8 +20,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
+            android:background="@color/surface"
             app:layout_scrollFlags="scroll|exitUntilCollapsed"
-            app:titleEnabled="false">
+            app:titleEnabled="false"
+            app:contentScrim="@color/surface"
+            app:statusBarScrim="@color/surface">
 
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
@@ -76,7 +79,7 @@
 
                 </LinearLayout>
 
-                <!-- Right side: Permanent Logout Button in Toolbar -->
+                <!-- Right side: Logout Button (appears on scroll/collapse) -->
                 <ImageView
                     android:id="@+id/toolbarLogout"
                     android:layout_width="28dp"
@@ -87,8 +90,7 @@
                     android:padding="4dp"
                     android:clickable="true"
                     android:focusable="true"
-                    android:visibility="invisible"
-                    android:alpha="0" />
+                    android:visibility="gone" />
 
             </LinearLayout>
 

@@ -20,12 +20,12 @@
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/drawable/dialog_background_rounded.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable-xxhdpi_ic_google.png.flat",
-        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_google.png"
-    },
-    {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable_circle_ripple.xml.flat",
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/drawable/circle_ripple.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable-xxhdpi_ic_google.png.flat",
+        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_google.png"
     },
     {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable-hdpi_ic_info_outline.png.flat",
@@ -572,12 +572,12 @@
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-pngs-0:/drawable-xhdpi/ic_email.png"
     },
     {
-        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable-mdpi_ic_info_outline.png.flat",
-        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_info_outline.png"
-    },
-    {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable_ic_exit_app.xml.flat",
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/drawable/ic_exit_app.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable-mdpi_ic_info_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_info_outline.png"
     },
     {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/color_tab_text_selector.xml.flat",
@@ -684,12 +684,12 @@
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_notification.png"
     },
     {
-        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable-anydpi-v24_ic_lock.xml.flat",
-        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_lock.xml"
-    },
-    {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable_toolbar_shadow.xml.flat",
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/drawable/toolbar_shadow.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable-anydpi-v24_ic_lock.xml.flat",
+        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_lock.xml"
     },
     {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable-hdpi_ic_email.png.flat",
@@ -1004,12 +1004,12 @@
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/drawable-xhdpi/ic_notification.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/layout_favorite.xml.flat",
-        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/layout/favorite.xml"
-    },
-    {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable-xhdpi_ic_home.xml.flat",
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/drawable-xhdpi/ic_home.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/layout_favorite.xml.flat",
+        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/layout/favorite.xml"
     },
     {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable_phone_silver_frame.xml.flat",
@@ -1152,12 +1152,12 @@
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/drawable/tab_background_selector.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/layout_dialog_exit.xml.flat",
-        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/layout/dialog_exit.xml"
-    },
-    {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable-xhdpi_icon_wallpaper_round.xml.flat",
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/drawable-xhdpi/icon_wallpaper_round.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/layout_dialog_exit.xml.flat",
+        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/layout/dialog_exit.xml"
     },
     {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable-hdpi_ic_favorite_outline.png.flat",
@@ -1168,16 +1168,16 @@
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/drawable-xhdpi/ic_premium.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/layout_main.xml.flat",
-        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/layout/main.xml"
-    },
-    {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable_button_white_outlined.xml.flat",
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/drawable/button_white_outlined.xml"
     },
     {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable_ic_arrow_back.xml.flat",
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/drawable/ic_arrow_back.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/layout_main.xml.flat",
+        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/layout/main.xml"
     },
     {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable_ic_exit.xml.flat",
@@ -1328,12 +1328,12 @@
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/drawable/avatar_background.xml"
     },
     {
-        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/layout_premium.xml.flat",
-        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/layout/premium.xml"
-    },
-    {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/drawable_circle_background.xml.flat",
         "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/drawable/circle_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/layout_premium.xml.flat",
+        "source": "/root/.gradle/daemon/8.6/com.wall.mob.app-main-7:/layout/premium.xml"
     },
     {
         "merged": "/root/.gradle/daemon/8.6/com.wall.mob.app-merged_res-5:/layout_item_admin_wallpaper.xml.flat",

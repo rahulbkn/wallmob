@@ -192,14 +192,14 @@ public class ProfileActivity extends BaseActivity {
                     toolbarLeftContent.setAlpha(0);
                 }
                 
-                // Fade in toolbar logout icon
+                // Show toolbar logout icon (fully opaque once visible)
                 if (scrollPercentage > 0.01f) {
-                    float toolbarLogoutAlpha = Math.min(1f, (scrollPercentage - 0.01f) / 0.2f);
-                    toolbarLogout.setVisibility(View.VISIBLE);
-                    toolbarLogout.setAlpha(toolbarLogoutAlpha);
+                    if (toolbarLogout.getVisibility() != View.VISIBLE) {
+                        toolbarLogout.setVisibility(View.VISIBLE);
+                        toolbarLogout.setAlpha(1f);
+                    }
                 } else {
-                    toolbarLogout.setVisibility(View.INVISIBLE);
-                    toolbarLogout.setAlpha(0);
+                    toolbarLogout.setVisibility(View.GONE);
                 }
             }
         });
