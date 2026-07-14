@@ -289,6 +289,13 @@ async function handleRequest(request: Request, env: Env, ctx: ExecutionContext):
       return handleWallpaperUpload(request, env, ctx);
     }
 
+    if (url.pathname === "/delete-wallpaper") {
+      if (request.method !== "POST") {
+        return createErrorResponse("Method Not Allowed", "Use POST", 405);
+      }
+      return handleDeleteWallpaper(request, env, ctx);
+    }
+
     if (url.pathname === "/accept-llama-license") {
       if (!env.AI) return createErrorResponse("No AI binding", "env.AI not configured", 500);
       try {
@@ -1069,6 +1076,12 @@ async function handleWallpaperUpload(request: Request, env: Env, ctx: ExecutionC
           signal: AbortSignal.timeout(8000)
         }).catch((e: unknown) => console.error("Firebase id patch failed:", e));
 
+        await fetch(`${env.FIREBASE_DATABASE_URL}/wallpapers/file_index/${fileUniqueId}.json?${auth}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ firebaseKey, addedAt: Date.now() })
+        }).catch((e: unknown) => console.error("Firebase file_index write failed:", e));
+
         ctx.waitUntil((async () => {
           await fetch(`${env.FIREBASE_DATABASE_URL!}/wallpapers/pending_processing/${firebaseKey!}.json?${auth}`, {
             method: "PUT",
@@ -1104,6 +1117,83 @@ async function handleWallpaperUpload(request: Request, env: Env, ctx: ExecutionC
   } catch (error: unknown) {
     console.error("Wallpaper upload handler error:", error);
     return createErrorResponse("Upload failed", (error as Error).message, 500);
+  }
+}
+
+async function handleDeleteWallpaper(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+  try {
+    const body = await request.json() as { firebaseKey?: string; fileUniqueId?: string; email?: string };
+    const { firebaseKey, fileUniqueId, email } = body;
+    if (!firebaseKey) {
+      return createErrorResponse("Bad Request", "firebaseKey is required", 400);
+    }
+    if (!env.FIREBASE_DATABASE_URL || !env.FIREBASE_DATABASE_SECRET) {
+      return createErrorResponse("Server config error", "Firebase not configured", 500);
+    }
+
+    const auth = `auth=${env.FIREBASE_DATABASE_SECRET}`;
+    const base = env.FIREBASE_DATABASE_URL;
+
+    const recordResp = await fetch(`${base}/wallpapers/newly_added/${firebaseKey}.json?${auth}`);
+    const record = await recordResp.json() as Record<string, any> | null;
+    if (!record) {
+      return createErrorResponse("Not Found", "Wallpaper not found in database", 404);
+    }
+
+    const uploaderId = record.uploaderId || "";
+    if (email && uploaderId && email !== uploaderId) {
+      return createErrorResponse("Forbidden", "You can only delete your own wallpapers", 403);
+    }
+
+    const actualFileUniqueId = fileUniqueId || record.fileUniqueId || "";
+    const chatId = record.chatId ? Number(record.chatId) : null;
+    const messageId = record.messageId ? Number(record.messageId) : null;
+
+    if (record.thumbnailUrl) {
+      const publicId = extractCloudinaryPublicId(record.thumbnailUrl);
+      if (publicId) {
+        ctx.waitUntil(deleteFromCloudinary(publicId, env));
+      }
+    }
+
+    ctx.waitUntil((async () => {
+      await fetch(`${base}/wallpapers/newly_added/${firebaseKey}.json?${auth}`, { method: "DELETE" }).catch(() => {});
+      if (actualFileUniqueId) {
+        await fetch(`${base}/wallpapers/file_index/${actualFileUniqueId}.json?${auth}`, { method: "DELETE" }).catch(() => {});
+      }
+      await fetch(`${base}/wallpapers/pending_processing/${firebaseKey}.json?${auth}`, { method: "DELETE" }).catch(() => {});
+      if (chatId && messageId) {
+        await deleteTelegramMessage(chatId, messageId, env);
+      }
+      const title = record.title || "Untitled";
+      const deleter = email || uploaderId || "Unknown";
+      const adminChatId = env.ADMIN_CHAT_ID ? Number(env.ADMIN_CHAT_ID) : null;
+      if (adminChatId && env.TELEGRAM_CHAT_ID) {
+        const targetChat = Number(env.TELEGRAM_CHAT_ID);
+        await replyToChat(targetChat, `🗑️ Wallpaper deleted by ${deleter}\nTitle: ${title}`, env);
+      }
+      if (env.WALLMOB_CACHE) {
+        try {
+          let cursor: string | undefined;
+          do {
+            const listResult = await env.WALLMOB_CACHE.list({ prefix: "wallmob:", cursor });
+            for (const key of listResult.keys) {
+              await env.WALLMOB_CACHE.delete(key.name);
+            }
+            cursor = listResult.cursor;
+          } while (cursor);
+        } catch (e) {
+          console.error("Cache purge failed:", e);
+        }
+      }
+    })());
+
+    return new Response(JSON.stringify({ success: true }), {
+      headers: { "Content-Type": "application/json", ...CORS_HEADERS }
+    });
+  } catch (error: unknown) {
+    console.error("Delete wallpaper handler error:", error);
+    return createErrorResponse("Delete failed", (error as Error).message, 500);
   }
 }
 
@@ -1170,7 +1260,15 @@ async function handleTelegramWebhook(request: Request, env: Env, _ctx: Execution
       const base = env.FIREBASE_DATABASE_URL;
       const indexResp = await fetch(`${base}/wallpapers/file_index/${fileUniqueId}.json?${auth}`);
       const indexData = await indexResp.json() as { firebaseKey?: string } | null;
-      const firebaseKey = indexData?.firebaseKey;
+      let firebaseKey = indexData?.firebaseKey;
+      if (!firebaseKey) {
+        const allResp = await fetch(`${base}/wallpapers/newly_added.json?${auth}&orderBy="fileUniqueId"&equalTo="${fileUniqueId}"`);
+        const allData = await allResp.json() as Record<string, any> | null;
+        if (allData) {
+          const keys = Object.keys(allData);
+          if (keys.length > 0) firebaseKey = keys[0];
+        }
+      }
       if (!firebaseKey) {
         await replyToChat(chatId, "Image not found in database.", env);
         return new Response("OK");

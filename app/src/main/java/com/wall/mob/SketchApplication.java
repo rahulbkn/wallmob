@@ -28,6 +28,7 @@ public class SketchApplication extends MultiDexApplication implements Applicatio
 
     private static final String TAG = "SketchApplication";
     private static Context mApplicationContext;
+    public static volatile boolean needsDataRefresh = false;
 
     private ConnectivityManager connectivityManager;
     private ConnectivityManager.NetworkCallback networkCallback;

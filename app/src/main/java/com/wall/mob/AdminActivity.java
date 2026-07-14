@@ -26,6 +26,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONObject;
+
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +39,7 @@ import java.util.Map;
 public class AdminActivity extends BaseActivity {
 
     private static final String TAG = "AdminActivity";
+    private static final String DELETE_API_URL = "https://api-server.rahulkumarbknv.workers.dev/delete-wallpaper";
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
@@ -144,31 +150,71 @@ public class AdminActivity extends BaseActivity {
         });
     }
 
-    private void deleteWallpaper(WallpaperEntry entry, int position) {
+    private int findPositionByKey(String firebaseKey) {
+        for (int i = 0; i < wallpaperList.size(); i++) {
+            if (firebaseKey.equals(wallpaperList.get(i).firebaseKey)) return i;
+        }
+        return -1;
+    }
+
+    private void deleteWallpaper(WallpaperEntry entry) {
+        String key = entry.firebaseKey;
+        if (key == null) return;
+
         new AlertDialog.Builder(this)
                 .setTitle("Delete Wallpaper")
                 .setMessage("Delete \"" + (entry.title != null ? entry.title : "untitled") + "\"?")
                 .setPositiveButton("Delete", (dialog, which) -> {
-                    String key = entry.firebaseKey;
-                    if (key == null) return;
+                    showLoading();
+                    new Thread(() -> {
+                        try {
+                            JSONObject payload = new JSONObject();
+                            payload.put("firebaseKey", key);
+                            if (entry.fileUniqueId != null) payload.put("fileUniqueId", entry.fileUniqueId);
+                            payload.put("email", currentUserEmail);
 
-                    newlyAddedRef.child(key).removeValue()
-                            .addOnSuccessListener(aVoid -> {
-                                if (entry.fileUniqueId != null) {
-                                    DatabaseReference fileIndexRef = FirebaseDatabase.getInstance()
-                                            .getReference("wallpapers/file_index/" + entry.fileUniqueId);
-                                    fileIndexRef.removeValue();
-                                }
-                                wallpaperList.remove(position);
-                                adapter.notifyItemRemoved(position);
-                                Toast.makeText(AdminActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
+                            HttpURLConnection conn = (HttpURLConnection) new URL(DELETE_API_URL).openConnection();
+                            conn.setRequestMethod("POST");
+                            conn.setRequestProperty("Content-Type", "application/json");
+                            conn.setDoOutput(true);
+                            conn.setConnectTimeout(15000);
+                            conn.setReadTimeout(15000);
+                            OutputStream os = conn.getOutputStream();
+                            os.write(payload.toString().getBytes());
+                            os.flush();
+                            os.close();
 
-                                if (wallpaperList.isEmpty()) {
-                                    emptyState.setVisibility(View.VISIBLE);
-                                    recyclerView.setVisibility(View.GONE);
-                                }
-                            })
-                            .addOnFailureListener(e -> Toast.makeText(AdminActivity.this, "Delete failed: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                            int code = conn.getResponseCode();
+                            conn.disconnect();
+
+                            if (code == 200) {
+                                SketchApplication.needsDataRefresh = true;
+                                runOnUiThread(() -> {
+                                    int idx = findPositionByKey(key);
+                                    if (idx >= 0) {
+                                        wallpaperList.remove(idx);
+                                        adapter.notifyItemRemoved(idx);
+                                    }
+                                    hideLoading();
+                                    Toast.makeText(AdminActivity.this, "Deleted", Toast.LENGTH_SHORT).show();
+                                    if (wallpaperList.isEmpty()) {
+                                        emptyState.setVisibility(View.VISIBLE);
+                                        recyclerView.setVisibility(View.GONE);
+                                    }
+                                });
+                            } else {
+                                runOnUiThread(() -> {
+                                    hideLoading();
+                                    Toast.makeText(AdminActivity.this, "Delete failed: HTTP " + code, Toast.LENGTH_SHORT).show();
+                                });
+                            }
+                        } catch (Exception e) {
+                            runOnUiThread(() -> {
+                                hideLoading();
+                                Toast.makeText(AdminActivity.this, "Delete error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                            });
+                        }
+                    }).start();
                 })
                 .setNegativeButton("Cancel", null)
                 .show();
@@ -285,7 +331,7 @@ public class AdminActivity extends BaseActivity {
                     .into(holder.image);
 
             holder.editBtn.setOnClickListener(v -> showEditDialog(entry, position));
-            holder.deleteBtn.setOnClickListener(v -> deleteWallpaper(entry, position));
+            holder.deleteBtn.setOnClickListener(v -> deleteWallpaper(entry));
             holder.itemView.setOnClickListener(v -> showEditDialog(entry, position));
         }
 

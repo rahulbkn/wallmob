@@ -146,7 +146,7 @@
                 android:layout_height="36dp"
                 android:layout_marginBottom="8dp"
                 android:visibility="gone"
-                android:indeterminateTint="@color/colorAccent" />
+                android:indeterminateTint="@color/onSurface" />
 
             <TextView
                 android:id="@+id/welcomeText"
@@ -227,7 +227,7 @@
                         android:layout_height="28dp"
                         android:layout_marginBottom="6dp"
                         android:src="@drawable/ic_dashboard"
-                        android:tint="@color/profile_icon_tint" />
+                        android:tint="@color/onSurface" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -255,7 +255,7 @@
                         android:layout_height="28dp"
                         android:layout_marginBottom="6dp"
                         android:src="@drawable/ic_settings"
-                        android:tint="@color/profile_icon_tint" />
+                        android:tint="@color/onSurface" />
 
                     <TextView
                         android:layout_width="wrap_content"

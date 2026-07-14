@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -805,6 +806,10 @@ public class MainActivity extends BaseActivity {
             bottomNavigationView.setItemIconTintList(colorStateList);
             bottomNavigationView.setItemTextColor(colorStateList);
         }
+        
+        if (fabUpload != null) {
+            fabUpload.setBackgroundTintList(ColorStateList.valueOf(goldColor));
+        }
     }
 
     private void enableNormalTheme() {
@@ -875,6 +880,10 @@ public class MainActivity extends BaseActivity {
 
             bottomNavigationView.setItemIconTintList(colorStateList);
             bottomNavigationView.setItemTextColor(colorStateList);
+        }
+
+        if (fabUpload != null) {
+            fabUpload.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.colorAccent)));
         }
     }
 

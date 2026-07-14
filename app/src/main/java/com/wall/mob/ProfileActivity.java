@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Build;
+import android.graphics.Color;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -18,6 +19,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -46,6 +48,11 @@ import org.json.JSONObject;
 public class ProfileActivity extends BaseActivity {
 
     private static final String UPLOAD_URL = "https://api-server.rahulkumarbknv.workers.dev/profile";
+    
+    // Constants for scroll behavior
+    private static final float TOOLBAR_FADE_START = 0.01f;
+    private static final float TOOLBAR_FADE_RANGE = 0.2f;
+    private static final float ALPHA_THRESHOLD = 0.99f;
 
     private TextView welcomeText;
     private TextView userInfoText;
@@ -74,6 +81,12 @@ public class ProfileActivity extends BaseActivity {
     private List<Wallpaper> uploadedWallpapers = new ArrayList<>();
     private boolean isGuest;
     private String currentEmail;
+
+    // Cached values for scroll behavior
+    private int cachedHeaderHeight;
+    private int cachedToolbarHeight;
+    private int cachedTotalScrollRange;
+    private AppBarLayout.OnOffsetChangedListener offsetListener;
 
     private final ActivityResultLauncher<String> pickImageLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
@@ -111,6 +124,16 @@ public class ProfileActivity extends BaseActivity {
         fetchUploadedWallpapers();
         loadAvatarImage();
         setupAppBarScrollBehavior();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // Clean up listener to prevent memory leaks
+        if (appBarLayout != null && offsetListener != null) {
+            appBarLayout.removeOnOffsetChangedListener(offsetListener);
+            offsetListener = null;
+        }
     }
 
     private void initViews() {
@@ -157,53 +180,114 @@ public class ProfileActivity extends BaseActivity {
     }
 
     private void setupAppBarScrollBehavior() {
-        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                int totalScrollRange = appBarLayout.getTotalScrollRange();
-                float scrollPercentage = Math.abs(verticalOffset) / (float) totalScrollRange;
-                
-                // Calculate the height of profile header
-                int headerHeight = profileHeader.getHeight();
-                int toolbarHeight = toolbar.getHeight();
-                int totalHeaderHeight = headerHeight + toolbarHeight;
-                
-                // Calculate progress based on actual header visibility
-                float headerProgress = Math.min(1f, Math.abs(verticalOffset) / (float) headerHeight);
-                
-                // Control profile header fade only — CollapsingToolbarLayout's
-                // parallax collapseMode already handles the actual movement/collapse,
-                // so we must NOT also set translationY here (double-movement glitch).
-                if (headerProgress < 1f) {
-                    profileHeader.setVisibility(View.VISIBLE);
-                    profileHeader.setAlpha(1f - headerProgress);
-                } else {
-                    profileHeader.setVisibility(View.INVISIBLE);
-                    profileHeader.setAlpha(0f);
-                }
-                
-                // Fade in toolbar content
-                if (scrollPercentage > 0.01f) {
-                    float toolbarAlpha = Math.min(1f, (scrollPercentage - 0.01f) / 0.2f);
-                    toolbarLeftContent.setVisibility(View.VISIBLE);
-                    toolbarLeftContent.setAlpha(toolbarAlpha);
-                } else {
-                    toolbarLeftContent.setVisibility(View.INVISIBLE);
-                    toolbarLeftContent.setAlpha(0);
-                }
-                
-                // Show toolbar logout icon (fully opaque once visible)
-                if (scrollPercentage > 0.01f) {
-                    if (toolbarLogout.getVisibility() != View.VISIBLE) {
-                        toolbarLogout.setVisibility(View.VISIBLE);
-                        toolbarLogout.setAlpha(1f);
-                    }
-                } else {
-                    toolbarLogout.setVisibility(View.GONE);
-                }
-            }
-        });
+    // Cache dimensions after layout
+    appBarLayout.post(() -> {
+        cachedHeaderHeight = profileHeader.getHeight();
+        cachedToolbarHeight = toolbar.getHeight();
+        cachedTotalScrollRange = appBarLayout.getTotalScrollRange();
+    });
+
+    offsetListener = new AppBarLayout.OnOffsetChangedListener() {
+        @Override
+        public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+            // Use cached values or get current values
+            int headerHeight = cachedHeaderHeight > 0 ? cachedHeaderHeight : profileHeader.getHeight();
+            int totalScrollRange = cachedTotalScrollRange > 0 ? cachedTotalScrollRange : appBarLayout.getTotalScrollRange();
+            
+            // Calculate scroll progress
+            float scrollPercentage = totalScrollRange > 0 ? Math.abs(verticalOffset) / (float) totalScrollRange : 0f;
+            
+            // Calculate header progress based on actual header visibility
+            float headerProgress = headerHeight > 0 ? Math.min(1f, Math.abs(verticalOffset) / (float) headerHeight) : 0f;
+            
+            // Handle profile header fade animation
+            updateProfileHeaderVisibility(headerProgress);
+            
+            // Handle toolbar content fade animation
+            float toolbarAlpha = calculateToolbarAlpha(scrollPercentage);
+            updateToolbarContentVisibility(toolbarAlpha);
+            
+            // FIX: Set toolbar background based on scroll state
+            updateToolbarBackground(scrollPercentage);
+        }
+    };
+    
+    appBarLayout.addOnOffsetChangedListener(offsetListener);
+}
+
+/**
+ * Updates profile header visibility and alpha based on scroll progress
+ */
+private void updateProfileHeaderVisibility(float headerProgress) {
+    if (headerProgress < ALPHA_THRESHOLD) {
+        if (profileHeader.getVisibility() != View.VISIBLE) {
+            profileHeader.setVisibility(View.VISIBLE);
+        }
+        profileHeader.setAlpha(1f - headerProgress);
+    } else {
+        if (profileHeader.getVisibility() != View.INVISIBLE) {
+            profileHeader.setVisibility(View.INVISIBLE);
+        }
+        profileHeader.setAlpha(0f);
     }
+}
+
+/**
+ * Calculates toolbar content alpha based on scroll percentage
+ */
+private float calculateToolbarAlpha(float scrollPercentage) {
+    if (scrollPercentage <= TOOLBAR_FADE_START) {
+        return 0f;
+    }
+    return Math.min(1f, (scrollPercentage - TOOLBAR_FADE_START) / TOOLBAR_FADE_RANGE);
+}
+
+/**
+ * Updates toolbar content (left content and logout icon) visibility and alpha
+ */
+private void updateToolbarContentVisibility(float alpha) {
+    boolean isVisible = alpha > 0f;
+    
+    // Handle toolbar left content (avatar + name)
+    if (isVisible) {
+        if (toolbarLeftContent.getVisibility() != View.VISIBLE) {
+            toolbarLeftContent.setVisibility(View.VISIBLE);
+        }
+        toolbarLeftContent.setAlpha(alpha);
+    } else {
+        if (toolbarLeftContent.getVisibility() != View.GONE) {
+            toolbarLeftContent.setVisibility(View.GONE);
+        }
+        toolbarLeftContent.setAlpha(0f);
+    }
+    
+    // Handle toolbar logout icon (fully opaque once visible)
+    if (isVisible) {
+        if (toolbarLogout.getVisibility() != View.VISIBLE) {
+            toolbarLogout.setVisibility(View.VISIBLE);
+        }
+        toolbarLogout.setAlpha(1f);
+    } else {
+        if (toolbarLogout.getVisibility() != View.GONE) {
+            toolbarLogout.setVisibility(View.GONE);
+        }
+    }
+}
+
+/**
+ * Updates toolbar background based on scroll state
+ */
+private void updateToolbarBackground(float scrollPercentage) {
+    if (scrollPercentage > TOOLBAR_FADE_START) {
+        // When collapsed, set solid background color to toolbar
+        toolbar.setBackgroundColor(ContextCompat.getColor(this, R.color.toolbar_background));
+        toolbar.setElevation(getResources().getDimension(R.dimen.toolbar_elevation));
+    } else {
+        // When expanded, make toolbar transparent
+        toolbar.setBackgroundColor(Color.TRANSPARENT);
+        toolbar.setElevation(0f);
+    }
+}
 
     private void fetchUploadedWallpapers() {
         FirebaseDatabase.getInstance().getReference("wallpapers/newly_added")

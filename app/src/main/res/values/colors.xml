@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Light palette -->
-    <color name="colorAccent">#C9A84C</color>
+    <color name="colorAccent">#2196F3</color>
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#222222</color>
     <color name="colorControlHighlight">#212121</color>
@@ -63,4 +63,7 @@
     <color name="text_secondary">#666666</color>
     <color name="text_primary">#000000</color>
     <color name="ripple_color">#40FFFFFF</color>
+    
+    <color name="toolbar_background">#FFFFFF</color>
+    
 </resources>

@@ -67,7 +67,7 @@
                     android:layout_width="@dimen/icon_size_normal"
                     android:layout_height="@dimen/icon_size_normal"
                     android:src="@drawable/ic_dark"
-                    app:tint="@color/profile_icon_tint" />
+                    app:tint="@color/onSurface" />
                 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -113,7 +113,7 @@
                     android:layout_width="@dimen/icon_size_normal"
                     android:layout_height="@dimen/icon_size_normal"
                     android:src="@drawable/ic_language"
-                    app:tint="@color/profile_icon_tint" />
+                    app:tint="@color/onSurface" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -159,7 +159,7 @@
                     android:layout_width="@dimen/icon_size_normal"
                     android:layout_height="@dimen/icon_size_normal"
                     android:src="@drawable/ic_description"
-                    app:tint="@color/profile_icon_tint" />
+                    app:tint="@color/onSurface" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -219,7 +219,7 @@
                     android:layout_width="@dimen/icon_size_normal"
                     android:layout_height="@dimen/icon_size_normal"
                     android:src="@drawable/ic_delete"
-                    app:tint="@color/profile_icon_tint" />
+                    app:tint="@color/onSurface" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -279,7 +279,7 @@
                     android:layout_width="@dimen/icon_size_normal"
                     android:layout_height="@dimen/icon_size_normal"
                     android:src="@drawable/ic_auto"
-                    app:tint="@color/profile_icon_tint" />
+                    app:tint="@color/onSurface" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -317,7 +317,7 @@
                     android:layout_width="@dimen/icon_size_normal"
                     android:layout_height="@dimen/icon_size_normal"
                     android:src="@drawable/ic_time"
-                    app:tint="@color/profile_icon_tint" />
+                    app:tint="@color/onSurface" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -377,7 +377,7 @@
                     android:layout_width="@dimen/icon_size_normal"
                     android:layout_height="@dimen/icon_size_normal"
                     android:src="@drawable/ic_notification"
-                    app:tint="@color/profile_icon_tint" />
+                    app:tint="@color/onSurface" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -429,7 +429,7 @@
                     android:layout_width="@dimen/icon_size_normal"
                     android:layout_height="@dimen/icon_size_normal"
                     android:src="@drawable/ic_email"
-                    app:tint="@color/profile_icon_tint" />
+                    app:tint="@color/onSurface" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -461,7 +461,7 @@
                     android:layout_width="@dimen/icon_size_normal"
                     android:layout_height="@dimen/icon_size_normal"
                     android:src="@drawable/ic_star"
-                    app:tint="@color/profile_icon_tint" />
+                    app:tint="@color/onSurface" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -493,7 +493,7 @@
                     android:layout_width="@dimen/icon_size_normal"
                     android:layout_height="@dimen/icon_size_normal"
                     android:src="@drawable/ic_telegram"
-                    app:tint="@color/profile_icon_tint" />
+                    app:tint="@color/onSurface" />
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -539,7 +539,7 @@
                     android:layout_width="@dimen/icon_size_normal"
                     android:layout_height="@dimen/icon_size_normal"
                     android:src="@drawable/ic_info"
-                    app:tint="@color/profile_icon_tint" />
+                    app:tint="@color/onSurface" />
 
                 <TextView
                     android:layout_width="wrap_content"

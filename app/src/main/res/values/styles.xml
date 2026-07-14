@@ -49,7 +49,7 @@
     <!-- Alert Dialog Theme -->
     <style name="AlertDialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
         <!-- Background -->
-        <item name="android:windowBackground">@drawable/dialog_background_rounded</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:background">@drawable/dialog_background_rounded</item>
         
         <!-- Title -->

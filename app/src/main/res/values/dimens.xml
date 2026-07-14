@@ -2,4 +2,5 @@
 <resources>
     <!-- Combined ActionBarSize + Status Bar height -->
     <dimen name="header_top_margin">90dp</dimen>
+    <dimen name="toolbar_elevation">4dp</dimen>
 </resources>

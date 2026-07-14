@@ -39,7 +39,7 @@
             android:scaleType="center"
             android:focusable="false"
             android:layout_marginEnd="16dp"
-            app:tint="@color/profile_icon_tint" />
+            app:tint="@color/onSurface" />
 
         <TextView
             android:id="@+id/textview18"
@@ -72,7 +72,7 @@
             android:scaleType="center"
             android:focusable="false"
             android:layout_marginEnd="16dp"
-            app:tint="@color/profile_icon_tint" />
+            app:tint="@color/onSurface" />
 
         <TextView
             android:id="@+id/textview22"
@@ -105,7 +105,7 @@
             android:scaleType="center"
             android:focusable="false"
             android:layout_marginEnd="16dp"
-            app:tint="@color/profile_icon_tint" />
+            app:tint="@color/onSurface" />
 
         <TextView
             android:id="@+id/textview19"
@@ -138,7 +138,7 @@
             android:scaleType="center"
             android:focusable="false"
             android:layout_marginEnd="16dp"
-            app:tint="@color/profile_icon_tint" />
+            app:tint="@color/onSurface" />
 
         <TextView
             android:id="@+id/textview20"
@@ -171,7 +171,7 @@
             android:scaleType="center"
             android:focusable="false"
             android:layout_marginEnd="16dp"
-            app:tint="@color/profile_icon_tint" />
+            app:tint="@color/onSurface" />
 
         <TextView
             android:id="@+id/textview21"
@@ -203,7 +203,7 @@
             android:scaleType="center"
             android:focusable="false"
             android:layout_marginEnd="16dp"
-            app:tint="@color/profile_icon_tint" />
+            app:tint="@color/onSurface" />
 
         <TextView
             android:id="@+id/textview2"
