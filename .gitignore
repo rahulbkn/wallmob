@@ -1,0 +1,22 @@
+# Gradle
+.gradle/
+
+# Build outputs
+build/
+**/build/
+
+# Wrangler
+.wrangler/
+
+# Local configuration
+local.properties
+
+# IDE files
+.idea/
+*.iml
+
+# Logs
+*.log
+
+# Android signing keys
+*.jks
