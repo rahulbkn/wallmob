@@ -3,6 +3,7 @@ package com.wall.mob;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,8 +11,8 @@ public abstract class BaseActivity extends AppCompatActivity {
 
     @Override
     protected void attachBaseContext(Context newBase) {
-        Context context = LocaleHelper.setLocale(newBase);
-        super.attachBaseContext(FontHelper.setFontScale(context));
+        Context context = FontHelper.setFontScale(newBase);
+        super.attachBaseContext(context);
     }
 
     @Override
@@ -22,7 +23,6 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        // Handle theme-dependent UI updates dynamically without recreating the activity
         ThemeUtils.applySystemBars(this);
     }
 }

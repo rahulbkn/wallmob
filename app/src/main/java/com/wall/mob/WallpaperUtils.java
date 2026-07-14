@@ -546,41 +546,5 @@ public class WallpaperUtils {
 
         return Bitmap.createScaledBitmap(original, newWidth, newHeight, true);
     }
-    private static void shortenUrlWithBitly(
-        String longUrl,
-        java.util.function.Consumer<String> callback
-) {
-    new Thread(() -> {
-        try {
-            String jsonBody = "{ \"long_url\": \"" + longUrl + "\" }";
-
-            java.net.URL url = new java.net.URL("https://api-ssl.bitly.com/v4/shorten");
-            java.net.HttpURLConnection conn =
-                    (java.net.HttpURLConnection) url.openConnection();
-
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Authorization", "134104750ac1df4ee516a0cfaafd2c0169e77069");
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setDoOutput(true);
-
-            try (java.io.OutputStream os = conn.getOutputStream()) {
-                os.write(jsonBody.getBytes("UTF-8"));
-            }
-
-            java.io.InputStream is = conn.getInputStream();
-            java.util.Scanner scanner = new java.util.Scanner(is).useDelimiter("\\A");
-            String response = scanner.hasNext() ? scanner.next() : "";
-
-            org.json.JSONObject json = new org.json.JSONObject(response);
-            String shortLink = json.getString("link");
-
-            mainHandler.post(() -> callback.accept(shortLink));
-
-        } catch (Exception e) {
-            Log.e("Bitly", "Shorten failed", e);
-            mainHandler.post(() -> callback.accept(longUrl)); // fallback
-        }
-    }).start();
-}
 }
 // test

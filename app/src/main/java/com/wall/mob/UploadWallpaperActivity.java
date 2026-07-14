@@ -19,6 +19,9 @@ import com.google.android.material.color.MaterialColors;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
@@ -259,11 +262,23 @@ public class UploadWallpaperActivity extends BaseActivity {
                 android.util.Log.d("UploadWallpaper", "Uploading wallpaper with uploaderId: " + uEmail);
                 byte[] uploaderPart = buildTextPart("uploader_id", uEmail);
 
+                byte[] idTokenPart = null;
+                FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (firebaseUser != null) {
+                    try {
+                        String idToken = com.google.android.gms.tasks.Tasks.await(firebaseUser.getIdToken(false)).getToken();
+                        idTokenPart = buildTextPart("idToken", idToken);
+                    } catch (Exception ignored) {}
+                }
+
                 byte[] closingBoundary = ("--" + BOUNDARY + "--\r\n").getBytes();
 
-                final long totalContentLength = photoHeader.length + imageBytes.length + photoFooter.length
+                long totalContentLength = photoHeader.length + imageBytes.length + photoFooter.length
                         + titlePart.length + categoryPart.length + photographerPart.length
                         + uploaderPart.length + closingBoundary.length;
+                if (idTokenPart != null) {
+                    totalContentLength += idTokenPart.length;
+                }
 
                 HttpURLConnection connection = (HttpURLConnection) new URL(UPLOAD_URL).openConnection();
                 connection.setRequestMethod("POST");
@@ -311,6 +326,11 @@ public class UploadWallpaperActivity extends BaseActivity {
 
                 os.write(uploaderPart);
                 bytesWritten[0] += uploaderPart.length;
+
+                if (idTokenPart != null) {
+                    os.write(idTokenPart);
+                    bytesWritten[0] += idTokenPart.length;
+                }
 
                 os.write(closingBoundary);
                 bytesWritten[0] += closingBoundary.length;

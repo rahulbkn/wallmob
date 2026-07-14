@@ -1,0 +1,1 @@
+http://schemas.android.com/apk/res-auto;androidx.swiperefreshlayout:swiperefreshlayout:1.1.0;$GRADLE_USER_HOME/caches/transforms-4/ac7e207ab97aa5ee57fc8b9b67a36e80/transformed/swiperefreshlayout-1.1.0/res/values/values.xml,+attr:swipeRefreshLayoutProgressSpinnerBackgroundColor,0,Vcolor:;+styleable:SwipeRefreshLayout,0,V-swipeRefreshLayoutProgressSpinnerBackgroundColor:color:;

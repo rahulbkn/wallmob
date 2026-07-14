@@ -65,7 +65,7 @@
 			
 		<activity
 			android:name=".ProfileActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
+			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|locale|layoutDirection"
 			android:hardwareAccelerated="true"
 			android:supportsPictureInPicture="true"
 			android:exported="false" />

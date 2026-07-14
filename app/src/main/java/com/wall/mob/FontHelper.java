@@ -10,7 +10,7 @@ public class FontHelper {
 
     private static final String PREF_NAME = "settings_prefs";
     private static final String KEY_TEXT_SIZE = "app_text_size";
-    private static final String DEFAULT_SIZE = "small";
+    private static final String DEFAULT_SIZE = "normal";
 
     public static Context setFontScale(Context context) {
         return updateResources(context, getTextSize(context));
@@ -24,12 +24,12 @@ public class FontHelper {
     private static float getScaleFactor(String size) {
         switch (size) {
             case "small":
-                return 0.80f;
+                return 0.85f;
             case "large":
                 return 1.15f;
             case "normal":
             default:
-                return 1.0f; // Reduced from 1.0f
+                return 1.0f;
         }
     }
 

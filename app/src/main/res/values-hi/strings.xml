@@ -359,9 +359,18 @@
     <string name="blur_max">25</string>
     <string name="zero">0</string>
     <string name="tab_for_you">आपके लिए</string>
+    <string name="tab_popular">लोकप्रिय</string>
     <string name="tab_newlyadded">नया जोड़ा गया</string>
     <string name="tab_premium">प्रीमियम</string>
     <string name="tab_categories">श्रेणियाँ</string>
     <string name="section_recent_title">हालिया</string>
     <string name="section_recent_desc">आपके द्वारा हाल ही में देखे गए वॉलपेपर</string>
+
+    <string name="admin_panel">एडमिन पैनल</string>
+    <string name="admin_only">केवल एडमिन</string>
+<string name="admin_empty_desc">मॉडरेशन के लिए कोई वॉलपेपर उपलब्ध नहीं है</string>
+    <string name="wallpaper_changed">वॉलपेपर बदल दिया गया</string>
+    <string name="new_wallpaper_applied">नया वॉलपेपर लागू किया गया</string>
+    <string name="wallpaper_changer_channel">वॉलपेपर बदलने वाला</string>
+    <string name="wallpaper_changer_description">ऑटो वॉलपेपर चेंजर से सूचनाएं</string>
 </resources>

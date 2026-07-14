@@ -1,6 +1,6 @@
 {
   "name": "api-server",
-  "main": "index.js",
+  "main": "index.ts",
   "compatibility_date": "2026-07-10",
   "ai": {
     "binding": "AI"

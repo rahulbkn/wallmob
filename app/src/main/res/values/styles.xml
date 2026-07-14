@@ -41,6 +41,51 @@
         <item name="materialCardViewStyle">@style/Widget.App.MaterialCardView</item>
         <item name="materialButtonStyle">@style/PrimaryButton</item>
         <item name="bottomNavigationStyle">@style/Widget.MaterialComponents.BottomNavigationView</item>
+        
+        <!-- Apply dialog theme to all alert dialogs -->
+        <item name="alertDialogTheme">@style/AlertDialogTheme</item>
+    </style>
+
+    <!-- Alert Dialog Theme -->
+    <style name="AlertDialogTheme" parent="Theme.MaterialComponents.DayNight.Dialog.Alert">
+        <!-- Background -->
+        <item name="android:windowBackground">@drawable/dialog_background_rounded</item>
+        <item name="android:background">@drawable/dialog_background_rounded</item>
+        
+        <!-- Title -->
+        <item name="android:textColorPrimary">@color/onSurface</item>
+        <item name="android:titleTextColor">@color/onSurface</item>
+        
+        <!-- Message -->
+        <item name="android:textColorSecondary">@color/onSurfaceVariant</item>
+        
+        <!-- Buttons -->
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/NeutralButtonStyle</item>
+        
+        <!-- Color accent for checkboxes/radio buttons -->
+        <item name="colorAccent">@color/colorAccent</item>
+        
+        <!-- Divider -->
+        <item name="android:divider">@color/profile_divider</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
+
+    <!-- Positive Button Style (Logout) -->
+    <style name="PositiveButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/red_error</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <!-- Negative Button Style (Cancel) -->
+    <style name="NegativeButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/onSurface</item>
+    </style>
+
+    <!-- Neutral Button Style (if needed) -->
+    <style name="NeutralButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/onSurface</item>
     </style>
 
     <style name="ToolbarPopup.Black" parent="ThemeOverlay.AppCompat.Light">
@@ -59,9 +104,7 @@
     <item name="hintTextColor">@color/gray_dark</item>
     <item name="android:textColorHint">@color/gray_dark</item>
 
-
 </style>
-
 
     <style name="PrimaryButton" parent="Widget.MaterialComponents.Button">
         <item name="backgroundTint">@color/colorPrimary</item>

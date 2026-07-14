@@ -3,6 +3,12 @@ package com.wall.mob;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+
 public class SessionManager {
     private static final String PREF_NAME = "UserSession";
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
@@ -10,47 +16,45 @@ public class SessionManager {
     private static final String KEY_FULL_NAME = "fullName";
     private static final String KEY_IS_GUEST = "isGuest";
     private static final String KEY_PHOTO_URL = "photoUrl";
-    
-    private SharedPreferences pref;
-    private SharedPreferences.Editor editor;
-    private Context context;
-    
+
+    private final SharedPreferences pref;
+
     public SessionManager(Context context) {
-        this.context = context;
         pref = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        editor = pref.edit();
     }
-    
+
     public void createLoginSession(String email, String fullName, boolean isGuest) {
-        editor.putBoolean(KEY_IS_LOGGED_IN, true);
-        editor.putString(KEY_EMAIL, email);
-        editor.putString(KEY_FULL_NAME, fullName);
-        editor.putBoolean(KEY_IS_GUEST, isGuest);
-        editor.putString(KEY_PHOTO_URL, null);
-        editor.commit();
+        pref.edit()
+                .putBoolean(KEY_IS_LOGGED_IN, true)
+                .putString(KEY_EMAIL, email)
+                .putString(KEY_FULL_NAME, fullName)
+                .putBoolean(KEY_IS_GUEST, isGuest)
+                .putString(KEY_PHOTO_URL, null)
+                .apply();
     }
 
     public void createLoginSession(String email, String fullName, boolean isGuest, String photoUrl) {
-        editor.putBoolean(KEY_IS_LOGGED_IN, true);
-        editor.putString(KEY_EMAIL, email);
-        editor.putString(KEY_FULL_NAME, fullName);
-        editor.putBoolean(KEY_IS_GUEST, isGuest);
-        editor.putString(KEY_PHOTO_URL, photoUrl);
-        editor.commit();
+        pref.edit()
+                .putBoolean(KEY_IS_LOGGED_IN, true)
+                .putString(KEY_EMAIL, email)
+                .putString(KEY_FULL_NAME, fullName)
+                .putBoolean(KEY_IS_GUEST, isGuest)
+                .putString(KEY_PHOTO_URL, photoUrl)
+                .apply();
     }
-    
+
     public boolean isLoggedIn() {
         return pref.getBoolean(KEY_IS_LOGGED_IN, false);
     }
-    
+
     public String getEmail() {
         return pref.getString(KEY_EMAIL, null);
     }
-    
+
     public String getFullName() {
         return pref.getString(KEY_FULL_NAME, null);
     }
-    
+
     public boolean isGuest() {
         return pref.getBoolean(KEY_IS_GUEST, false);
     }
@@ -59,19 +63,30 @@ public class SessionManager {
         return pref.getString(KEY_PHOTO_URL, null);
     }
 
+    public String getIdToken() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            try {
+                Task<GetTokenResult> task = user.getIdToken(false);
+                Tasks.await(task);
+                return task.getResult().getToken();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
     public boolean hasPhotoUrl() {
         String url = getPhotoUrl();
         return url != null && !url.isEmpty();
     }
 
     public void savePhotoUrl(String photoUrl) {
-        editor.putString(KEY_PHOTO_URL, photoUrl);
-        editor.commit();
+        pref.edit().putString(KEY_PHOTO_URL, photoUrl).apply();
     }
-    
+
     public void logoutUser() {
-        editor.clear();
-        editor.commit();
+        pref.edit().clear().apply();
     }
 }
-// test

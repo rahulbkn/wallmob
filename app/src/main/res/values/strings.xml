@@ -277,9 +277,7 @@
     <string name="back_button">Back button</string>
     <string name="coins_required_static">You need coins to perform this action. Would you like to earn more coins?</string>
     <string name="long_clicked">Long-clicked: %1$s</string>
-    <string name="profile_full_access">Email: %1$s
-Phone: %2$s
-You have full access to all features.</string>
+    <string name="profile_full_access">Email: %1$s\nPhone: %2$s</string>
 
     <string name="trending_now">Trending Now</string>
     <string name="facebook_app_id" translatable="false">1573326364496807</string>
@@ -345,32 +343,33 @@ You have full access to all features.</string>
     <string name="shared_wallpaper_format">Shared %1$s Wallpaper</string>
     <string name="downloaded_wallpaper_format">Downloaded %1$s Wallpaper</string>
     <string name="no_results">No results</string>
-<string name="crash_log_title">App Crashed</string>
-<string name="crash_log_message">The app encountered an unexpected error. Details below:</string>
-<string name="copy_log_to_clipboard">Copy Log to Clipboard</string>
-<string name="view_all_crash_logs">View All Crash Logs</string>
-<string name="restart_app">Restart App</string>
-<string name="select_language">Select Language</string>
-<string name="select_theme">Select Theme</string>
-<string name="auto_wallpaper">Auto Wallpaper</string>
-<string name="auto_change">Auto Change</string>
-<string name="change_interval">Change Interval</string>
-<string name="every_24_hours">Every 24 hours</string>
-<string name="select_all">Select All</string>
-<string name="delete">Delete</string>
-<string name="recent">Recent</string>
-<string name="clear">Clear</string>
-<string name="blur_min">0</string>
-<string name="blur_max">25</string>
-<string name="zero">0</string>
-<string name="or">OR LOGIN WITH</string>
-<plurals name="wallpaper_count">
-    <item quantity="one">%d wallpaper</item>
-    <item quantity="other">%d wallpapers</item>
-</plurals>
+    <string name="crash_log_title">App Crashed</string>
+    <string name="crash_log_message">The app encountered an unexpected error. Details below:</string>
+    <string name="copy_log_to_clipboard">Copy Log to Clipboard</string>
+    <string name="view_all_crash_logs">View All Crash Logs</string>
+    <string name="restart_app">Restart App</string>
+    <string name="select_language">Select Language</string>
+    <string name="select_theme">Select Theme</string>
+    <string name="auto_wallpaper">Auto Wallpaper</string>
+    <string name="auto_change">Auto Change</string>
+    <string name="change_interval">Change Interval</string>
+    <string name="every_24_hours">Every 24 hours</string>
+    <string name="select_all">Select All</string>
+    <string name="delete">Delete</string>
+    <string name="recent">Recent</string>
+    <string name="clear">Clear</string>
+    <string name="blur_min">0</string>
+    <string name="blur_max">25</string>
+    <string name="zero">0</string>
+    <string name="or">OR LOGIN WITH</string>
+    <plurals name="wallpaper_count">
+        <item quantity="one">%d wallpaper</item>
+        <item quantity="other">%d wallpapers</item>
+    </plurals>
     <string name="tab_for_you">For You</string>
-    <string name="tab_newlyadded">Newly Added</string>
     <string name="tab_popular">Popular</string>
+    <string name="tab_newlyadded">Newly Added</string>
+    <string name="tab_premium">Premium</string>
     <string name="tab_categories">Categories</string>
     <string name="text_size">Text Size</string>
     <string name="text_size_option_small">Small</string>
@@ -386,23 +385,28 @@ You have full access to all features.</string>
     <string name="wallpaper_title_hint">Wallpaper title</string>
     <string name="wallpaper_category_hint">Category (e.g. Nature, Abstract)</string>
     
-    <!-- Ye naye keys apne existing values/strings.xml me merge karo -->
-<string name="server_unavailable">Server unavailable, please try again later</string>
-<string name="select_image_first">Please select an image first</string>
-<string name="failed_to_read_image">Failed to read image</string>
-<string name="default_title">Untitled</string>
-<string name="default_category">General</string>
-<string name="upload_success">Wallpaper uploaded successfully!</string>
-<string name="server_error">server error</string>
-<string name="upload_failed_with_reason">Upload failed: %1$s</string>
-<string name="image_objectionable_content">Image contains objectionable content</string>
-<string name="upload_error_with_reason">Upload error: %1$s</string>
-<string name="uploading_label">Uploading your wallpaper…</string>
-<string name="processing_label">Verifying and finalizing…</string>
-<string name="processing_percent">…</string>
+    <string name="server_unavailable">Server unavailable, please try again later</string>
+    <string name="select_image_first">Please select an image first</string>
+    <string name="failed_to_read_image">Failed to read image</string>
+    <string name="default_title">Untitled</string>
+    <string name="default_category">General</string>
+    <string name="upload_success">Wallpaper uploaded successfully!</string>
+    <string name="server_error">server error</string>
+    <string name="upload_failed_with_reason">Upload failed: %1$s</string>
+    <string name="image_objectionable_content">Image contains objectionable content</string>
+    <string name="upload_error_with_reason">Upload error: %1$s</string>
+    <string name="uploading_label">Uploading your wallpaper…</string>
+    <string name="processing_label">Verifying and finalizing…</string>
+    <string name="processing_percent">…</string>
     <string name="upload_timeout">Upload is taking longer than usual. Please check your connection and try again.</string>
 
     <string name="admin_panel">Admin Panel</string>
     <string name="admin_only">Admin Only</string>
+    <string name="admin_empty_desc">No wallpapers available for moderation</string>
+
+    <string name="wallpaper_changed">Wallpaper Changed</string>
+    <string name="new_wallpaper_applied">New wallpaper applied</string>
+    <string name="wallpaper_changer_channel">Wallpaper Changer</string>
+    <string name="wallpaper_changer_description">Notifications from auto wallpaper changer</string>
 
 </resources>

@@ -60,22 +60,8 @@ public class MenuBottomSheetDialog extends BottomSheetDialog {
         LinearLayout contactItem = findViewById(R.id.menu_contact);
         LinearLayout privacyItem = findViewById(R.id.menu_privacy);
         LinearLayout termsItem = findViewById(R.id.menu_terms);
-        LinearLayout adminItem = findViewById(R.id.menu_admin);
+        
 
-        SessionManager sessionManager = new SessionManager(context);
-        boolean isLoggedIn = sessionManager.isLoggedIn() && !sessionManager.isGuest();
-
-        // Show admin item only for logged-in users
-        if (adminItem != null) {
-            if (isLoggedIn) {
-                adminItem.setVisibility(View.VISIBLE);
-                adminItem.setOnClickListener(v -> {
-                    Intent intent = new Intent(context, AdminActivity.class);
-                    context.startActivity(intent);
-                    dismiss();
-                });
-            }
-        }
 
         // Show upload wallpaper item only for logged-in users
 

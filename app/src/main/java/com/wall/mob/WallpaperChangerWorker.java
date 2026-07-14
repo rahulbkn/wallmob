@@ -91,8 +91,8 @@ public class WallpaperChangerWorker extends Worker {
         createChannel(context);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(android.R.drawable.ic_menu_gallery)
-                .setContentTitle("Wallpaper Changed")
-                .setContentText(wallpaper.getTitle() != null ? wallpaper.getTitle() : "New wallpaper applied")
+                .setContentTitle(context.getString(R.string.wallpaper_changed))
+                .setContentText(wallpaper.getTitle() != null ? wallpaper.getTitle() : context.getString(R.string.new_wallpaper_applied))
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .setAutoCancel(true);
 
@@ -103,9 +103,9 @@ public class WallpaperChangerWorker extends Worker {
     private void createChannel(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID, "Wallpaper Changer",
+                    CHANNEL_ID, context.getString(R.string.wallpaper_changer_channel),
                     NotificationManager.IMPORTANCE_LOW);
-            channel.setDescription("Notifications from auto wallpaper changer");
+            channel.setDescription(context.getString(R.string.wallpaper_changer_description));
             NotificationManager nm = context.getSystemService(NotificationManager.class);
             if (nm != null) nm.createNotificationChannel(channel);
         }

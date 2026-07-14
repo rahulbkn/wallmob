@@ -1,22 +1,30 @@
 package com.wall.mob;
 
-import android.content.Context;
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Build;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import android.widget.Toast;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.widget.NestedScrollView;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.recyclerview.widget.GridLayoutManager;
+
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
+import com.google.android.material.button.MaterialButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,36 +32,46 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
-import com.wall.mob.User;
-
-import androidx.recyclerview.widget.RecyclerView;
-import java.util.List;
-import java.util.ArrayList;
-import androidx.annotation.NonNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
+import java.util.ArrayList;
+
 import org.json.JSONObject;
 
 public class ProfileActivity extends BaseActivity {
 
-    private static final String UPLOAD_URL = "https://api-server.rahulkumarbknv.workers.dev/upload";
-    private static final String BOUNDARY = "Boundary-" + System.currentTimeMillis();
+    private static final String UPLOAD_URL = "https://api-server.rahulkumarbknv.workers.dev/profile";
 
     private TextView welcomeText;
     private TextView userInfoText;
-    private Button logoutButton;
     private ImageView avatarImage;
     private ImageView uploadPhotoButton;
     private ProgressBar uploadProgressBar;
     private LinearLayout settingsButton;
+    private LinearLayout dashboardButton;
     private MaterialToolbar toolbar;
+    private RecyclerView uploadedWallpapersGrid;
     private DatabaseReference databaseReference;
     private SessionManager sessionManager;
     
+    // Toolbar views
+    private LinearLayout toolbarLeftContent;
+    private ImageView toolbarAvatar;
+    private TextView toolbarUserName;
+    private ImageView toolbarLogout;
+    private LinearLayout profileHeader;
+    private AppBarLayout appBarLayout;
+    
+    // Logout button
+    private MaterialButton logoutButton;
+    
+    private WallpaperAdapter adapter;
+    private List<Wallpaper> uploadedWallpapers = new ArrayList<>();
     private boolean isGuest;
     private String currentEmail;
 
@@ -69,26 +87,21 @@ public class ProfileActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
         
-        // Initialize SessionManager
         sessionManager = new SessionManager(this);
         
-        // Check if user is not logged in, redirect to LoginActivity
         if (!sessionManager.isLoggedIn()) {
             redirectToLogin();
             finish();
             return;
         }
         
-        // Get user data from session
         isGuest = sessionManager.isGuest();
         currentEmail = sessionManager.getEmail();
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // Use ThemeUtils to apply system bar colors according to current theme (handles night mode)
             ThemeUtils.applySystemBars(this);
         }
 
-        // Initialize Firebase Database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference("users");
 
@@ -96,42 +109,104 @@ public class ProfileActivity extends BaseActivity {
         setUserInfo();
         setClickListeners();
         fetchUploadedWallpapers();
-        
-        }
-
-
-    private RecyclerView uploadedWallpapersGrid;
-    private WallpaperAdapter adapter;
-    private List<Wallpaper> uploadedWallpapers = new ArrayList<>();
+        loadAvatarImage();
+        setupAppBarScrollBehavior();
+    }
 
     private void initViews() {
         welcomeText = findViewById(R.id.welcomeText);
         userInfoText = findViewById(R.id.userInfoText);
-        logoutButton = findViewById(R.id.logoutButton);
         settingsButton = findViewById(R.id.settingsButton);
-        avatarImage = findViewById(R.id.imageview8);
+        dashboardButton = findViewById(R.id.dashboardButton);
+        avatarImage = findViewById(R.id.avatarImage);
         uploadPhotoButton = findViewById(R.id.uploadPhotoButton);
         uploadProgressBar = findViewById(R.id.uploadProgressBar);
         toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        loadAvatarImage();
-
         uploadedWallpapersGrid = findViewById(R.id.uploadedWallpapersGrid);
-        adapter = new WallpaperAdapter(this, uploadedWallpapers, new WallpaperAdapter.OnWallpaperClickListener() {
-            @Override
-            public void onWallpaperClick(Wallpaper wallpaper) {
-                // Handle click if needed
-            }
-            @Override
-            public void onWallpaperLongClick(Wallpaper wallpaper, int position) {
-                // Handle long click
-            }
-        });
+        
+        // Toolbar views
+        toolbarLeftContent = findViewById(R.id.toolbarLeftContent);
+        toolbarAvatar = findViewById(R.id.toolbarAvatar);
+        toolbarUserName = findViewById(R.id.toolbarUserName);
+        toolbarLogout = findViewById(R.id.toolbarLogout);
+        profileHeader = findViewById(R.id.profileHeader);
+        appBarLayout = findViewById(R.id.appBarLayout);
+        
+        // Logout button in profile header
+        logoutButton = findViewById(R.id.logoutButton);
+        
+        setSupportActionBar(toolbar);
+        
+        // Setup RecyclerView
+        int spanCount = 3;
+        GridLayoutManager layoutManager = new GridLayoutManager(this, spanCount);
+        uploadedWallpapersGrid.setLayoutManager(layoutManager);
+        
+        adapter = new WallpaperAdapter(this, uploadedWallpapers, 
+            new WallpaperAdapter.OnWallpaperClickListener() {
+                @Override
+                public void onWallpaperClick(Wallpaper wallpaper) {
+                    Toast.makeText(ProfileActivity.this, "Wallpaper clicked", Toast.LENGTH_SHORT).show();
+                }
+                @Override
+                public void onWallpaperLongClick(Wallpaper wallpaper, int position) {
+                    // Handle long click
+                }
+            });
         uploadedWallpapersGrid.setAdapter(adapter);
     }
 
+    private void setupAppBarScrollBehavior() {
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                int totalScrollRange = appBarLayout.getTotalScrollRange();
+                float scrollPercentage = Math.abs(verticalOffset) / (float) totalScrollRange;
+                
+                // Calculate the height of profile header
+                int headerHeight = profileHeader.getHeight();
+                int toolbarHeight = toolbar.getHeight();
+                int totalHeaderHeight = headerHeight + toolbarHeight;
+                
+                // Calculate progress based on actual header visibility
+                float headerProgress = Math.min(1f, Math.abs(verticalOffset) / (float) headerHeight);
+                
+                // Control profile header fade only — CollapsingToolbarLayout's
+                // parallax collapseMode already handles the actual movement/collapse,
+                // so we must NOT also set translationY here (double-movement glitch).
+                if (headerProgress < 1f) {
+                    profileHeader.setVisibility(View.VISIBLE);
+                    profileHeader.setAlpha(1f - headerProgress);
+                } else {
+                    profileHeader.setVisibility(View.INVISIBLE);
+                    profileHeader.setAlpha(0f);
+                }
+                
+                // Fade in toolbar content
+                if (scrollPercentage > 0.01f) {
+                    float toolbarAlpha = Math.min(1f, (scrollPercentage - 0.01f) / 0.2f);
+                    toolbarLeftContent.setVisibility(View.VISIBLE);
+                    toolbarLeftContent.setAlpha(toolbarAlpha);
+                } else {
+                    toolbarLeftContent.setVisibility(View.INVISIBLE);
+                    toolbarLeftContent.setAlpha(0);
+                }
+                
+                // Fade in toolbar logout icon
+                if (scrollPercentage > 0.01f) {
+                    float toolbarLogoutAlpha = Math.min(1f, (scrollPercentage - 0.01f) / 0.2f);
+                    toolbarLogout.setVisibility(View.VISIBLE);
+                    toolbarLogout.setAlpha(toolbarLogoutAlpha);
+                } else {
+                    toolbarLogout.setVisibility(View.INVISIBLE);
+                    toolbarLogout.setAlpha(0);
+                }
+            }
+        });
+    }
+
     private void fetchUploadedWallpapers() {
-        FirebaseDatabase.getInstance().getReference("wallpapers/trending")
+        FirebaseDatabase.getInstance().getReference("wallpapers/newly_added")
             .addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -139,7 +214,7 @@ public class ProfileActivity extends BaseActivity {
                     String userEmail = sessionManager.getEmail();
                     for (DataSnapshot ds : snapshot.getChildren()) {
                         Wallpaper w = ds.getValue(Wallpaper.class);
-                        if (w != null && userEmail.equals(w.getUploaderId())) {
+                        if (w != null && userEmail != null && userEmail.equals(w.getUploaderId())) {
                             uploadedWallpapers.add(w);
                         }
                     }
@@ -147,29 +222,47 @@ public class ProfileActivity extends BaseActivity {
                 }
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
+                    // Handle error
                 }
             });
     }
 
     private void loadAvatarImage() {
         String photoUrl = sessionManager.getPhotoUrl();
+        
+        // Load main avatar
         if (photoUrl != null && !photoUrl.isEmpty() && avatarImage != null) {
             avatarImage.setImageTintList(null);
             avatarImage.setColorFilter(null);
             avatarImage.setPadding(0, 0, 0, 0);
             Glide.with(this)
                     .load(photoUrl)
+                    .placeholder(R.drawable.ic_person)
+                    .error(R.drawable.ic_person)
                     .transform(new CircleCrop())
                     .into(avatarImage);
+        }
+        
+        // Load toolbar avatar (same image, smaller)
+        if (photoUrl != null && !photoUrl.isEmpty() && toolbarAvatar != null) {
+            Glide.with(this)
+                    .load(photoUrl)
+                    .placeholder(R.drawable.ic_person)
+                    .error(R.drawable.ic_person)
+                    .transform(new CircleCrop())
+                    .into(toolbarAvatar);
         }
     }
 
     private void setUserInfo() {
+        String displayName = "User";
+        
         if (isGuest) {
+            displayName = getString(R.string.welcome_guest);
             welcomeText.setText(R.string.welcome_guest);
             userInfoText.setText(R.string.guest_user_info);
+            toolbarUserName.setText("Guest");
         } else {
-            // Fetch user details from Firebase
             databaseReference.orderByChild("email").equalTo(currentEmail)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -178,8 +271,11 @@ public class ProfileActivity extends BaseActivity {
                                 for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                                     User user = userSnapshot.getValue(User.class);
                                     if (user != null) {
-                                        welcomeText.setText(getString(R.string.welcome_back_name, user.getFullName()));
-                                        userInfoText.setText(getString(R.string.profile_full_access, user.getEmail(), user.getPhone()));
+                                        String fullName = user.getFullName();
+                                        welcomeText.setText(getString(R.string.welcome_back_name, fullName));
+                                        userInfoText.setText(getString(R.string.profile_full_access, 
+                                            user.getEmail(), user.getPhone()));
+                                        toolbarUserName.setText(fullName);
                                     }
                                 }
                             }
@@ -189,42 +285,61 @@ public class ProfileActivity extends BaseActivity {
                         public void onCancelled(DatabaseError databaseError) {
                             welcomeText.setText(R.string.welcome_back);
                             userInfoText.setText(getString(R.string.profile_email_failed, currentEmail));
+                            toolbarUserName.setText("User");
                         }
                     });
         }
     }
 
     private void setClickListeners() {
-     logoutButton.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-             logout();
-         }
-     });
+        toolbar.setNavigationOnClickListener(v -> finish());
 
-     toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-             finish();
-         }
-     });
+        settingsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, SettingsActivity.class);
+            startActivity(intent);
+        });
 
-     settingsButton.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-             Intent intent = new Intent(ProfileActivity.this, SettingsActivity.class);
-             startActivity(intent);
-         }
-     });
+        dashboardButton.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, AdminActivity.class);
+            startActivity(intent);
+        });
 
-     uploadPhotoButton.setOnClickListener(new View.OnClickListener() {
-         @Override
-         public void onClick(View v) {
-             pickImageLauncher.launch("image/*");
-         }
-     });
- }
+        uploadPhotoButton.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
+        
+        // Logout button in profile header
+        logoutButton.setOnClickListener(v -> showLogoutConfirmationDialog());
+        
+        // Toolbar logout icon
+        toolbarLogout.setOnClickListener(v -> showLogoutConfirmationDialog());
+    }
+
+    /**
+     * Shows a confirmation dialog before logging out the user
+     */
+    private void showLogoutConfirmationDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Logout")
+                .setMessage("Are you sure you want to logout?")
+                .setIcon(R.drawable.ic_exit)
+                .setPositiveButton("Logout", (dialog, which) -> performLogout())
+                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    /**
+     * Performs the actual logout operation
+     */
+    private void performLogout() {
+        sessionManager.logoutUser();
+        Toast.makeText(this, getString(R.string.logged_out_successfully), Toast.LENGTH_SHORT).show();
+        redirectToLogin();
+    }
+
     private void uploadImage(Uri imageUri) {
+        String boundary = "BOUNDARY-" + System.currentTimeMillis();
+        String oldPhotoUrl = sessionManager.getPhotoUrl();
+        String email = sessionManager.getEmail();
+
         uploadProgressBar.setVisibility(View.VISIBLE);
         uploadPhotoButton.setEnabled(false);
 
@@ -239,6 +354,7 @@ public class ProfileActivity extends BaseActivity {
                     });
                     return;
                 }
+                
                 ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
                 byte[] buffer = new byte[4096];
                 int len;
@@ -250,17 +366,30 @@ public class ProfileActivity extends BaseActivity {
 
                 HttpURLConnection connection = (HttpURLConnection) new URL(UPLOAD_URL).openConnection();
                 connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
+                connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + boundary);
                 connection.setDoOutput(true);
                 connection.setConnectTimeout(30000);
                 connection.setReadTimeout(30000);
 
                 OutputStream os = connection.getOutputStream();
-                os.write(("--" + BOUNDARY + "\r\n").getBytes());
+                os.write(("--" + boundary + "\r\n").getBytes());
                 os.write(("Content-Disposition: form-data; name=\"photo\"; filename=\"profile.jpg\"\r\n").getBytes());
                 os.write(("Content-Type: image/jpeg\r\n\r\n").getBytes());
                 os.write(imageBytes);
-                os.write(("\r\n--" + BOUNDARY + "--\r\n").getBytes());
+
+                if (email != null && !email.isEmpty()) {
+                    os.write(("\r\n--" + boundary + "\r\n").getBytes());
+                    os.write(("Content-Disposition: form-data; name=\"email\"\r\n\r\n").getBytes());
+                    os.write(email.getBytes());
+                }
+
+                if (oldPhotoUrl != null && !oldPhotoUrl.isEmpty()) {
+                    os.write(("\r\n--" + boundary + "\r\n").getBytes());
+                    os.write(("Content-Disposition: form-data; name=\"oldPhotoUrl\"\r\n\r\n").getBytes());
+                    os.write(oldPhotoUrl.getBytes());
+                }
+
+                os.write(("\r\n--" + boundary + "--\r\n").getBytes());
                 os.flush();
                 os.close();
 
@@ -320,6 +449,7 @@ public class ProfileActivity extends BaseActivity {
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
+                            // Handle error
                         }
                     });
         }
@@ -328,13 +458,6 @@ public class ProfileActivity extends BaseActivity {
         Toast.makeText(this, "Profile photo updated", Toast.LENGTH_SHORT).show();
     }
 
-    private void logout() {
-        sessionManager.logoutUser();
-        Toast.makeText(this, getString(R.string.logged_out_successfully), Toast.LENGTH_SHORT).show();
-        
-        redirectToLogin();
-    }
-    
     private void redirectToLogin() {
         Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -348,4 +471,3 @@ public class ProfileActivity extends BaseActivity {
         finish();
     }
 }
-// test

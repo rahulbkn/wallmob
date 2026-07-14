@@ -24,6 +24,7 @@ import android.widget.Toast;
 import android.graphics.Color;
 
 import androidx.annotation.NonNull;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -159,6 +160,13 @@ public class MainActivity extends BaseActivity {
         
         // Run FCM diagnostic test
         testFCMSetup();
+
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                showExitDialog();
+            }
+        });
     }
 
     private void initializeDefaultFCM() {
@@ -966,8 +974,7 @@ public class MainActivity extends BaseActivity {
         }
     }
     
-    @Override
-    public void onBackPressed() {
+    private void showExitDialog() {
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_exit, null);
 
@@ -985,13 +992,9 @@ public class MainActivity extends BaseActivity {
 
         btnYes.setOnClickListener(v -> {
             dialog.dismiss();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                finishAffinity();
-            } else {
-                finish();
-            }
+            finishAffinity();
         });
-        
+
         btnNo.setOnClickListener(v -> dialog.dismiss());
         dialog.show();
     }

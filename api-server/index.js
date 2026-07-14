@@ -48,6 +48,13 @@ async function handleRequest(request, env, ctx) {
       return await handleUpload(request, env);
     }
 
+    if (url.pathname === "/profile") {
+      if (request.method !== "POST") {
+        return createErrorResponse("Method Not Allowed", "Use POST to upload profile image", 405);
+      }
+      return await handleProfileUpload(request, env, ctx);
+    }
+
     if (url.pathname === "/upload-wallpaper") {
       if (request.method !== "POST") {
         return createErrorResponse("Method Not Allowed", "Use POST to upload wallpaper", 405);
@@ -476,21 +483,15 @@ async function handleUpload(request, env) {
     const largestPhoto = photos[photos.length - 1];
     const fileId = largestPhoto.file_id;
 
-    const fileResponse = await fetch(
-      `https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/getFile?file_id=${fileId}`
-    );
-    const fileResult = await fileResponse.json();
-
-    if (!fileResult.ok) {
-      return createErrorResponse("Telegram file error", fileResult.description, 502);
+    const { url: cloudinaryUrl, error: cdError } = await uploadToCloudinary(photo, env);
+    if (cdError) {
+      console.error("Cloudinary upload failed:", cdError);
+      return createErrorResponse("Cloudinary upload failed", cdError, 502);
     }
-
-    const filePath = fileResult.result.file_path;
-    const fileUrl = `https://api.telegram.org/file/bot${env.TELEGRAM_BOT_TOKEN}/${filePath}`;
 
     return new Response(JSON.stringify({
       success: true,
-      url: fileUrl,
+      url: cloudinaryUrl,
       file_id: fileId
     }), {
       headers: { "Content-Type": "application/json", ...CORS_HEADERS }
@@ -501,10 +502,70 @@ async function handleUpload(request, env) {
   }
 }
 
+async function handleProfileUpload(request, env, ctx) {
+  try {
+    const contentType = request.headers.get("Content-Type") || "";
+    if (!contentType.includes("multipart/form-data")) {
+      return createErrorResponse("Bad Request", "Content-Type must be multipart/form-data", 400);
+    }
+
+    const formData = await request.formData();
+    const photo = formData.get("photo");
+    const email = (formData.get("email") || "").toString().trim();
+    const oldPhotoUrl = formData.get("oldPhotoUrl");
+
+    if (!photo) {
+      return createErrorResponse("Missing photo", "No photo file provided in 'photo' field", 400);
+    }
+
+    if (!email) {
+      return createErrorResponse("Unauthorized", "Email is required", 401);
+    }
+
+    if (env.FIREBASE_DATABASE_URL && env.FIREBASE_DATABASE_SECRET) {
+      const auth = `auth=${env.FIREBASE_DATABASE_SECRET}`;
+      const userResp = await fetch(
+        `${env.FIREBASE_DATABASE_URL}/users.json?${auth}&orderBy="email"&equalTo="${encodeURIComponent(email)}"`,
+        { signal: AbortSignal.timeout(10000) }
+      );
+      if (userResp.ok) {
+        const users = await userResp.json();
+        if (!users || Object.keys(users).length === 0) {
+          return createErrorResponse("Unauthorized", "User not found", 401);
+        }
+      }
+    }
+
+    const { url: cloudinaryUrl, error: cdError } = await uploadToCloudinary(photo, env, "profiles");
+    if (cdError) {
+      console.error("Cloudinary upload failed:", cdError);
+      return createErrorResponse("Cloudinary upload failed", cdError, 502);
+    }
+
+    if (oldPhotoUrl) {
+      const oldPublicId = extractCloudinaryPublicId(oldPhotoUrl);
+      if (oldPublicId) {
+        ctx.waitUntil(deleteFromCloudinary(oldPublicId, env));
+        console.log(`Queued deletion of old profile image: ${oldPublicId}`);
+      }
+    }
+
+    return new Response(JSON.stringify({
+      success: true,
+      url: cloudinaryUrl
+    }), {
+      headers: { "Content-Type": "application/json", ...CORS_HEADERS }
+    });
+  } catch (error) {
+    console.error("Profile upload handler error:", error);
+    return createErrorResponse("Upload failed", error.message, 500);
+  }
+}
+
 function extractCloudinaryPublicId(url) {
   try {
     const u = new URL(url);
-    const match = u.pathname.match(/\/upload\/v?\d+\/(.+)/);
+    const match = u.pathname.match(/\/upload\/(?:.*\/)?v?\d+\/(.+)/);
     if (!match) return null;
     let publicId = match[1];
     const dot = publicId.lastIndexOf(".");
@@ -573,7 +634,7 @@ async function moderateImage(imageUrl, env) {
   // First attempt: short timeout, covers the common "already warm" case fast.
   // If that fails/times out, it's likely a Render cold start — retry once
   // with a much longer timeout instead of immediately treating it as unsafe.
-  const attempts = [8000, 45000];
+  const attempts = [15000, 30000];
   let lastError = null;
 
   for (let i = 0; i < attempts.length; i++) {
@@ -657,6 +718,10 @@ async function handleWallpaperUpload(request, env, ctx) {
     const photographer = (formData.get("photographer") || "").toString().trim();
     const uploaderId = (formData.get("uploader_id") || "").toString().trim();
 
+    if (await isOverLimit(uploaderId, env)) {
+      return createErrorResponse("Too many uploads in queue", "Too many uploads in queue. Please wait.", 400);
+    }
+
     if (!photo || typeof photo === "string") {
       return createErrorResponse("Missing photo", "No photo file provided in 'photo' field", 400);
     }
@@ -691,6 +756,12 @@ async function handleWallpaperUpload(request, env, ctx) {
     if (!tgResponse.ok) {
       const err = await tgResponse.text();
       console.error("Telegram sendPhoto failed:", err);
+      
+      // NEW: Catch the dimension error cleanly
+      if (err.includes("PHOTO_INVALID_DIMENSIONS")) {
+        return createErrorResponse("Invalid Image Dimensions", "Image resolution is too high. The combined width and height must be less than 10,000 pixels.", 400);
+      }
+      
       return createErrorResponse("Telegram upload failed", err.substring(0, 200), 502);
     }
 
@@ -759,6 +830,7 @@ async function handleWallpaperUpload(request, env, ctx) {
               chatId: env.TELEGRAM_CHAT_ID, 
               messageId, 
               queuedAt: Date.now(),
+              uploaderId: uploaderId,
               skipAI: !needsAutoCategory // Don't run AI if user gave a category manually
             })
           }).catch((e) => console.error("Failed to queue pending item:", e));
@@ -787,7 +859,7 @@ async function handleWallpaperUpload(request, env, ctx) {
 
 // Uploads a photo to Cloudinary and returns { url, error }. Never throws —
 // callers can Promise.all this alongside other independent work.
-async function uploadToCloudinary(photo, env) {
+async function uploadToCloudinary(photo, env, folder) {
   if (!env.CLOUDINARY_CLOUD_NAME || !env.CLOUDINARY_UPLOAD_PRESET) {
     return { url: "", error: "Missing CLOUDINARY_CLOUD_NAME or CLOUDINARY_UPLOAD_PRESET in env variables" };
   }
@@ -795,6 +867,7 @@ async function uploadToCloudinary(photo, env) {
     const cloudFormData = new FormData();
     cloudFormData.append("file", photo);
     cloudFormData.append("upload_preset", env.CLOUDINARY_UPLOAD_PRESET);
+    if (folder) cloudFormData.append("folder", folder);
 
     const cloudResp = await fetch(
       `https://api.cloudinary.com/v1_1/${env.CLOUDINARY_CLOUD_NAME}/image/upload`,
@@ -827,6 +900,50 @@ async function handleTelegramWebhook(request, env, ctx) {
     const from = msg.from || {};
     const chatId = chat.id;
     const senderName = from.username || from.first_name || "Unknown";
+
+    // --- Admin: /delete command (reply to an image message to remove it) ---
+    if (msg.text && msg.text.trim() === "/delete" && msg.reply_to_message) {
+      const adminId = env.ADMIN_CHAT_ID;
+      if (!adminId || String(chatId) !== String(adminId)) {
+        await replyToChat(chatId, "Unauthorized.", env);
+        return new Response("OK");
+      }
+      const replied = msg.reply_to_message;
+      let fileUniqueId = null;
+      if (replied.photo) {
+        fileUniqueId = replied.photo[replied.photo.length - 1].file_unique_id;
+      } else if (replied.document && IMAGE_MIME_TYPES.includes(replied.document.mime_type)) {
+        fileUniqueId = replied.document.file_unique_id;
+      }
+      if (!fileUniqueId) {
+        await replyToChat(chatId, "Reply to an image message with /delete.", env);
+        return new Response("OK");
+      }
+      const auth = `auth=${env.FIREBASE_DATABASE_SECRET}`;
+      const base = env.FIREBASE_DATABASE_URL;
+      const indexResp = await fetch(`${base}/wallpapers/file_index/${fileUniqueId}.json?${auth}`);
+      const indexData = await indexResp.json();
+      const firebaseKey = indexData?.firebaseKey;
+      if (!firebaseKey) {
+        await replyToChat(chatId, "Image not found in database.", env);
+        return new Response("OK");
+      }
+      const recordResp = await fetch(`${base}/wallpapers/newly_added/${firebaseKey}.json?${auth}`);
+      const record = await recordResp.json();
+      if (record && record.thumbnailUrl) {
+        const publicId = extractCloudinaryPublicId(record.thumbnailUrl);
+        if (publicId) await deleteFromCloudinary(publicId, env);
+      }
+      await fetch(`${base}/wallpapers/newly_added/${firebaseKey}.json?${auth}`, { method: "DELETE" }).catch(() => {});
+      await fetch(`${base}/wallpapers/file_index/${fileUniqueId}.json?${auth}`, { method: "DELETE" }).catch(() => {});
+      await fetch(`${base}/wallpapers/pending_processing/${firebaseKey}.json?${auth}`, { method: "DELETE" }).catch(() => {});
+      const origChat = record?.chatId || chatId;
+      const origMsg = record?.messageId || replied.message_id;
+      if (origChat && origMsg) await deleteTelegramMessage(origChat, origMsg, env);
+      await deleteTelegramMessage(chatId, replied.message_id, env);
+      await replyToChat(chatId, "Image deleted.", env);
+      return new Response("OK");
+    }
 
     // --- Extract photo info (photo array or document) ---
     let file_id, file_unique_id, width = 0, height = 0;
@@ -868,6 +985,12 @@ async function handleTelegramWebhook(request, env, ctx) {
     const thumbnailUrl = `https://${workerHost}/proxy-image?file_id=${encodeURIComponent(file_id)}&quality=low`;
 
     const messageId = msg.message_id;
+    const uploaderId = String(chatId);
+
+    if (await isOverLimit(uploaderId, env)) {
+      await replyToChat(chatId, "Too many uploads in queue. Please wait.", env);
+      return new Response("OK");
+    }
 
     const payload = {
       telegramFileId: file_id,
@@ -884,7 +1007,7 @@ async function handleTelegramWebhook(request, env, ctx) {
       height,
       chatId,
       messageId,
-      uploaderId: String(chatId),
+      uploaderId: uploaderId,
       addedAt: Date.now(),
       premium: false
     };
@@ -913,30 +1036,19 @@ async function handleTelegramWebhook(request, env, ctx) {
     const pushResult = await pushResp.json();
     const firebaseKey = pushResult.name;
 
-    // Try to fetch + moderate inline so we can give the right reply immediately
-    const imgResp = await fetchImageWithRetry(imageUrl, env);
-    if (imgResp) {
-      imgResp.body?.cancel().catch(() => {});
-      // 🚀 MODIFIED: Added skipAI = false for telegram webhook flow
-      const result = await processWallpaperAssets(firebaseKey, file_unique_id, imageUrl, chatId, messageId, env, false);
-      if (result === true) {
-        await replyToChat(chatId, "Saved successfully!", env);
-      }
-      // rejected case already handled by processWallpaperAssets (deleted msg, replied)
-      return new Response("OK");
-    }
-
-    // Image not ready yet — queue for cron, tell user it's pending
-    console.log(`Queueing ${firebaseKey} for later processing (file not ready yet)`);
+    // Always queue to pending_processing for the cron job to handle
+    // (moderation, Cloudinary upload, AI categorization). The inline and
+    // waitUntil paths caused "CPU time limit" and "waitUntil cancelled"
+    // errors when multiple rapid uploads each waited 15+ seconds for the
+    // moderation API. The cron job processes at most 10 items per tick
+    // and respects exponential backoff, so it's safe from timeouts.
     const auth = `auth=${env.FIREBASE_DATABASE_SECRET}`;
-    ctx.waitUntil((async () => {
-      await fetch(`${env.FIREBASE_DATABASE_URL}/wallpapers/pending_processing/${firebaseKey}.json?${auth}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ firebaseKey, fileUniqueId: file_unique_id, imageUrl, chatId, messageId, queuedAt: Date.now(), skipAI: false })
-      }).catch((e) => console.error("Failed to queue pending item:", e));
-    })());
-    await replyToChat(chatId, "Processing image, please wait...", env);
+    const waitMsgId = await replyToChat(chatId, "Processing image, please wait...", env);
+    await fetch(`${env.FIREBASE_DATABASE_URL}/wallpapers/pending_processing/${firebaseKey}.json?${auth}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ firebaseKey, fileUniqueId: file_unique_id, imageUrl, chatId, messageId, waitMsgId, queuedAt: Date.now(), uploaderId: uploaderId, skipAI: false })
+    }).catch((e) => console.error("Failed to queue pending item:", e));
     return new Response("OK");
   } catch (error) {
     console.error("Telegram webhook error:", error);
@@ -950,7 +1062,7 @@ async function handleTelegramWebhook(request, env, ctx) {
 // byte array for the AI model burns way too much CPU time), uploads that to
 // Cloudinary, runs AI categorization on it, and patches the Firebase record.
 // 🚀 MODIFIED: Added skipAI param
-async function processWallpaperAssets(firebaseKey, fileUniqueId, imageUrl, chatId, messageId, env, skipAI = false) {
+async function processWallpaperAssets(firebaseKey, fileUniqueId, imageUrl, chatId, messageId, env, skipAI = false, waitMsgId = null) {
   const auth = `auth=${env.FIREBASE_DATABASE_SECRET}`;
   const base = env.FIREBASE_DATABASE_URL;
 
@@ -975,7 +1087,7 @@ async function processWallpaperAssets(firebaseKey, fileUniqueId, imageUrl, chatI
   if (!safe) {
     console.log(`processWallpaperAssets: NSFW detected, deleting ${firebaseKey}`);
     await fetch(`${base}/wallpapers/newly_added/${firebaseKey}.json?${auth}`, { method: "DELETE" }).catch(() => {});
-    // Delete the original message from Telegram and notify user
+    if (chatId && waitMsgId) await deleteTelegramMessage(chatId, waitMsgId, env);
     if (chatId && messageId) {
       await deleteTelegramMessage(chatId, messageId, env);
       await replyToChat(chatId, "Image rejected: contains inappropriate content (violence, drugs, nudity, etc). Please upload only clean, safe images.", env);
@@ -986,28 +1098,47 @@ async function processWallpaperAssets(firebaseKey, fileUniqueId, imageUrl, chatI
   const imageBuffer = await fetchResizedImage(imageUrl, env);
   if (!imageBuffer) {
     console.error(`processWallpaperAssets: could not fetch resized image for ${firebaseKey}`);
+    if (chatId && waitMsgId) {
+      await deleteTelegramMessage(chatId, waitMsgId, env);
+      await replyToChat(chatId, "Failed to process image. The image may be too large or the source is unavailable.", env);
+    }
     return false;
   }
 
   let cloudinaryUrl = null;
   if (env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_UPLOAD_PRESET) {
     try {
-      const cdForm = new FormData();
-      cdForm.append("file", new Blob([imageBuffer]), "image.jpg");
-      cdForm.append("upload_preset", env.CLOUDINARY_UPLOAD_PRESET);
-      const cdResp = await fetch(
-        `https://api.cloudinary.com/v1_1/${env.CLOUDINARY_CLOUD_NAME}/image/upload`,
-        { method: "POST", body: cdForm, signal: AbortSignal.timeout(20000) }
-      );
-      if (cdResp.ok) {
-        const cdResult = await cdResp.json();
-        cloudinaryUrl = cdResult.secure_url;
-      } else {
-        const errText = await cdResp.text().catch(() => "<unreadable>");
-        console.error("Cloudinary bg upload failed with status:", cdResp.status, errText.substring(0, 300));
+      const existingResp = await fetch(`${base}/wallpapers/newly_added/${firebaseKey}.json?${auth}`);
+      if (existingResp.ok) {
+        const existing = await existingResp.json();
+        if (existing?.thumbnailUrl && typeof existing.thumbnailUrl === "string" && existing.thumbnailUrl.includes("cloudinary")) {
+          cloudinaryUrl = existing.thumbnailUrl;
+          console.log(`Cloudinary URL already exists for ${firebaseKey}, skipping re-upload`);
+        }
       }
     } catch (e) {
-      console.error("Cloudinary bg upload failed:", e);
+      console.error(`Failed to check existing Cloudinary URL for ${firebaseKey}:`, e);
+    }
+
+    if (!cloudinaryUrl) {
+      try {
+        const cdForm = new FormData();
+        cdForm.append("file", new Blob([imageBuffer]), "image.jpg");
+        cdForm.append("upload_preset", env.CLOUDINARY_UPLOAD_PRESET);
+        const cdResp = await fetch(
+          `https://api.cloudinary.com/v1_1/${env.CLOUDINARY_CLOUD_NAME}/image/upload`,
+          { method: "POST", body: cdForm, signal: AbortSignal.timeout(20000) }
+        );
+        if (cdResp.ok) {
+          const cdResult = await cdResp.json();
+          cloudinaryUrl = cdResult.secure_url;
+        } else {
+          const errText = await cdResp.text().catch(() => "<unreadable>");
+          console.error("Cloudinary bg upload failed with status:", cdResp.status, errText.substring(0, 300));
+        }
+      } catch (e) {
+        console.error("Cloudinary bg upload failed:", e);
+      }
     }
   }
 
@@ -1025,7 +1156,6 @@ async function processWallpaperAssets(firebaseKey, fileUniqueId, imageUrl, chatI
     if (quotaExceeded) {
       // Daily free neuron allocation used up — don't give up permanently.
       // Save what we have (thumbnail) and requeue just the categorization
-      // for after the quota resets at 00:00 UTC.
       patchData.categorized = false;
       await fetch(`${base}/wallpapers/newly_added/${firebaseKey}.json?${auth}`, {
         method: "PATCH",
@@ -1044,6 +1174,10 @@ async function processWallpaperAssets(firebaseKey, fileUniqueId, imageUrl, chatI
         body: JSON.stringify({ firebaseKey, fileUniqueId, imageUrl, categoryOnly: true, queuedAt: Date.now(), retryAfter })
       });
       console.log(`${firebaseKey}: neuron quota hit, category retry queued for ${new Date(retryAfter).toISOString()}`);
+      if (chatId && waitMsgId) {
+        await deleteTelegramMessage(chatId, waitMsgId, env);
+        await replyToChat(chatId, "Image uploaded successfully. Category will be assigned later (AI quota limit reached).", env);
+      }
       return true;
     }
     patchData.category = category;
@@ -1063,6 +1197,11 @@ async function processWallpaperAssets(firebaseKey, fileUniqueId, imageUrl, chatI
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ firebaseKey, addedAt: Date.now() })
   });
+  if (chatId && waitMsgId) {
+    await deleteTelegramMessage(chatId, waitMsgId, env);
+    const cat = patchData.category ? ` (${patchData.category})` : "";
+    await replyToChat(chatId, `Image uploaded successfully${cat}.`, env);
+  }
   return true;
 }
 
@@ -1088,7 +1227,7 @@ async function retryCategorizationOnly(firebaseKey, imageUrl, env) {
 }
 
 const PENDING_MAX_AGE_MS = 20 * 60 * 1000; // give up after 20 min of retries
-const MAX_PENDING_PER_TICK = 10; // free tier CPU limit: max items per cron run
+const MAX_PENDING_PER_TICK = 5; // free tier: 50 subrequest limit, each item needs ~8-10
 
 // Cron entry point (see wrangler.jsonc triggers.crons). Retries any wallpapers
 // whose image wasn't ready yet when the webhook first ran.
@@ -1101,6 +1240,11 @@ async function processPendingWallpapers(env) {
   if (!listResp.ok) return;
   const pending = await listResp.json();
   if (!pending) return;
+
+  // Track moderation API health across items in this tick. If it's unreachable
+  // for one item, skip moderation for the rest — no point hammering it and
+  // burning CPU on more timeouts just to requeue everything anyway.
+  let moderationUnreachable = false;
 
   const entries = Object.entries(pending).slice(0, MAX_PENDING_PER_TICK);
   for (const [firebaseKey, item] of entries) {
@@ -1115,7 +1259,6 @@ async function processPendingWallpapers(env) {
           await fetch(`${base}/wallpapers/pending_processing/${firebaseKey}.json?${auth}`, { method: "DELETE" });
           console.log(`Category retry succeeded for ${firebaseKey}`);
         } else if (result.quotaExceeded) {
-          // Still over quota (e.g. reset boundary race) — push retry forward again
           const retryAfter = Date.now() + msUntilNextUtcMidnight() + 5 * 60 * 1000;
           await fetch(`${base}/wallpapers/pending_processing/${firebaseKey}.json?${auth}`, {
             method: "PUT",
@@ -1123,21 +1266,33 @@ async function processPendingWallpapers(env) {
             body: JSON.stringify({ ...item, retryAfter })
           });
         }
-        // else: transient fetch failure, leave as-is, will retry next cron tick
+        continue;
+      }
+
+      if (moderationUnreachable) {
+        // Moderation API was down in this tick — skip and requeue with a
+        // longer backoff instead of eating CPU on another timeout cycle.
+        const retryAfter = Date.now() + 3 * 60 * 1000;
+        await fetch(`${base}/wallpapers/pending_processing/${firebaseKey}.json?${auth}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...item, moderationOnly: true, retryAfter })
+        }).catch(() => {});
         continue;
       }
 
       const imgResp = await fetchImageWithRetry(item.imageUrl, env, 2, 3000);
       if (imgResp) {
         imgResp.body?.cancel().catch(() => {});
-        // 🚀 MODIFIED: pass item.skipAI here
-        const result = await processWallpaperAssets(firebaseKey, item.fileUniqueId, item.imageUrl, item.chatId, item.messageId, env, item.skipAI);
+        const result = await processWallpaperAssets(firebaseKey, item.fileUniqueId, item.imageUrl, item.chatId, item.messageId, env, item.skipAI, item.waitMsgId);
         if (result === true || result === "rejected") {
           await fetch(`${base}/wallpapers/pending_processing/${firebaseKey}.json?${auth}`, { method: "DELETE" });
           console.log(result === "rejected" ? `Confirmed NSFW on retry, cleared queue: ${firebaseKey}` : `Processed queued wallpaper ${firebaseKey}`);
+        } else {
+          // result === false: moderation API unreachable — mark it so
+          // remaining items skip moderation and get requeued fast.
+          moderationUnreachable = true;
         }
-        // else result === false: moderation API still unreachable — stays
-        // queued, will retry again next tick (bounded by PENDING_MAX_AGE_MS below)
       } else if (Date.now() - (item.queuedAt || 0) > PENDING_MAX_AGE_MS) {
         // Give up — leave category as "General", stop retrying
         console.error(`Giving up on ${firebaseKey} after ${PENDING_MAX_AGE_MS / 60000} min`);
@@ -1305,104 +1460,44 @@ const DEFAULT_CATEGORY = "General";
 // Compact category groups sent to the AI — keeps prompt small for free-tier
 // Workers AI context limits while still covering all 1000 categories.
 const AI_CATEGORY_GROUPS = WALLPAPER_CATEGORIES;
-// Uses Cloudflare Workers AI (free tier: 10k neurons/day) to auto-pick a
-// category for an uploaded wallpaper. Needs `AI` binding in wrangler.toml.
+function arrayBufferToBase64(buf) {
+  const bytes = new Uint8Array(buf);
+  const chunks = [];
+  for (let i = 0; i < bytes.length; i += 8192)
+    chunks.push(String.fromCharCode(...bytes.subarray(i, i + 8192)));
+  return btoa(chunks.join(""));
+}
+
 async function categorizeImage(imageBuffer, env) {
-  if (!env.AI) return {
-    category: DEFAULT_CATEGORY,
-  quotaExceeded: false
-};
+  if (!env.AI) return { category: DEFAULT_CATEGORY, quotaExceeded: false };
   try {
-    const prompt = `
-You are an expert wallpaper classifier.
-
-Choose ONLY ONE category from this list:
-
-${AI_CATEGORY_GROUPS.join(", ")}
-
-Rules:
-- Choose the MAIN subject only.
-- Ignore colors, lighting and mood unless they are the main theme.
-- Never invent a category.
-- Never explain.
-- Return ONLY JSON.
-
-Example:
-{"category":"Nature"}
-
-If unsure, choose the closest category.
-`;
-    const result = await env.AI.run("@cf/meta/llama-3.2-11b-vision-instruct", {
-      image: new Uint8Array(imageBuffer),
-      prompt,
-      max_tokens: 15 // short on purpose — keeps the model from rambling into extra lines/options
+    const categories = AI_CATEGORY_GROUPS.join(", ");
+    const result = await env.AI.run("@cf/moondream/moondream3.1-9B-A2B", {
+      image: `data:image/jpeg;base64,${arrayBufferToBase64(imageBuffer)}`,
+      question: `What category best describes this wallpaper? Choose exactly one word from: ${categories}. Reply with only the category name.`,
+      max_tokens: 60,
+      stream: false
     });
-    const raw = (result.response || "").trim();
+    console.log(`categorizeImage keys: ${Object.keys(result).join(",")}`);
+    const nested = result.result || result;
+    const raw = (nested.answer || nested.caption || nested.response || nested.result?.answer || JSON.stringify(result)).trim();
+    console.log(`categorizeImage raw: "${raw.substring(0, 200)}"`);
+    console.log(`categorizeImage answer field: "${nested.answer}", finish_reason: "${nested.finish_reason}"`);
 
-    // Try JSON first
-    try {
-      const cleaned = raw
-        .replace(/```json/gi, "")
-        .replace(/```/g, "")
-        .trim();
-
-      const parsed = JSON.parse(cleaned);
-
-      if (
-        parsed.category &&
-        AI_CATEGORY_GROUPS.includes(parsed.category)
-      ) {
-        console.log(`categorizeImage JSON -> ${parsed.category}`);
-        return {
-          category: parsed.category,
-          quotaExceeded: false
-        };
-      }
-    } catch (_) {}
-
-    // Model sometimes ignores "one line only" and lists several options — only
-    // trust the first line, otherwise the "last category mentioned" fallback
-    // below can pick something unrelated to the actual image.
-    const firstLine = raw.split("\n")[0].trim();
-
-    // Strategy 1: text after last " - " on the first line → first word is the category
-    const dashIdx = firstLine.lastIndexOf(" - ");
-    if (dashIdx > 0) {
-      const afterDash = firstLine.substring(dashIdx + 3).trim().toLowerCase();
-      const firstWord = afterDash.split(/[\s,;:.!?]+/)[0];
-      const match = AI_CATEGORY_GROUPS.find((c) => c.toLowerCase() === firstWord);
-      if (match) {
-        console.log(`categorizeImage: "${raw}" -> "${match}"`);
-        return { category: match, quotaExceeded: false };
-      }
-    }
-
-    // Strategy 2: find any category word in the first line (last occurrence
-    // within that single line, in case of "word - Category" phrasing variants)
-    const lower = firstLine.toLowerCase();
-    let lastCat = null;
-    let lastIdx = -1;
+    const lower = raw.toLowerCase();
     for (const cat of AI_CATEGORY_GROUPS) {
-      const idx = lower.lastIndexOf(cat.toLowerCase());
-      if (idx > lastIdx) { lastIdx = idx; lastCat = cat; }
-    }
-    if (lastCat) {
-      console.log(`categorizeImage: "${raw}" -> "${lastCat}"`);
-      return { category: lastCat, quotaExceeded: false };
+      if (lower.includes(cat.toLowerCase())) {
+        console.log(`categorizeImage -> ${cat}`);
+        return { category: cat, quotaExceeded: false };
+      }
     }
 
-    console.log(`categorizeImage: "${raw}" -> "General"`);
-    return {
-  category: DEFAULT_CATEGORY,
-  quotaExceeded: false
-};
+    console.log(`categorizeImage: no category match, falls to "General"`);
+    return { category: DEFAULT_CATEGORY, quotaExceeded: false };
   } catch (e) {
     const quotaExceeded = /daily free allocation|10,000 neurons/i.test(e.message || "");
     console.error("categorizeImage failed:", e.message, quotaExceeded ? "(daily neuron quota exceeded)" : "");
-    return {
-  category: DEFAULT_CATEGORY,
-  quotaExceeded
-};
+    return { category: DEFAULT_CATEGORY, quotaExceeded };
   }
 }
 
@@ -1495,15 +1590,18 @@ async function fetchImageWithRetry(url, env, retries = 3, delayMs = 2000) {
 }
 
 async function replyToChat(chatId, text, env) {
-  if (!env.TELEGRAM_BOT_TOKEN) return;
+  if (!env.TELEGRAM_BOT_TOKEN) return null;
   try {
-    await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    const resp = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ chat_id: chatId, text })
     });
+    const data = await resp.json();
+    return data?.result?.message_id || null;
   } catch (e) {
     console.error("sendMessage failed:", e);
+    return null;
   }
 }
 
@@ -1528,6 +1626,22 @@ async function checkDuplicateByFileUniqueId(fileUniqueId, env) {
     const data = await resp.json();
     return data !== null;
   } catch {
+    return false;
+  }
+}
+
+async function isOverLimit(uploaderId, env) {
+  if (!uploaderId || !env.FIREBASE_DATABASE_URL || !env.FIREBASE_DATABASE_SECRET) return false;
+  try {
+    const auth = `auth=${env.FIREBASE_DATABASE_SECRET}`;
+    const listResp = await fetch(`${env.FIREBASE_DATABASE_URL}/wallpapers/pending_processing.json?${auth}`);
+    if (!listResp.ok) return false;
+    const pending = await listResp.json();
+    if (!pending) return false;
+    const count = Object.values(pending).filter(item => item.uploaderId === uploaderId).length;
+    return count >= 20;
+  } catch (e) {
+    console.error("isOverLimit check failed:", e);
     return false;
   }
 }

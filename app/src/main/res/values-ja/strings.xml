@@ -355,9 +355,19 @@
     <string name="blur_max">25</string>
     <string name="zero">0</string>
     <string name="tab_for_you">おすすめ</string>
+    <string name="tab_popular">人気</string>
     <string name="tab_newlyadded">新着</string>
     <string name="tab_premium">プレミアム</string>
     <string name="tab_categories">カテゴリー</string>
     <string name="section_recent_title">最近</string>
     <string name="section_recent_desc">最近閲覧した壁紙</string>
+
+    <string name="admin_panel">管理パネル</string>
+    <string name="admin_only">管理者のみ</string>
+    <string name="admin_empty_desc">モデレーション用の壁紙がありません</string>
+
+    <string name="wallpaper_changed">壁紙が変更されました</string>
+    <string name="new_wallpaper_applied">新しい壁紙が適用されました</string>
+    <string name="wallpaper_changer_channel">壁紙チェンジャー</string>
+    <string name="wallpaper_changer_description">自動壁紙チェンジャーからの通知</string>
 </resources>

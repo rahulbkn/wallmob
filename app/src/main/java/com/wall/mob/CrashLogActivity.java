@@ -11,15 +11,9 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import java.io.File;
 
-/**
- * Activity that displays crash logs when the app crashes.
- * Automatically launched by CrashHandler when an uncaught exception occurs.
- */
-public class CrashLogActivity extends AppCompatActivity {
+public class CrashLogActivity extends BaseActivity {
     
     private TextView crashLogTextView;
     private ScrollView scrollView;
@@ -134,7 +128,7 @@ public class CrashLogActivity extends AppCompatActivity {
     
     @Override
     public void onBackPressed() {
-        // Prevent going back, force restart
         restartButton.performClick();
+        super.onBackPressed();
     }
 }

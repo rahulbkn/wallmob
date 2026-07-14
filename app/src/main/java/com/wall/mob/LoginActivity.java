@@ -402,24 +402,22 @@ private void setupGoogleButtonGradient() {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        showLoading(false);
-
                         if (dataSnapshot.exists()) {
+                            boolean userFound = false;
                             for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
                                 User user = userSnapshot.getValue(User.class);
                                 if (user != null && user.getPassword().equals(password)) {
-                                    Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
-
-                                    String photoUrl = user.getPhotoUrl() != null ? user.getPhotoUrl() : "";
-                                    sessionManager.createLoginSession(user.getEmail(), user.getFullName(), false, photoUrl);
-
-                                    redirectToMainActivity();
-                                    finish();
-                                    return;
+                                    userFound = true;
+                                    signInToFirebaseAndRedirect(user, password);
+                                    break;
                                 }
                             }
-                            Toast.makeText(LoginActivity.this, getString(R.string.invalid_email_password), Toast.LENGTH_SHORT).show();
+                            if (!userFound) {
+                                showLoading(false);
+                                Toast.makeText(LoginActivity.this, getString(R.string.invalid_email_password), Toast.LENGTH_SHORT).show();
+                            }
                         } else {
+                            showLoading(false);
                             Toast.makeText(LoginActivity.this, getString(R.string.invalid_email_password), Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -430,6 +428,35 @@ private void setupGoogleButtonGradient() {
                         Toast.makeText(LoginActivity.this, getString(R.string.database_error, databaseError.getMessage()), Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    private void signInToFirebaseAndRedirect(User user, String password) {
+        firebaseAuth.signInWithEmailAndPassword(user.getEmail(), password)
+                .addOnCompleteListener(this, task -> {
+                    if (task.isSuccessful()) {
+                        completeLoginSession(user);
+                    } else {
+                        // Migration: If user doesn't exist in FirebaseAuth but is in RTDB, create them
+                        firebaseAuth.createUserWithEmailAndPassword(user.getEmail(), password)
+                                .addOnCompleteListener(this, createTask -> {
+                                    if (createTask.isSuccessful()) {
+                                        completeLoginSession(user);
+                                    } else {
+                                        showLoading(false);
+                                        Toast.makeText(LoginActivity.this, "Firebase Auth failed: " + createTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                    }
+                });
+    }
+
+    private void completeLoginSession(User user) {
+        showLoading(false);
+        Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
+        String photoUrl = user.getPhotoUrl() != null ? user.getPhotoUrl() : "";
+        sessionManager.createLoginSession(user.getEmail(), user.getFullName(), false, photoUrl);
+        redirectToMainActivity();
+        finish();
     }
 
     private void loginAsGuest() {
