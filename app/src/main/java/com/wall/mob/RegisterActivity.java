@@ -22,6 +22,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.AuthResult;
 
 // Remove the inner User class and import the new one
 import com.wall.mob.User;
@@ -39,6 +40,7 @@ public class RegisterActivity extends BaseActivity {
     private MaterialToolbar toolbar;
     // Firebase Database reference
     private DatabaseReference databaseReference;
+    private FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +52,7 @@ public class RegisterActivity extends BaseActivity {
         // Initialize Firebase Database
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         databaseReference = database.getReference("users");
+        firebaseAuth = FirebaseAuth.getInstance();
 
         initViews();
         setClickListeners();
@@ -154,64 +157,35 @@ public class RegisterActivity extends BaseActivity {
             return;
         }
 
-        // Check if email already exists in Firebase
-        checkEmailExistsAndRegister(email, fullName, phone, password);
+        // Proceed with secure registration using FirebaseAuth only (do not store plaintext password in RTDB)
+        registerUser(fullName, email, phone, password);
     }
 
     private void checkEmailExistsAndRegister(String email, String fullName, String phone, String password) {
-        // Create a query to check if the email already exists
-        databaseReference.orderByChild("email").equalTo(email)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            // Email already exists
-                            emailInput.setError("Email already registered");
-                            emailInput.requestFocus();
-                        } else {
-                            // Email doesn't exist, proceed with registration
-                            registerUser(fullName, email, phone, password);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-                        Toast.makeText(RegisterActivity.this, getString(R.string.database_error, databaseError.getMessage()), Toast.LENGTH_SHORT).show();
-                    }
-                });
+        // Deprecated: we now rely on FirebaseAuth to detect existing emails; keep for legacy if needed
+        registerUser(fullName, email, phone, password);
     }
 
     private void registerUser(String fullName, String email, String phone, String password) {
-        // Create a unique key for the user
-        String userId = databaseReference.push().getKey();
-        
-        // Create a User object
-        User user = new User(userId, fullName, email, phone, password);
-        
-        // Save user to Firebase RTDB first
-        databaseReference.child(userId).setValue(user)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        // Register in Firebase Auth as well
-                        FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
-                                .addOnCompleteListener(authTask -> {
-                                    if (authTask.isSuccessful()) {
-                                        Toast.makeText(RegisterActivity.this, getString(R.string.registration_successful), Toast.LENGTH_LONG).show();
-                                        // Navigate back to LoginActivity
-                                        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else {
-                                        // Fallback: If FirebaseAuth fails, still proceed but log it.
-                                        // This is useful if the user already exists in FirebaseAuth but we still want to let them login.
-                                        Toast.makeText(RegisterActivity.this, getString(R.string.registration_successful), Toast.LENGTH_LONG).show();
-                                        Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    }
+        showLoading(true);
+        // Create user in FirebaseAuth. Do NOT store password in Realtime Database.
+        firebaseAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(authTask -> {
+                    showLoading(false);
+                    if (authTask.isSuccessful()) {
+                        String uid = authTask.getResult().getUser().getUid();
+                        User profile = new User(uid, fullName, email, phone);
+                        profile.setPhotoUrl("");
+                        databaseReference.child(uid).setValue(profile)
+                                .addOnCompleteListener(dbTask -> {
+                                    Toast.makeText(RegisterActivity.this, getString(R.string.registration_successful), Toast.LENGTH_LONG).show();
+                                    Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                                    startActivity(intent);
+                                    finish();
                                 });
                     } else {
-                        Toast.makeText(RegisterActivity.this, getString(R.string.registration_failed, task.getException().getMessage()), Toast.LENGTH_SHORT).show();
+                        // Registration failed (email may already exist or invalid password)
+                        Toast.makeText(RegisterActivity.this, getString(R.string.registration_failed, authTask.getException() != null ? authTask.getException().getMessage() : ""), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -232,4 +206,3 @@ public class RegisterActivity extends BaseActivity {
     }
 
 }
-// test
