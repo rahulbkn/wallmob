@@ -57,31 +57,32 @@
                     app:cardElevation="2dp"
                     app:strokeColor="@color/profile_divider"
                     app:strokeWidth="1dp">
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-                    <FrameLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
+    <ImageView
+        android:id="@+id/previewImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_attach"
+        android:padding="24dp"
+        app:tint="@color/onSurfaceVariant" />
 
-                        <ImageView
-                            android:id="@+id/previewImage"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:scaleType="centerCrop"
-                            android:src="@drawable/ic_attach"
-                            app:tint="@color/onSurfaceVariant"
-                            android:padding="64dp" />
+    <TextView
+        android:id="@+id/selectImageHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:layout_marginBottom="16dp"
+        android:text="@string/tap_to_select_image"
+        android:textSize="14sp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/onSurfaceVariant" />
 
-                        <TextView
-                            android:id="@+id/selectImageHint"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="bottom|center_horizontal"
-                            android:layout_marginBottom="16dp"
-                            android:text="@string/tap_to_select_image"
-                            android:textSize="14sp"
-                            android:fontFamily="sans-serif-medium"
-                            android:textColor="@color/onSurfaceVariant" />
-                    </FrameLayout>
+</FrameLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Title field -->
@@ -143,7 +144,7 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     app:cornerRadius="12dp"
-                    app:icon="@drawable/ic_add_photo"
+                    app:icon="@drawable/ic_upload"
                     app:iconGravity="textStart"
                     style="@style/PrimaryButton" />
             </LinearLayout>

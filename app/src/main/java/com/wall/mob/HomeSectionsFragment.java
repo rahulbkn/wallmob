@@ -89,7 +89,7 @@ public class HomeSectionsFragment extends Fragment {
                     break;
                 case 2:
                     text.setText(getString(R.string.tab_popular));
-                    icon.setImageResource(R.drawable.ic_star);
+                    icon.setImageResource(R.drawable.ic_face_grin);
                     break;
                 case 3:
                     text.setText(getString(R.string.tab_categories));
