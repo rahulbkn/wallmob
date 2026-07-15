@@ -125,7 +125,6 @@ private boolean tabIsSticky = false;
         initializeViews(view);
         setupSwipeRefresh(view);
         firebasePremiumRef = FirebaseDatabase.getInstance().getReference("wallpapers/premium");
-
         loadAllWallpapers();
         return view;
     }
@@ -144,16 +143,16 @@ private boolean tabIsSticky = false;
         heroDots = view.findViewById(R.id.hero_dots);
         mainContentContainer = view.findViewById(R.id.main_content_container);
 
-if (nestedScrollView != null) {
-    nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
-        MainActivity activity = (MainActivity) getActivity();
-        if (activity != null) {
-            activity.updateToolbarOnScroll(scrollY);
-            activity.handleScrollDirection(scrollY - oldScrollY);
+        if (nestedScrollView != null) {
+            nestedScrollView.setOnScrollChangeListener((NestedScrollView.OnScrollChangeListener) (v, scrollX, scrollY, oldScrollX, oldScrollY) -> {
+                MainActivity activity = (MainActivity) getActivity();
+                if (activity != null) {
+                    activity.updateToolbarOnScroll(scrollY);
+                    activity.handleScrollDirection(scrollY - oldScrollY);
+                }
+                updateStickyTab(activity, scrollY);
+            });
         }
-        updateStickyTab(activity, scrollY);
-    });
-}
 
         apiManager = new ApiManager(requireContext());
         retryButton.setOnClickListener(v -> {
@@ -162,7 +161,6 @@ if (nestedScrollView != null) {
         });
 
         sectionsContainer = view.findViewById(R.id.sections_container);
-
         FragmentManager childFm = getChildFragmentManager();
         sectionsFragment = (HomeSectionsFragment) childFm.findFragmentByTag("home_sections");
         if (sectionsFragment == null) {
@@ -192,57 +190,55 @@ if (nestedScrollView != null) {
     private int dpToPx(int dp) {
         return Math.round(dp * getResources().getDisplayMetrics().density);
     }
-    
-    
+
     private void updateStickyTab(MainActivity activity, int scrollY) {
-    if (activity == null || getView() == null) return;
-    
+        if (activity == null || getView() == null) return;
 
-    if (cachedTabLayout == null || cachedTabPlaceholder == null) {
-        if (sectionsFragment == null || sectionsFragment.getView() == null) return;
-        cachedTabLayout = sectionsFragment.getView().findViewById(R.id.tab_layout);
-        cachedTabPlaceholder = sectionsFragment.getView().findViewById(R.id.tab_placeholder);
-    }
-    if (cachedTabLayout == null || cachedTabPlaceholder == null) return;
+        if (cachedTabLayout == null || cachedTabPlaceholder == null) {
+            if (sectionsFragment == null || sectionsFragment.getView() == null) return;
+            cachedTabLayout = sectionsFragment.getView().findViewById(R.id.tab_layout);
+            cachedTabPlaceholder = sectionsFragment.getView().findViewById(R.id.tab_placeholder);
+        }
+        if (cachedTabLayout == null || cachedTabPlaceholder == null) return;
 
-    View tabLayout = cachedTabLayout;
-    View tabPlaceholder = cachedTabPlaceholder;
+        View tabLayout = cachedTabLayout;
+        View tabPlaceholder = cachedTabPlaceholder;
 
-    if (stickyTabContainer == null) {
-        stickyTabContainer = activity.findViewById(R.id.sticky_tab_container);
-    }
-    if (stickyTabContainer == null) return;
+        if (stickyTabContainer == null) {
+            stickyTabContainer = activity.findViewById(R.id.sticky_tab_container);
+        }
+        if (stickyTabContainer == null) return;
 
-    int toolbarH = 0;
-    View tb = activity.findViewById(R.id.toolbar);
-    if (tb != null) toolbarH = tb.getHeight();
+        int toolbarH = 0;
+        View tb = activity.findViewById(R.id.toolbar);
+        if (tb != null) toolbarH = tb.getHeight();
 
-    int heroH = heroContainer != null ? heroContainer.getHeight() : 0;
-    if (heroH == 0) return;
+        int heroH = heroContainer != null ? heroContainer.getHeight() : 0;
+        if (heroH == 0) return;
 
-    boolean shouldStick = scrollY > (heroH - toolbarH - dpToPx(25));
+        boolean shouldStick = scrollY > (heroH - toolbarH - dpToPx(25));
 
-    if (shouldStick && !tabIsSticky) {
-        tabIsSticky = true;
-        tabOriginalParent = (ViewGroup) tabLayout.getParent();
-        tabOriginalIndex = tabOriginalParent.indexOfChild(tabLayout);
-        tabPlaceholder.getLayoutParams().height = tabLayout.getHeight();
-        tabPlaceholder.setVisibility(View.VISIBLE);
-        tabOriginalParent.removeView(tabLayout);
-        stickyTabContainer.removeAllViews();
-        stickyTabContainer.addView(tabLayout);
-        stickyTabContainer.setVisibility(View.VISIBLE);
-    } else if (!shouldStick && tabIsSticky) {
-        tabIsSticky = false;
-        stickyTabContainer.removeView(tabLayout);
-        stickyTabContainer.setVisibility(View.GONE);
-        tabPlaceholder.setVisibility(View.GONE);
-        if (tabOriginalParent != null) {
-            int index = Math.min(tabOriginalIndex, tabOriginalParent.getChildCount());
-            tabOriginalParent.addView(tabLayout, index);
+        if (shouldStick && !tabIsSticky) {
+            tabIsSticky = true;
+            tabOriginalParent = (ViewGroup) tabLayout.getParent();
+            tabOriginalIndex = tabOriginalParent.indexOfChild(tabLayout);
+            tabPlaceholder.getLayoutParams().height = tabLayout.getHeight();
+            tabPlaceholder.setVisibility(View.VISIBLE);
+            tabOriginalParent.removeView(tabLayout);
+            stickyTabContainer.removeAllViews();
+            stickyTabContainer.addView(tabLayout);
+            stickyTabContainer.setVisibility(View.VISIBLE);
+        } else if (!shouldStick && tabIsSticky) {
+            tabIsSticky = false;
+            stickyTabContainer.removeView(tabLayout);
+            stickyTabContainer.setVisibility(View.GONE);
+            tabPlaceholder.setVisibility(View.GONE);
+            if (tabOriginalParent != null) {
+                int index = Math.min(tabOriginalIndex, tabOriginalParent.getChildCount());
+                tabOriginalParent.addView(tabLayout, index);
+            }
         }
     }
-}
 
     private void refreshAllSections() {
         final List<Wallpaper> ap = new ArrayList<>(allWallpapers);
@@ -376,7 +372,6 @@ if (nestedScrollView != null) {
 
     private void loadPremiumWallpapersFromFirebase() {
         isLoadingPremiumData = true;
-        
         DatabaseReference premiumRef = FirebaseDatabase.getInstance().getReference("wallpapers/premium");
         premiumRef.get().addOnCompleteListener(task -> {
             isLoadingPremiumData = false;
@@ -392,13 +387,10 @@ if (nestedScrollView != null) {
                 premiumWallpapers.clear();
                 premiumWallpapers.addAll(refreshedPremium);
                 refreshAllSections();
-            } else {
-                Log.w(TAG, "Failed to refresh premium wallpapers", task.getException());
             }
             checkAllDataLoaded();
         }).addOnFailureListener(e -> {
             isLoadingPremiumData = false;
-            Log.w(TAG, "Failed to refresh premium wallpapers", e);
             checkAllDataLoaded();
         });
     }
@@ -429,10 +421,8 @@ if (nestedScrollView != null) {
     }
 
     private void setupHeroCarousel(List<Wallpaper> wallpapers) {
-        // existing implementation unchanged
     }
 
     private void handleMoreWallpapers(List<Wallpaper> newWallpapers) {
-        // existing implementation unchanged
     }
 }
