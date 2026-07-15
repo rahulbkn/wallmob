@@ -1,15 +1,19 @@
 export default {
   async fetch(request, env) {
-    return handleRequest(request, env.BOT_TOKEN);
+    return handleRequest(request, env.BOT_TOKEN, env.ALLOWED_ORIGINS);
   }
 };
 
-async function handleRequest(request, BOT_TOKEN) {
+async function handleRequest(request, BOT_TOKEN, ALLOWED_ORIGINS) {
   const url = new URL(request.url);
   const path = url.pathname;
 
+  const origin = request.headers.get('Origin') || '';
+  const allowed = ALLOWED_ORIGINS ? ALLOWED_ORIGINS.split(',').map(s => s.trim()) : [];
+  const allowOrigin = allowed.includes(origin) ? origin : '';
+
   const corsHeaders = {
-    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Origin": allowOrigin || 'null',
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type",
   };
@@ -103,7 +107,7 @@ async function proxyImage(url, corsHeaders, BOT_TOKEN) {
   try {
     // Step 1: Get file path from Telegram
     const result = await fetchTelegramFile(fileId, BOT_TOKEN);
-    
+
     // Yahan exact error return hoga agar Telegram reject karega
     if (!result.ok) {
       return errorResponse(`Telegram API Error (getFile): ${result.description}`, corsHeaders);
@@ -130,7 +134,7 @@ async function proxyImage(url, corsHeaders, BOT_TOKEN) {
 
     // Full quality — fetch directly from Telegram
     const fullRes = await fetch(telegramUrl);
-    
+
     // Yahan HTTP status ke sath exact error pata chalega
     if (!fullRes.ok) {
       const errorText = await fullRes.text();
