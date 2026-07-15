@@ -63,7 +63,9 @@ public class HomeTabContentFragment extends Fragment {
 
         if (tvUnlockAll != null) {
             tvUnlockAll.setOnClickListener(v -> {
-                if (getActivity() instanceof MainActivity) ((MainActivity) getActivity()).navigateToPremium();
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).navigateToPremium();
+                }
             });
         }
         if (tvSeeAllTrending != null) {
@@ -73,6 +75,7 @@ public class HomeTabContentFragment extends Fragment {
         if (tvShuffle != null) tvShuffle.setOnClickListener(v -> shuffleTrending());
         if (tvClearRecent != null) {
             tvClearRecent.setOnClickListener(v -> {
+                if (getContext() == null) return;
                 RecentWallpapersManager.clearRecents(requireContext());
                 updateRecentSection();
             });
@@ -80,80 +83,76 @@ public class HomeTabContentFragment extends Fragment {
     }
 
     private void setupRecyclerViews() {
-    Context context = requireContext();
+        Context context = requireContext();
 
-    // 1. Trending / Best Month Section
-    recyclerBestMonth.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-    bestMonthAdapter = new BestMonthAdapter(context, new ArrayList<>(), this::onWallpaperClick);
-    recyclerBestMonth.setAdapter(bestMonthAdapter);
-    ViewPager2ConflictResolver.attach(recyclerBestMonth); // <-- FIX ADDED HERE
+        recyclerBestMonth.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        bestMonthAdapter = new BestMonthAdapter(context, new ArrayList<>(), this::onWallpaperClick);
+        recyclerBestMonth.setAdapter(bestMonthAdapter);
 
-    // 2. Premium Section
-    recyclerPremium.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-    premiumAdapter = new BestMonthAdapter(context, new ArrayList<>(), this::onWallpaperClick);
-    recyclerPremium.setAdapter(premiumAdapter);
-    ViewPager2ConflictResolver.attach(recyclerPremium); // <-- FIX ADDED HERE
+        recyclerPremium.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        premiumAdapter = new BestMonthAdapter(context, new ArrayList<>(), this::onWallpaperClick);
+        recyclerPremium.setAdapter(premiumAdapter);
 
-    // 3. Landscape Section
-    recyclerLandscape.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-    landscapeAdapter = new LandscapeAdapter(context, new ArrayList<>(), this::onWallpaperClick);
-    recyclerLandscape.setAdapter(landscapeAdapter);
-    ViewPager2ConflictResolver.attach(recyclerLandscape); // <-- FIX ADDED HERE
+        recyclerLandscape.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        landscapeAdapter = new LandscapeAdapter(context, new ArrayList<>(), this::onWallpaperClick);
+        recyclerLandscape.setAdapter(landscapeAdapter);
 
-    // 4. Color Palettes Section
-    recyclerColorTone.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-    List<String> colors = Arrays.asList("#FF0000", "#FF7F00", "#FFD700", "#32CD32", "#40E0D0", "#4169E1", "#4B0082", "#8B00FF", "#FF1493", "#2C2C2C");
-    colorToneAdapter = new ColorToneAdapter(context, colors, this::onColorClick);
-    recyclerColorTone.setAdapter(colorToneAdapter);
-    ViewPager2ConflictResolver.attach(recyclerColorTone); // <-- FIX ADDED HERE
+        recyclerColorTone.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        List<String> colors = Arrays.asList("#FF0000", "#FF7F00", "#FFD700", "#32CD32", "#40E0D0", "#4169E1", "#4B0082", "#8B00FF", "#FF1493", "#2C2C2C");
+        colorToneAdapter = new ColorToneAdapter(context, colors, this::onColorClick);
+        recyclerColorTone.setAdapter(colorToneAdapter);
 
-    // 5. Recent Section
-    recyclerRecent.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-    recentAdapter = new BestMonthAdapter(context, new ArrayList<>(), this::onWallpaperClick);
-    recyclerRecent.setAdapter(recentAdapter);
-    ViewPager2ConflictResolver.attach(recyclerRecent); // <-- FIX ADDED HERE
+        recyclerRecent.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        recentAdapter = new BestMonthAdapter(context, new ArrayList<>(), this::onWallpaperClick);
+        recyclerRecent.setAdapter(recentAdapter);
 
-    // 6. NASA Section
-    recyclerNasa.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
-    nasaApodAdapter = new NasaApodAdapter(context, new ArrayList<>(), this::onWallpaperClick);
-    recyclerNasa.setAdapter(nasaApodAdapter);
-    ViewPager2ConflictResolver.attach(recyclerNasa); // <-- FIX ADDED HERE
+        recyclerNasa.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        nasaApodAdapter = new NasaApodAdapter(context, new ArrayList<>(), this::onWallpaperClick);
+        recyclerNasa.setAdapter(nasaApodAdapter);
 
-    // (Note: Categories Section uses GridLayoutManager which scrolls vertically, 
-    // so it will not cause horizontal ViewPager swiping conflicts)
-    recyclerCategories.setLayoutManager(new GridLayoutManager(context, 2));
-    recyclerCategories.addItemDecoration(new GridSpacingItemDecoration(2, Math.round(2 * getResources().getDisplayMetrics().density)));
-    categoryGridAdapter = new CategoryGridAdapter(context, new ArrayList<>(), this::onCategoryClick);
-    recyclerCategories.setAdapter(categoryGridAdapter);
-}
-
+        recyclerCategories.setLayoutManager(new GridLayoutManager(context, 2));
+        recyclerCategories.addItemDecoration(new GridSpacingItemDecoration(2, Math.round(2 * getResources().getDisplayMetrics().density)));
+        categoryGridAdapter = new CategoryGridAdapter(context, new ArrayList<>(), this::onCategoryClick);
+        recyclerCategories.setAdapter(categoryGridAdapter);
+    }
 
     public void updateDashboardData(List<Wallpaper> portrait, List<Wallpaper> landscape, List<Wallpaper> premium, List<CategoryItem> categories, List<Wallpaper> nasa) {
-        currentPortraitList = portrait;
-        if (bestMonthAdapter != null) bestMonthAdapter.updateData(portrait);
-        if (landscapeAdapter != null) landscapeAdapter.updateData(landscape);
-        if (premiumAdapter != null) premiumAdapter.updateData(premium);
-        if (categoryGridAdapter != null) categoryGridAdapter.updateData(categories);
-        if (nasaApodAdapter != null) nasaApodAdapter.updateData(nasa);
+        currentPortraitList = portrait != null ? new ArrayList<>(portrait) : new ArrayList<>();
+        if (bestMonthAdapter != null) bestMonthAdapter.updateData(currentPortraitList);
+        if (landscapeAdapter != null) landscapeAdapter.updateData(landscape != null ? landscape : new ArrayList<>());
+        if (premiumAdapter != null) premiumAdapter.updateData(premium != null ? premium : new ArrayList<>());
+        if (categoryGridAdapter != null) categoryGridAdapter.updateData(categories != null ? categories : new ArrayList<>());
+        if (nasaApodAdapter != null) nasaApodAdapter.updateData(nasa != null ? nasa : new ArrayList<>());
 
-        if (premiumSectionView != null) premiumSectionView.setVisibility(premium.isEmpty() ? View.GONE : View.VISIBLE);
-        if (landscapeSectionView != null) landscapeSectionView.setVisibility(landscape.isEmpty() ? View.GONE : View.VISIBLE);
-        if (nasaSectionView != null) nasaSectionView.setVisibility(nasa.isEmpty() ? View.GONE : View.VISIBLE);
+        if (premiumSectionView != null) premiumSectionView.setVisibility(premium != null && !premium.isEmpty() ? View.VISIBLE : View.GONE);
+        if (landscapeSectionView != null) landscapeSectionView.setVisibility(landscape != null && !landscape.isEmpty() ? View.VISIBLE : View.GONE);
+        if (nasaSectionView != null) nasaSectionView.setVisibility(nasa != null && !nasa.isEmpty() ? View.VISIBLE : View.GONE);
 
         updateRecentSection();
     }
 
     public void updateRecentSection() {
-        if (getContext() == null) return;
         Context ctx = getContext();
+        if (ctx == null || !isAdded()) return;
+
         SketchApplication.getIoExecutor().execute(() -> {
             List<Wallpaper> recents = RecentWallpapersManager.getRecents(ctx);
-            if (getActivity() == null) return;
+            if (!isAdded() || getActivity() == null) return;
             getActivity().runOnUiThread(() -> {
-                if (recentAdapter != null) recentAdapter.updateData(recents);
-                if (recentSection != null) recentSection.setVisibility(recents.isEmpty() ? View.GONE : View.VISIBLE);
+                if (recentAdapter != null) recentAdapter.updateData(recents != null ? recents : new ArrayList<>());
+                if (recentSection != null) recentSection.setVisibility(recents != null && !recents.isEmpty() ? View.VISIBLE : View.GONE);
             });
         });
+    }
+
+    public void refreshDashboard() {
+        if (!isAdded()) return;
+        updateRecentSection();
+        if (bestMonthAdapter != null) bestMonthAdapter.notifyDataSetChanged();
+        if (landscapeAdapter != null) landscapeAdapter.notifyDataSetChanged();
+        if (premiumAdapter != null) premiumAdapter.notifyDataSetChanged();
+        if (categoryGridAdapter != null) categoryGridAdapter.notifyDataSetChanged();
+        if (nasaApodAdapter != null) nasaApodAdapter.notifyDataSetChanged();
     }
 
     private void shuffleTrending() {
