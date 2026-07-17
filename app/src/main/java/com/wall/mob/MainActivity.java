@@ -424,6 +424,10 @@ public class MainActivity extends BaseActivity {
                 } else if (itemId == R.id.nav_downloads) { // NEW: Downloads Tab Logic
                     if (currentPosition != 3) showFragment(3);
                     return true;
+                } else if (itemId == R.id.nav_reel) {
+                    Intent intent = new Intent(MainActivity.this, ReelActivity.class);
+                    startActivity(intent);
+                    return true;
                 }
                 return false;
             });
@@ -542,6 +546,10 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        if (SketchApplication.needsDataRefresh) {
+            SketchApplication.needsDataRefresh = false;
+            refreshAllFragments();
+        }
         refreshCoins();
         loadProfilePhoto();
         updateMainIconSizes();
@@ -905,6 +913,23 @@ public class MainActivity extends BaseActivity {
                     break;
             }
             setupNavigation(); 
+        }
+    }
+
+    private void refreshAllFragments() {
+        if (homeFragment instanceof HomeFragment) {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.detach(homeFragment).attach(homeFragment).commit();
+        }
+        if (premiumFragment instanceof PremiumFragment) {
+            ((PremiumFragment) premiumFragment).refreshData();
+        }
+        if (favoriteFragment instanceof FavoriteFragment) {
+            ((FavoriteFragment) favoriteFragment).refreshData();
+        }
+        if (downloadsFragment instanceof DownloadsFragment) {
+            ((DownloadsFragment) downloadsFragment).refreshData();
         }
     }
 

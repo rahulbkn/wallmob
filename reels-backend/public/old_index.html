@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Upload & Play Test</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .section { margin-bottom: 30px; border: 1px solid #ccc; padding: 15px; }
+        video { width: 100%; max-width: 600px; display: block; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<h1>Video Upload & Play Test</h1>
+
+<div class="section">
+    <h2>Upload Video</h2>
+    <form id="uploadForm">
+        <input type="file" id="videoFile" accept="video/*" required><br><br>
+        <input type="text" id="title" placeholder="Title" required><br><br>
+        <button type="submit">Upload</button>
+    </form>
+    <div id="uploadStatus"></div>
+</div>
+
+<div class="section">
+    <h2>Play Video</h2>
+    <input type="text" id="videoId" placeholder="Enter Video ID (e.g., from upload response)">
+    <button id="playBtn">Load & Play</button>
+    <video id="videoPlayer" controls></video>
+</div>
+
+<script>
+    // Adjust based on where your backend is actually running
+    const API_BASE = 'http://localhost:3000'; 
+
+    document.getElementById('uploadForm').onsubmit = async (e) => {
+        e.preventDefault();
+        const status = document.getElementById('uploadStatus');
+        status.innerText = 'Uploading...';
+        
+        const formData = new FormData();
+        formData.append('video', document.getElementById('videoFile').files[0]);
+        formData.append('title', document.getElementById('title').value);
+        formData.append('uploader', 'test-user');
+        formData.append('category', 'test');
+
+        try {
+            const response = await fetch(`${API_BASE}/api/videos`, {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            status.innerText = 'Uploaded! ID: ' + JSON.stringify(result);
+        } catch (err) {
+            status.innerText = 'Error: ' + err.message;
+        }
+    };
+
+    document.getElementById('playBtn').onclick = () => {
+        const id = document.getElementById('videoId').value;
+        const player = document.getElementById('videoPlayer');
+        // Construct the stream URL based on router.ts
+        player.src = `${API_BASE}/stream?key=${id}&variant=original`;
+        player.play();
+    };
+</script>
+</body>
+</html>

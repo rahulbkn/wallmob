@@ -339,6 +339,9 @@
     <string name="downloading_wallpaper">Downloading wallpaper...</string>
     <string name="unknown_error">Unknown error</string>
     <string name="api_error_format">API error: %1$s</string>
+    <string name="reels">Reels</string>
+    <string name="placeholder_handle">@username</string>
+    <string name="placeholder_title">Title</string>
     <string name="normal">Normal</string>
     <string name="shared_wallpaper_format">Shared %1$s Wallpaper</string>
     <string name="downloaded_wallpaper_format">Downloaded %1$s Wallpaper</string>

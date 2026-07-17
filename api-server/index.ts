@@ -978,8 +978,27 @@ async function handleWallpaperUpload(request: Request, env: Env, ctx: ExecutionC
     const rawCategory = validCategory || "";
     const photographer = (formData.get("photographer") || "").toString().trim();
     const uploaderId = (formData.get("uploader_id") || "").toString().trim();
+    const email = (formData.get("email") || "").toString().trim();
+    const idToken = (formData.get("idToken") || "").toString().trim();
 
-    if (await isOverLimit(uploaderId, env)) {
+    let verifiedEmail: string | null = null;
+    if (idToken) {
+      const tokenResult = await verifyFirebaseToken(idToken, env);
+      if (!tokenResult.verified) {
+        return createErrorResponse("Unauthorized", "Invalid or expired token", 401);
+      }
+      verifiedEmail = tokenResult.email;
+    } else if (email) {
+      if (!(await verifyEmailUser(email, env))) {
+        return createErrorResponse("Unauthorized", "User not found", 401);
+      }
+      verifiedEmail = email;
+    } else {
+      return createErrorResponse("Unauthorized", "Authentication required", 401);
+    }
+    const effectiveUploaderId = uploaderId || verifiedEmail;
+
+    if (await isOverLimit(effectiveUploaderId, env)) {
       return createErrorResponse("Too many uploads in queue", "Too many uploads in queue. Please wait.", 400);
     }
 
@@ -1056,7 +1075,7 @@ async function handleWallpaperUpload(request: Request, env: Env, ctx: ExecutionC
       premium: false,
       width: imgWidth,
       height: imgHeight,
-      uploaderId,
+      uploaderId: effectiveUploaderId,
       chatId: env.TELEGRAM_CHAT_ID,
       messageId
     };
@@ -1093,7 +1112,7 @@ async function handleWallpaperUpload(request: Request, env: Env, ctx: ExecutionC
               chatId: env.TELEGRAM_CHAT_ID,
               messageId,
               queuedAt: Date.now(),
-              uploaderId,
+              uploaderId: effectiveUploaderId,
               skipAI: !needsAutoCategory
             })
           }).catch((e: unknown) => console.error("Failed to queue pending item:", e));
@@ -1122,13 +1141,29 @@ async function handleWallpaperUpload(request: Request, env: Env, ctx: ExecutionC
 
 async function handleDeleteWallpaper(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
   try {
-    const body = await request.json() as { firebaseKey?: string; fileUniqueId?: string; email?: string };
-    const { firebaseKey, fileUniqueId, email } = body;
+    const body = await request.json() as { firebaseKey?: string; fileUniqueId?: string; email?: string; idToken?: string };
+    const { firebaseKey, fileUniqueId, email, idToken } = body;
     if (!firebaseKey) {
       return createErrorResponse("Bad Request", "firebaseKey is required", 400);
     }
     if (!env.FIREBASE_DATABASE_URL || !env.FIREBASE_DATABASE_SECRET) {
       return createErrorResponse("Server config error", "Firebase not configured", 500);
+    }
+
+    let verifiedEmail: string | null = null;
+    if (idToken) {
+      const tokenResult = await verifyFirebaseToken(idToken, env);
+      if (!tokenResult.verified) {
+        return createErrorResponse("Unauthorized", "Invalid or expired token", 401);
+      }
+      verifiedEmail = tokenResult.email;
+    } else if (email) {
+      if (!(await verifyEmailUser(email, env))) {
+        return createErrorResponse("Unauthorized", "User not found", 401);
+      }
+      verifiedEmail = email;
+    } else {
+      return createErrorResponse("Unauthorized", "Authentication required", 401);
     }
 
     const auth = `auth=${env.FIREBASE_DATABASE_SECRET}`;
@@ -1141,7 +1176,7 @@ async function handleDeleteWallpaper(request: Request, env: Env, ctx: ExecutionC
     }
 
     const uploaderId = record.uploaderId || "";
-    if (email && uploaderId && email !== uploaderId) {
+    if (uploaderId && verifiedEmail !== uploaderId) {
       return createErrorResponse("Forbidden", "You can only delete your own wallpapers", 403);
     }
 
@@ -1152,41 +1187,42 @@ async function handleDeleteWallpaper(request: Request, env: Env, ctx: ExecutionC
     if (record.thumbnailUrl) {
       const publicId = extractCloudinaryPublicId(record.thumbnailUrl);
       if (publicId) {
-        ctx.waitUntil(deleteFromCloudinary(publicId, env));
+        await deleteFromCloudinary(publicId, env);
       }
     }
 
-    ctx.waitUntil((async () => {
-      await fetch(`${base}/wallpapers/newly_added/${firebaseKey}.json?${auth}`, { method: "DELETE" }).catch(() => {});
-      if (actualFileUniqueId) {
-        await fetch(`${base}/wallpapers/file_index/${actualFileUniqueId}.json?${auth}`, { method: "DELETE" }).catch(() => {});
-      }
-      await fetch(`${base}/wallpapers/pending_processing/${firebaseKey}.json?${auth}`, { method: "DELETE" }).catch(() => {});
-      if (chatId && messageId) {
-        await deleteTelegramMessage(chatId, messageId, env);
-      }
-      const title = record.title || "Untitled";
-      const deleter = email || uploaderId || "Unknown";
-      const adminChatId = env.ADMIN_CHAT_ID ? Number(env.ADMIN_CHAT_ID) : null;
-      if (adminChatId && env.TELEGRAM_CHAT_ID) {
-        const targetChat = Number(env.TELEGRAM_CHAT_ID);
-        await replyToChat(targetChat, `🗑️ Wallpaper deleted by ${deleter}\nTitle: ${title}`, env);
-      }
-      if (env.WALLMOB_CACHE) {
+    await fetch(`${base}/wallpapers/newly_added/${firebaseKey}.json?${auth}`, { method: "DELETE" }).catch(() => {});
+    if (actualFileUniqueId) {
+      await fetch(`${base}/wallpapers/file_index/${actualFileUniqueId}.json?${auth}`, { method: "DELETE" }).catch(() => {});
+    }
+    await fetch(`${base}/wallpapers/pending_processing/${firebaseKey}.json?${auth}`, { method: "DELETE" }).catch(() => {});
+    if (chatId && messageId) {
+      await deleteTelegramMessage(chatId, messageId, env);
+    }
+
+    const title = record.title || "Untitled";
+    const deleter = email || uploaderId || "Unknown";
+    const adminChatId = env.ADMIN_CHAT_ID ? Number(env.ADMIN_CHAT_ID) : null;
+    if (adminChatId && env.TELEGRAM_CHAT_ID) {
+      const targetChat = Number(env.TELEGRAM_CHAT_ID);
+      ctx.waitUntil(replyToChat(targetChat, `\u{1F5D1}\uFE0F Wallpaper deleted by ${deleter}\nTitle: ${title}`, env));
+    }
+    if (env.WALLMOB_CACHE) {
+      ctx.waitUntil((async () => {
         try {
           let cursor: string | undefined;
           do {
-            const listResult = await env.WALLMOB_CACHE.list({ prefix: "wallmob:", cursor });
+            const listResult = await env.WALLMOB_CACHE!.list({ prefix: "wallmob:", cursor });
             for (const key of listResult.keys) {
-              await env.WALLMOB_CACHE.delete(key.name);
+              await env.WALLMOB_CACHE!.delete(key.name);
             }
             cursor = listResult.cursor;
           } while (cursor);
         } catch (e) {
           console.error("Cache purge failed:", e);
         }
-      }
-    })());
+      })());
+    }
 
     return new Response(JSON.stringify({ success: true }), {
       headers: { "Content-Type": "application/json", ...CORS_HEADERS }
@@ -1871,6 +1907,49 @@ async function isOverLimit(uploaderId: string, env: Env): Promise<boolean> {
     return count >= 20;
   } catch (e: unknown) {
     console.error("isOverLimit check failed:", e);
+    return false;
+  }
+}
+
+async function verifyFirebaseToken(idToken: string, env: Env): Promise<{ verified: boolean; email: string | null }> {
+  if (!env.FIREBASE_API_KEY) {
+    return { verified: false, email: null };
+  }
+  try {
+    const resp = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${env.FIREBASE_API_KEY}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken }),
+        signal: AbortSignal.timeout(10000)
+      }
+    );
+    if (!resp.ok) {
+      console.error("Firebase token verify failed:", resp.status, await resp.text());
+      return { verified: false, email: null };
+    }
+    const data = await resp.json() as { users?: Array<{ email?: string }> };
+    const email = (data.users && data.users[0] && data.users[0].email) || null;
+    return { verified: true, email };
+  } catch (e: unknown) {
+    console.error("Firebase token verify error:", e);
+    return { verified: false, email: null };
+  }
+}
+
+async function verifyEmailUser(email: string, env: Env): Promise<boolean> {
+  if (!env.FIREBASE_DATABASE_URL || !env.FIREBASE_DATABASE_SECRET) return false;
+  try {
+    const auth = `auth=${env.FIREBASE_DATABASE_SECRET}`;
+    const resp = await fetch(
+      `${env.FIREBASE_DATABASE_URL}/users.json?${auth}&orderBy="email"&equalTo="${encodeURIComponent(email)}"`,
+      { signal: AbortSignal.timeout(10000) }
+    );
+    if (!resp.ok) return false;
+    const users = await resp.json() as Record<string, unknown> | null;
+    return users !== null && Object.keys(users).length > 0;
+  } catch {
     return false;
   }
 }

@@ -12,9 +12,9 @@
         android:title="@string/premium"/>
 
     <item
-        android:id="@+id/nav_spacer"
-        android:title=""
-        android:enabled="false"/>
+        android:id="@+id/nav_reel"
+        android:icon="@drawable/ic_reels_selector"
+        android:title="@string/reels"/>
 
     <item
         android:id="@+id/nav_favorite"

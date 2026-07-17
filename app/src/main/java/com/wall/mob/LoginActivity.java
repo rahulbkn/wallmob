@@ -344,7 +344,7 @@ private void setupGoogleButtonGradient() {
                         } else {
                             String userId = databaseReference.push().getKey();
                             if (userId != null) {
-                                User newUser = new User(userId, name, email, "", "");
+                                User newUser = new User(userId, name, email, "");
                                 newUser.setPhotoUrl(photoUrl);
                                 databaseReference.child(userId).setValue(newUser);
                             }
@@ -398,34 +398,50 @@ private void setupGoogleButtonGradient() {
 
         showLoading(true);
 
-        databaseReference.orderByChild("email").equalTo(email)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        if (dataSnapshot.exists()) {
-                            boolean userFound = false;
-                            for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
-                                User user = userSnapshot.getValue(User.class);
-                                if (user != null && user.getPassword().equals(password)) {
-                                    userFound = true;
-                                    signInToFirebaseAndRedirect(user, password);
-                                    break;
-                                }
-                            }
-                            if (!userFound) {
-                                showLoading(false);
-                                Toast.makeText(LoginActivity.this, getString(R.string.invalid_email_password), Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            showLoading(false);
-                            Toast.makeText(LoginActivity.this, getString(R.string.invalid_email_password), Toast.LENGTH_SHORT).show();
-                        }
-                    }
+        FirebaseAuth.getInstance().signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                        String userName = firebaseUser != null && firebaseUser.getDisplayName() != null
+                                ? firebaseUser.getDisplayName() : "User";
+                        String photoUrl = firebaseUser != null && firebaseUser.getPhotoUrl() != null
+                                ? firebaseUser.getPhotoUrl().toString() : "";
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                        databaseReference.orderByChild("email").equalTo(email)
+                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+                                        if (dataSnapshot.exists()) {
+                                            for (DataSnapshot userSnapshot : dataSnapshot.getChildren()) {
+                                                User user = userSnapshot.getValue(User.class);
+                                                if (user != null) {
+                                                    sessionManager.createLoginSession(email, userName, false, photoUrl);
+                                                    showLoading(false);
+                                                    Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
+                                                    redirectToMainActivity();
+                                                    return;
+                                                }
+                                            }
+                                        }
+                                        sessionManager.createLoginSession(email, userName, false, photoUrl);
+                                        showLoading(false);
+                                        Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
+                                        redirectToMainActivity();
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+                                        sessionManager.createLoginSession(email, userName, false, photoUrl);
+                                        showLoading(false);
+                                        Toast.makeText(LoginActivity.this, getString(R.string.login_successful), Toast.LENGTH_SHORT).show();
+                                        redirectToMainActivity();
+                                    }
+                                });
+                    } else {
                         showLoading(false);
-                        Toast.makeText(LoginActivity.this, getString(R.string.database_error, databaseError.getMessage()), Toast.LENGTH_SHORT).show();
+                        String errorMsg = task.getException() != null
+                                ? task.getException().getMessage() : "Authentication failed";
+                        Toast.makeText(LoginActivity.this, "Login failed: " + errorMsg, Toast.LENGTH_SHORT).show();
                     }
                 });
     }

@@ -4,21 +4,23 @@ import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
-import com.bumptech.glide.Glide;
+
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.color.MaterialColors;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
-
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -34,6 +36,7 @@ public class UploadWallpaperActivity extends BaseActivity {
 
     private static final String UPLOAD_URL = "https://api-server.rahulkumarbknv.workers.dev/upload-wallpaper";
     private static final String BOUNDARY = "Boundary-" + System.currentTimeMillis();
+    private static final String TAG = "UploadWallpaper";
 
     private ImageView previewImage;
     private View selectImageHint;
@@ -54,9 +57,8 @@ public class UploadWallpaperActivity extends BaseActivity {
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
                     selectedImageUri = uri;
-                    previewImage.setPadding(0, 0, 0, 0);
-                    previewImage.setImageTintList(null);
-                    Glide.with(this).load(uri).into(previewImage);
+                    previewImage.setImageURI(uri);
+                    previewImage.setVisibility(View.VISIBLE);
                     selectImageHint.setVisibility(View.GONE);
                 }
             });
@@ -66,14 +68,9 @@ public class UploadWallpaperActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.upload_wallpaper);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ThemeUtils.applySystemBars(this);
-        }
-
         sessionManager = new SessionManager(this);
-
         if (!sessionManager.isLoggedIn() || sessionManager.isGuest()) {
-            Toast.makeText(this, "Please login to upload wallpapers", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
@@ -83,8 +80,6 @@ public class UploadWallpaperActivity extends BaseActivity {
         checkHealthAndEnableUpload();
     }
 
-    // Theme attr color helper — sirf AppTheme me defined attrs (colorPrimary, colorOnPrimary,
-    // colorSurface, colorOnSurface, colorControlNormal) DayNight ke saath safe hain
     private int themeColor(int attr) {
         return MaterialColors.getColor(this, attr, 0);
     }
@@ -138,7 +133,6 @@ public class UploadWallpaperActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        // NAYA: upload ke dauraan back press ignore — user ko beech me activity chhodne se roko
         if (uploadOverlay != null && uploadOverlay.getVisibility() == View.VISIBLE) {
             return;
         }
@@ -163,7 +157,6 @@ public class UploadWallpaperActivity extends BaseActivity {
 
     private void setClickListeners() {
         toolbar.setNavigationOnClickListener(v -> {
-            // NAYA: upload chal rahe time back navigation block — overlay visible = upload in progress
             if (uploadOverlay.getVisibility() == View.VISIBLE) return;
             finish();
         });
@@ -179,7 +172,6 @@ public class UploadWallpaperActivity extends BaseActivity {
         });
     }
 
-    // Disabled state: muted grey, using theme's colorControlNormal + textColorSecondary
     private void setUploadButtonDisabledAppearance() {
         uploadButton.setEnabled(false);
         uploadButton.setBackgroundTintList(ColorStateList.valueOf(
@@ -190,7 +182,6 @@ public class UploadWallpaperActivity extends BaseActivity {
         uploadButton.setIconTint(ColorStateList.valueOf(secondaryText));
     }
 
-    // Enabled state: uses AppTheme's colorPrimary / colorOnPrimary (already DayNight-aware)
     private void setUploadButtonEnabledAppearance() {
         uploadButton.setEnabled(true);
         uploadButton.setBackgroundTintList(ColorStateList.valueOf(
@@ -202,7 +193,6 @@ public class UploadWallpaperActivity extends BaseActivity {
 
     private void setUploadingAppearance(boolean isUploading) {
         if (isUploading) {
-            uploadProgressBar.setIndeterminate(false);
             uploadProgressBar.setProgress(0);
             uploadProgressText.setText("0%");
             uploadStatusLabel.setText(getString(R.string.uploading_label));
@@ -226,12 +216,15 @@ public class UploadWallpaperActivity extends BaseActivity {
         final String effectiveTitle = title.isEmpty() ? getString(R.string.default_title) : title;
         final String effectiveCategory = category.isEmpty() ? getString(R.string.default_category) : category;
 
+        Log.d(TAG, "uploadWallpaper: title=" + effectiveTitle + " category=" + effectiveCategory + " uri=" + selectedImageUri);
         setUploadingAppearance(true);
 
         new Thread(() -> {
             try {
+                Log.d(TAG, "Opening input stream");
                 InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
                 if (inputStream == null) {
+                    Log.e(TAG, "inputStream is null");
                     runOnUiThread(() -> {
                         setUploadingAppearance(false);
                         Toast.makeText(UploadWallpaperActivity.this, getString(R.string.failed_to_read_image), Toast.LENGTH_SHORT).show();
@@ -239,6 +232,7 @@ public class UploadWallpaperActivity extends BaseActivity {
                     return;
                 }
 
+                Log.d(TAG, "Reading image bytes");
                 ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
                 byte[] buffer = new byte[4096];
                 int len;
@@ -247,8 +241,9 @@ public class UploadWallpaperActivity extends BaseActivity {
                 }
                 byte[] imageBytes = byteBuffer.toByteArray();
                 inputStream.close();
+                Log.d(TAG, "Image read: " + imageBytes.length + " bytes");
 
-                // Saare multipart parts pehle hi bana lo taaki exact Content-Length pata ho
+                Log.d(TAG, "Building multipart parts");
                 byte[] photoHeader = ("--" + BOUNDARY + "\r\n" +
                         "Content-Disposition: form-data; name=\"photo\"; filename=\"wallpaper.jpg\"\r\n" +
                         "Content-Type: image/jpeg\r\n\r\n").getBytes();
@@ -259,39 +254,40 @@ public class UploadWallpaperActivity extends BaseActivity {
 
                 String uEmail = sessionManager.getEmail();
                 if (uEmail == null) uEmail = "";
-                android.util.Log.d("UploadWallpaper", "Uploading wallpaper with uploaderId: " + uEmail);
+                Log.d(TAG, "uploader_id=" + uEmail);
                 byte[] uploaderPart = buildTextPart("uploader_id", uEmail);
+                byte[] emailPart = buildTextPart("email", uEmail);
 
                 byte[] idTokenPart = null;
                 FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
+                Log.d(TAG, "FirebaseAuth user=" + (firebaseUser != null ? firebaseUser.getEmail() : "null"));
                 if (firebaseUser != null) {
                     try {
                         String idToken = com.google.android.gms.tasks.Tasks.await(firebaseUser.getIdToken(false)).getToken();
                         idTokenPart = buildTextPart("idToken", idToken);
-                    } catch (Exception ignored) {}
+                        Log.d(TAG, "idToken obtained, length=" + idToken.length());
+                    } catch (Exception e) {
+                        Log.w(TAG, "idToken fetch failed: " + e.getMessage());
+                    }
                 }
 
                 byte[] closingBoundary = ("--" + BOUNDARY + "--\r\n").getBytes();
 
                 long totalContentLength = photoHeader.length + imageBytes.length + photoFooter.length
                         + titlePart.length + categoryPart.length + photographerPart.length
-                        + uploaderPart.length + closingBoundary.length;
+                        + uploaderPart.length + emailPart.length + closingBoundary.length;
                 if (idTokenPart != null) {
                     totalContentLength += idTokenPart.length;
                 }
+                Log.d(TAG, "totalContentLength=" + totalContentLength);
 
+                Log.d(TAG, "Opening HTTP connection to " + UPLOAD_URL);
                 HttpURLConnection connection = (HttpURLConnection) new URL(UPLOAD_URL).openConnection();
                 connection.setRequestMethod("POST");
                 connection.setRequestProperty("Content-Type", "multipart/form-data; boundary=" + BOUNDARY);
                 connection.setDoOutput(true);
                 connection.setConnectTimeout(30000);
-                // NAYA: 30s bahut kam tha — server-side moderation (NudeNet) + Telegram upload +
-                // Firebase write chain kabhi kabhi isse zyada le leti hai, isliye badha diya
                 connection.setReadTimeout(120000);
-
-                // NAYA: fixed-length streaming mode — isse HttpURLConnection poora body memory me
-                // buffer nahi karta. Har write() seedha socket pe jaata hai (TCP backpressure ke
-                // saath), so progress bar REAL network upload speed dikhayega, fake nahi.
                 connection.setFixedLengthStreamingMode(totalContentLength);
 
                 OutputStream os = connection.getOutputStream();
@@ -302,7 +298,6 @@ public class UploadWallpaperActivity extends BaseActivity {
                 bytesWritten[0] += photoHeader.length;
                 publishProgress(bytesWritten[0], totalContentLength);
 
-                // Photo ko chunks me likho — har write() network pe jaata hai, isliye progress real hai
                 int chunkSize = 8192;
                 int totalImageSize = imageBytes.length;
                 for (int i = 0; i < totalImageSize; i += chunkSize) {
@@ -314,38 +309,33 @@ public class UploadWallpaperActivity extends BaseActivity {
 
                 os.write(photoFooter);
                 bytesWritten[0] += photoFooter.length;
-
                 os.write(titlePart);
                 bytesWritten[0] += titlePart.length;
-
                 os.write(categoryPart);
                 bytesWritten[0] += categoryPart.length;
-
                 os.write(photographerPart);
                 bytesWritten[0] += photographerPart.length;
-
                 os.write(uploaderPart);
                 bytesWritten[0] += uploaderPart.length;
-
+                os.write(emailPart);
+                bytesWritten[0] += emailPart.length;
                 if (idTokenPart != null) {
                     os.write(idTokenPart);
                     bytesWritten[0] += idTokenPart.length;
                 }
-
                 os.write(closingBoundary);
                 bytesWritten[0] += closingBoundary.length;
                 publishProgress(bytesWritten[0], totalContentLength);
 
                 os.flush();
                 os.close();
+                Log.d(TAG, "Body sent: " + bytesWritten[0] + " bytes");
 
-                // NAYA: yahan tak client ka kaam khatam — poora body network pe ja chuka hai.
-                // Ab server moderation + Telegram upload + Firebase write kar raha hai, jisme
-                // kuch second lag sakte hain. Isliye "100% frozen" dikhne ki jagah spinner +
-                // "Processing" state dikhao, taaki user ko pata rahe kuch ho raha hai
                 switchToProcessingState();
 
+                Log.d(TAG, "Reading response code...");
                 int responseCode = connection.getResponseCode();
+                Log.d(TAG, "Response code: " + responseCode);
 
                 InputStream errorStream = null;
                 try {
@@ -362,9 +352,11 @@ public class UploadWallpaperActivity extends BaseActivity {
                     }
                     errorBody = errBuf.toString();
                     errorStream.close();
+                    Log.e(TAG, "Error body: " + errorBody);
                 }
 
                 if (responseCode == HttpURLConnection.HTTP_OK) {
+                    Log.d(TAG, "Upload OK, reading response");
                     InputStream is = connection.getInputStream();
                     ByteArrayOutputStream responseBuffer = new ByteArrayOutputStream();
                     byte[] buff = new byte[4096];
@@ -374,19 +366,18 @@ public class UploadWallpaperActivity extends BaseActivity {
                     }
                     String responseBody = responseBuffer.toString();
                     is.close();
+                    Log.d(TAG, "Response: " + responseBody);
 
                     JSONObject json = new JSONObject(responseBody);
                     if (json.getBoolean("success")) {
-
-                        // Worker database handle kar raha hai, so no saveToFirebase call.
                         runOnUiThread(() -> {
                             setUploadingAppearance(false);
                             Toast.makeText(UploadWallpaperActivity.this, getString(R.string.upload_success), Toast.LENGTH_LONG).show();
-                            finish(); // Activity close
+                            finish();
                         });
-
                     } else {
                         final String errMsg = json.optString("message", getString(R.string.server_error));
+                        Log.e(TAG, "Server success=false: " + errMsg);
                         runOnUiThread(() -> {
                             setUploadingAppearance(false);
                             Toast.makeText(UploadWallpaperActivity.this, getString(R.string.upload_failed_with_reason, errMsg), Toast.LENGTH_SHORT).show();
@@ -401,24 +392,27 @@ public class UploadWallpaperActivity extends BaseActivity {
                         } catch (Exception ignored) {}
                     }
                     final String displayReason = reason;
+                    Log.e(TAG, "Rejected 422: " + displayReason);
                     runOnUiThread(() -> {
                         setUploadingAppearance(false);
                         Toast.makeText(UploadWallpaperActivity.this, displayReason, Toast.LENGTH_LONG).show();
                     });
                 } else {
                     final String detail = errorBody != null ? errorBody : "HTTP " + responseCode;
+                    Log.e(TAG, "Failed " + responseCode + ": " + detail);
                     runOnUiThread(() -> {
                         setUploadingAppearance(false);
                         Toast.makeText(UploadWallpaperActivity.this, getString(R.string.upload_failed_with_reason, detail), Toast.LENGTH_SHORT).show();
                     });
                 }
             } catch (java.net.SocketTimeoutException e) {
-                // NAYA: timeout ko alag se handle — generic exception message se zyada helpful
+                Log.e(TAG, "SocketTimeout: " + e.getMessage());
                 runOnUiThread(() -> {
                     setUploadingAppearance(false);
                     Toast.makeText(UploadWallpaperActivity.this, getString(R.string.upload_timeout), Toast.LENGTH_LONG).show();
                 });
             } catch (Exception e) {
+                Log.e(TAG, "Exception: " + e.getMessage(), e);
                 runOnUiThread(() -> {
                     setUploadingAppearance(false);
                     Toast.makeText(UploadWallpaperActivity.this, getString(R.string.upload_error_with_reason, e.getMessage()), Toast.LENGTH_SHORT).show();
@@ -427,7 +421,6 @@ public class UploadWallpaperActivity extends BaseActivity {
         }).start();
     }
 
-    // Real byte count se UI progress push karta hai — network write ke turant baad call hota hai
     private void publishProgress(long written, long total) {
         int progress = total > 0 ? (int) ((written * 100) / total) : 0;
         runOnUiThread(() -> {
@@ -436,8 +429,6 @@ public class UploadWallpaperActivity extends BaseActivity {
         });
     }
 
-    // Body fully sent hone ke baad determinate % se indeterminate spinner me switch —
-    // ab server-side processing ka wait hai, byte-progress ka nahi
     private void switchToProcessingState() {
         runOnUiThread(() -> {
             uploadProgressText.setText(getString(R.string.processing_percent));

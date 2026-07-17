@@ -185,8 +185,8 @@ public class RegisterActivity extends BaseActivity {
         // Create a unique key for the user
         String userId = databaseReference.push().getKey();
         
-        // Create a User object
-        User user = new User(userId, fullName, email, phone, password);
+        // Create a User object (password is stored in Firebase Auth, not RTDB)
+        User user = new User(userId, fullName, email, phone);
         
         // Save user to Firebase RTDB first
         databaseReference.child(userId).setValue(user)

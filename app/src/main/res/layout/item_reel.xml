@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- reel.videoUrl goes straight into ExoPlayer's MediaItem; the
+         backend's /stream endpoint already supports HTTP Range for
+         seeking, so no special player config is needed. -->
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:use_controller="false"
+        app:resize_mode="zoom"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:background="@drawable/scrim_bottom"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageView
+        android:id="@+id/playPauseIcon"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@android:drawable/ic_media_pause"
+        android:visibility="gone"
+        android:tint="#FFFFFF"
+        android:alpha="0.8"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Action rail: like / comment / share / delete -->
+    <LinearLayout
+        android:id="@+id/actionRail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="96dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageButton
+            android:id="@+id/likeButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/circle_button_bg"
+            android:src="@android:drawable/btn_star_big_off"
+            android:contentDescription="Like" />
+
+        <TextView
+            android:id="@+id/likeCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="0"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="12sp" />
+
+        <ImageButton
+            android:id="@+id/commentButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/circle_button_bg"
+            android:src="@android:drawable/ic_menu_send"
+            android:contentDescription="Comments" />
+
+        <TextView
+            android:id="@+id/commentCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="0"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="12sp" />
+
+        <ImageButton
+            android:id="@+id/shareButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/circle_button_bg"
+            android:src="@android:drawable/ic_menu_share"
+            android:contentDescription="Share" />
+
+        <TextView
+            android:id="@+id/shareCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="0"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="12sp" />
+
+        <ImageButton
+            android:id="@+id/qualityButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/circle_button_bg"
+            android:src="@android:drawable/ic_menu_preferences"
+            android:contentDescription="Quality" />
+
+        <TextView
+            android:id="@+id/qualityText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="Auto"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="12sp" />
+
+        <ImageButton
+            android:id="@+id/deleteButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/circle_button_bg"
+            android:src="@android:drawable/ic_menu_delete"
+            android:contentDescription="Delete" />
+
+        <TextView
+            android:id="@+id/deleteText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Del"
+            android:textColor="#FF4F6D"
+            android:textStyle="bold"
+            android:textSize="12sp" />
+
+    </LinearLayout>
+
+    <!-- Caption / uploader panel -->
+    <LinearLayout
+        android:id="@+id/captionPanel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="80dp"
+        android:layout_marginBottom="28dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/actionRail"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:id="@+id/uploaderHandle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:text="@string/placeholder_handle" />
+
+        <TextView
+            android:id="@+id/reelTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:maxLines="2"
+            android:ellipsize="end"
+            android:text="@string/placeholder_title" />
+
+        <TextView
+            android:id="@+id/reelDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="#D9FFFFFF"
+            android:textSize="13sp"
+            android:maxLines="2"
+            android:ellipsize="end" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
