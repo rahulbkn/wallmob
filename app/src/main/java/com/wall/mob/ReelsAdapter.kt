@@ -76,15 +76,26 @@ class ReelsAdapter(
         holder.playPauseIcon.visibility = android.view.View.GONE
 
         holder.uploaderHandle.text = "@${reel.uploader}"
-        holder.reelTitle.text = reel.title
-        holder.reelDescription.text = reel.description.orEmpty()
+        holder.reelTitle.text = reel.title.ifBlank { "Untitled reel" }
+        val description = reel.description.orEmpty().trim()
+        holder.reelDescription.text = description
+        holder.reelDescription.visibility = if (description.isBlank()) android.view.View.GONE else android.view.View.VISIBLE
         holder.likeCount.text = reel.likes.toString()
         holder.commentCount.text = reel.comments.toString()
         holder.shareCount.text = reel.shares.toString()
 
+        val hasAlternateQualities = !reel.qualities.isNullOrEmpty()
+        holder.qualityButton.isEnabled = hasAlternateQualities
+        holder.qualityButton.alpha = if (hasAlternateQualities) 1f else 0.45f
+        holder.qualityText.text = if (hasAlternateQualities) "Auto" else "HD"
+
+        val canDelete = repo.ownerToken(reel.id) != null
+        holder.deleteButton.visibility = if (canDelete) android.view.View.VISIBLE else android.view.View.GONE
+        holder.deleteText.visibility = if (canDelete) android.view.View.VISIBLE else android.view.View.GONE
+
         holder.likeButton.setImageResource(
-            if (repo.isLiked(reel.id)) android.R.drawable.btn_star_big_on
-            else android.R.drawable.btn_star_big_off
+            if (repo.isLiked(reel.id)) R.drawable.ic_reel_like_filled
+            else R.drawable.ic_reel_like_outline
         )
 
         val player = ExoPlayer.Builder(holder.itemView.context).build()
@@ -107,7 +118,7 @@ class ReelsAdapter(
                 Toast.makeText(holder.itemView.context, "Already liked", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            holder.likeButton.setImageResource(android.R.drawable.btn_star_big_on)
+            holder.likeButton.setImageResource(R.drawable.ic_reel_like_filled)
             scope.launch(Dispatchers.Main) {
                 repo.like(reel.id).onSuccess { result ->
                     repo.markLiked(reel.id)
@@ -116,7 +127,7 @@ class ReelsAdapter(
                         holder.likeCount.text = reel.likes.toString()
                     }
                 }.onFailure {
-                    holder.likeButton.setImageResource(android.R.drawable.btn_star_big_off)
+                    holder.likeButton.setImageResource(R.drawable.ic_reel_like_outline)
                 }
             }
         }
@@ -141,7 +152,7 @@ class ReelsAdapter(
 
         holder.qualityButton.setOnClickListener {
             val qualities = reel.qualities
-            if (qualities != null && qualities.isNotEmpty()) {
+            if (!qualities.isNullOrEmpty()) {
                 val labels = qualities.keys.toTypedArray()
                 android.app.AlertDialog.Builder(holder.itemView.context)
                     .setTitle("Select Quality")
@@ -182,7 +193,7 @@ class ReelsAdapter(
         if (player.isPlaying) {
             player.pause()
             holder.isPaused = true
-            holder.playPauseIcon.setImageResource(android.R.drawable.ic_media_play)
+            holder.playPauseIcon.setImageResource(R.drawable.ic_reel_play)
             holder.playPauseIcon.visibility = android.view.View.VISIBLE
             holder.playPauseIcon.alpha = 1f
             mainHandler.postDelayed({
@@ -191,7 +202,7 @@ class ReelsAdapter(
         } else {
             player.play()
             holder.isPaused = false
-            holder.playPauseIcon.setImageResource(android.R.drawable.ic_media_pause)
+            holder.playPauseIcon.setImageResource(R.drawable.ic_reel_pause)
             holder.playPauseIcon.visibility = android.view.View.VISIBLE
             holder.playPauseIcon.alpha = 1f
             mainHandler.postDelayed({
