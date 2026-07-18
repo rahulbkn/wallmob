@@ -18,13 +18,31 @@ export function normalizeUserId(raw: unknown): string | null {
   return id;
 }
 
-export function requireLoggedUser(req: Request): string {
-  const userId = normalizeUserId(
+export function userIdFromRequest(req: Request): string | null {
+  return normalizeUserId(
     req.headers["x-user-id"] ??
     req.headers["x-user-email"] ??
+    req.query?.userId ??
     req.body?.userId ??
     req.body?.userEmail
   );
+}
+
+export function requireLoggedUser(req: Request): string {
+  const userId = userIdFromRequest(req);
   if (!userId) throw new UnauthorizedError();
   return userId;
 }
+
+export function parseAdminUserIds(raw?: string): Set<string> {
+  return new Set((raw || "").split(",").map((id) => normalizeUserId(id)?.toLowerCase()).filter(Boolean) as string[]);
+}
+
+export function requireAdminUser(req: Request, adminUserIds: Set<string>): string {
+  const userId = requireLoggedUser(req);
+  if (adminUserIds.size === 0 || !adminUserIds.has(userId.toLowerCase())) {
+    throw new UnauthorizedError("Admin access is required");
+  }
+  return userId;
+}
+

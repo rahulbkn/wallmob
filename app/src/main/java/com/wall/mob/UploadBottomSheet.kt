@@ -108,8 +108,8 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
         }
 
         val repo = repo() ?: return
-        if (repo.loggedUserId() == null) {
-            Toast.makeText(context, "Please log in to upload reels", Toast.LENGTH_SHORT).show()
+        if (!repo.isAdminUser()) {
+            Toast.makeText(context, "Admin access is required to upload reels", Toast.LENGTH_SHORT).show()
             return
         }
 

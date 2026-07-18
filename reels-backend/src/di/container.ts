@@ -23,6 +23,7 @@ import { StreamController } from "../controllers/StreamController";
 import { HlsController } from "../controllers/HlsController";
 import { ChunkedUploadController } from "../controllers/ChunkedUploadController";
 import { TranscodeController } from "../controllers/TranscodeController";
+import { parseAdminUserIds } from "../utils/auth";
 
 export interface AppContainer {
   storage: StorageProvider;
@@ -36,6 +37,7 @@ export interface AppContainer {
   hlsController: HlsController;
   chunkedUploadController: ChunkedUploadController;
   transcodeController: TranscodeController;
+  adminUserIds: Set<string>;
 }
 
 /**
@@ -49,6 +51,7 @@ export function buildContainer(env: Env & { DB?: D1Database; KV?: KVNamespace })
   const comments: CommentRepository = env.DB ? new D1CommentRepository(env.DB) : new InMemoryCommentRepository();
   const cache: CacheStore = new InMemoryCacheStore();
   const interactions = new DeviceInteractionStore(env.KV || null, cache);
+  const adminUserIds = parseAdminUserIds(env.ADMIN_USER_IDS);
 
   const uploadService = new VideoUploadService(storage, videos, env.TRANSCODER_URL, env.TRANSCODER_SECRET, env.OWNER_TOKEN_SECRET);
   const feedService = new VideoFeedService(storage, videos, cache, interactions);
@@ -66,6 +69,7 @@ export function buildContainer(env: Env & { DB?: D1Database; KV?: KVNamespace })
     streamController: new StreamController(storage),
     hlsController: new HlsController(videos),
     chunkedUploadController: new ChunkedUploadController(uploadService, env.KV || null),
-    transcodeController: new TranscodeController(uploadService, env.TRANSCODER_SECRET || "")
+    transcodeController: new TranscodeController(uploadService, env.TRANSCODER_SECRET || ""),
+    adminUserIds
   };
 }

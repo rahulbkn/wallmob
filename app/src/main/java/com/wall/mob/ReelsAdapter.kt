@@ -131,14 +131,14 @@ class ReelsAdapter(
                     holder.likeCount.text = reel.likes.toString()
                 }.onFailure {
                     holder.likeButton.setImageResource(if (wasLiked) R.drawable.ic_reel_like_filled else R.drawable.ic_reel_like_outline)
-                    Toast.makeText(holder.itemView.context, it.message ?: "Please log in to like reels", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(holder.itemView.context, it.message ?: "Admin access is required to like reels", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
         holder.shareButton.setOnClickListener {
-            if (repo.loggedUserId() == null) {
-                Toast.makeText(holder.itemView.context, "Please log in to share reels", Toast.LENGTH_SHORT).show()
+            if (!repo.isAdminUser()) {
+                Toast.makeText(holder.itemView.context, "Admin access is required to share reels", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             if (repo.isShared(reel.id)) {

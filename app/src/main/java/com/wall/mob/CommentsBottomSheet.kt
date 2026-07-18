@@ -98,8 +98,8 @@ class CommentsBottomSheet : BottomSheetDialogFragment() {
     private fun postComment() {
         val id = videoId ?: return
         val repo = repo() ?: return
-        if (repo.loggedUserId() == null) {
-            Toast.makeText(context, "Please log in to comment", Toast.LENGTH_SHORT).show()
+        if (!repo.isAdminUser()) {
+            Toast.makeText(context, "Admin access is required to comment", Toast.LENGTH_SHORT).show()
             return
         }
         val author = authorInput?.text?.toString()?.trim() ?: return

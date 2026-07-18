@@ -23,7 +23,8 @@
   "vars": {
     "STORAGE_PROVIDER": "telegram",
     "PUBLIC_BASE_URL": "https://reels-backend.rahulkumarbknv.workers.dev",
-    "TRANSCODER_URL": "https://web-based-ipl-team-prediction-4ak8.onrender.com/transcode"
+    "TRANSCODER_URL": "https://web-based-ipl-team-prediction-4ak8.onrender.com/transcode",
+    "ADMIN_USER_IDS": "rahulkumarbknv@gmail.com"
     // TRANSCODER_SECRET and OWNER_TOKEN_SECRET set via `wrangler secret put`
   }
 }

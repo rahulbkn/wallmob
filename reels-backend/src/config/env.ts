@@ -29,6 +29,7 @@ export interface Env {
   TRANSCODER_URL?: string;
   TRANSCODER_SECRET?: string;
   OWNER_TOKEN_SECRET?: string;
+  ADMIN_USER_IDS?: string;
 
   DB?: import("@cloudflare/workers-types").D1Database;
 }
@@ -63,6 +64,7 @@ export function readEnv(bindings: Record<string, string | undefined>): Env {
 
     TRANSCODER_URL: bindings.TRANSCODER_URL,
     TRANSCODER_SECRET: bindings.TRANSCODER_SECRET,
-    OWNER_TOKEN_SECRET: bindings.OWNER_TOKEN_SECRET
+    OWNER_TOKEN_SECRET: bindings.OWNER_TOKEN_SECRET,
+    ADMIN_USER_IDS: bindings.ADMIN_USER_IDS
   };
 }

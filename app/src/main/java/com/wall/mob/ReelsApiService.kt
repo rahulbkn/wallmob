@@ -16,6 +16,7 @@ interface ReelsApiService {
     // GET /api/videos?page=&perPage=&category=&uploader=
     @GET("api/videos")
     suspend fun getFeed(
+        @Header("X-User-Id") userId: String,
         @Query("page") page: Int = 1,
         @Query("perPage") perPage: Int = 10,
         @Query("category") category: String? = null,
@@ -24,7 +25,10 @@ interface ReelsApiService {
 
     // GET /api/videos/:id
     @GET("api/videos/{id}")
-    suspend fun getVideo(@Path("id") id: String): Response<ApiEnvelope<ReelVideo>>
+    suspend fun getVideo(
+        @Path("id") id: String,
+        @Header("X-User-Id") userId: String
+    ): Response<ApiEnvelope<ReelVideo>>
 
     // POST /api/videos/:id/view
     @POST("api/videos/{id}/view")
@@ -63,6 +67,7 @@ interface ReelsApiService {
     @GET("api/videos/{id}/comments")
     suspend fun getComments(
         @Path("id") id: String,
+        @Header("X-User-Id") userId: String,
         @Query("page") page: Int = 1,
         @Query("perPage") perPage: Int = 20
     ): Response<CommentsResponse>

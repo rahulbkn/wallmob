@@ -12,6 +12,8 @@ import java.util.UUID
 
 class ReelsRepository(context: Context) {
 
+    private val adminUserIds = setOf("rahulkumarbknv@gmail.com")
+
     private val api = RetrofitClient.api
     private val appContext = context.applicationContext
     private val sessionManager = SessionManager(appContext)
@@ -66,18 +68,18 @@ class ReelsRepository(context: Context) {
 
     suspend fun getFeed(page: Int = 1, perPage: Int = 10, category: String? = null): Result<FeedResponse> =
         runCatching {
-            val resp = api.getFeed(page, perPage, category)
+            val resp = api.getFeed(requireAdminUserId(), page, perPage, category)
             if (!resp.isSuccessful) error("Feed request failed: ${resp.code()}")
             resp.body() ?: error("Empty feed response")
         }
 
     suspend fun getVideo(id: String): Result<ReelVideo> = runCatching {
-        val resp = api.getVideo(id)
+        val resp = api.getVideo(id, requireAdminUserId())
         resp.body()?.data ?: error("Video not found")
     }
 
     suspend fun recordView(id: String) {
-        val userId = loggedUserId() ?: return
+        val userId = if (isAdminUser()) loggedUserId() ?: return else return
         runCatching { api.recordView(id, userId) }
     }
 
@@ -86,7 +88,15 @@ class ReelsRepository(context: Context) {
         return sessionManager.email?.takeIf { it.isNotBlank() }
     }
 
-    fun requireLoggedUserId(): String = loggedUserId() ?: error("Please log in to continue")
+    fun isAdminUser(): Boolean = loggedUserId()?.lowercase() in adminUserIds
+
+    fun requireAdminUserId(): String {
+        val userId = loggedUserId() ?: error("Please log in to continue")
+        if (userId.lowercase() !in adminUserIds) error("Admin access is required")
+        return userId
+    }
+
+    fun requireLoggedUserId(): String = requireAdminUserId()
 
     suspend fun like(id: String): Result<CountedResponse> = runCatching {
         val userId = requireLoggedUserId()
@@ -108,7 +118,7 @@ class ReelsRepository(context: Context) {
     }
 
     suspend fun getComments(id: String, page: Int = 1, perPage: Int = 20): Result<CommentsResponse> =
-        runCatching { api.getComments(id, page, perPage).body() ?: error("No comments response") }
+        runCatching { api.getComments(id, requireAdminUserId(), page, perPage).body() ?: error("No comments response") }
 
     suspend fun addComment(id: String, author: String, text: String): Result<Comment> = runCatching {
         val userId = requireLoggedUserId()
