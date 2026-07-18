@@ -2,7 +2,8 @@ import type { CommentRepository } from "../repositories/CommentRepository";
 import type { VideoRepository } from "../repositories/VideoRepository";
 import type { Comment } from "../types/comment";
 import { BadRequestError, ConflictError, NotFoundError } from "../utils/errors";
-import { DeviceInteractionStore, normalizeDeviceId } from "../utils/deviceInteractions";
+import { DeviceInteractionStore } from "../utils/deviceInteractions";
+import { normalizeUserId } from "../utils/auth";
 
 const MAX_COMMENT_LENGTH = 2000;
 const MAX_AUTHOR_LENGTH = 80;
@@ -20,8 +21,8 @@ export class CommentService {
     text: string | undefined,
     deviceIdRaw?: unknown
   ): Promise<Comment> {
-    const deviceId = normalizeDeviceId(deviceIdRaw);
-    if (!deviceId) throw new BadRequestError("deviceId is required");
+    const deviceId = normalizeUserId(deviceIdRaw);
+    if (!deviceId) throw new BadRequestError("logged user is required");
 
     const video = await this.videos.getById(videoId);
     if (!video) throw new NotFoundError(`Video "${videoId}" not found`);

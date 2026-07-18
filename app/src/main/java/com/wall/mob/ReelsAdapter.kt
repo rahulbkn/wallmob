@@ -46,6 +46,7 @@ class ReelsAdapter(
     private val activePlayers = mutableListOf<ExoPlayer>()
     private val mainHandler = Handler(Looper.getMainLooper())
     private var recyclerView: RecyclerView? = null
+    private var activePosition: Int = 0
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -76,22 +77,33 @@ class ReelsAdapter(
         holder.playPauseIcon.visibility = android.view.View.GONE
 
         holder.uploaderHandle.text = "@${reel.uploader}"
-        holder.reelTitle.text = reel.title
-        holder.reelDescription.text = reel.description.orEmpty()
+        holder.reelTitle.text = reel.title.ifBlank { "Untitled reel" }
+        val description = reel.description.orEmpty().trim()
+        holder.reelDescription.text = description
+        holder.reelDescription.visibility = if (description.isBlank()) android.view.View.GONE else android.view.View.VISIBLE
         holder.likeCount.text = reel.likes.toString()
         holder.commentCount.text = reel.comments.toString()
         holder.shareCount.text = reel.shares.toString()
 
+        val hasAlternateQualities = !reel.qualities.isNullOrEmpty()
+        holder.qualityButton.isEnabled = hasAlternateQualities
+        holder.qualityButton.alpha = if (hasAlternateQualities) 1f else 0.45f
+        holder.qualityText.text = if (hasAlternateQualities) "Auto" else "HD"
+
+        val canDelete = repo.ownerToken(reel.id) != null
+        holder.deleteButton.visibility = if (canDelete) android.view.View.VISIBLE else android.view.View.GONE
+        holder.deleteText.visibility = if (canDelete) android.view.View.VISIBLE else android.view.View.GONE
+
         holder.likeButton.setImageResource(
-            if (repo.isLiked(reel.id)) android.R.drawable.btn_star_big_on
-            else android.R.drawable.btn_star_big_off
+            if (repo.isLiked(reel.id)) R.drawable.ic_reel_like_filled
+            else R.drawable.ic_reel_like_outline
         )
 
         val player = ExoPlayer.Builder(holder.itemView.context).build()
         player.setMediaItem(MediaItem.fromUri(reel.videoUrl))
         player.repeatMode = ExoPlayer.REPEAT_MODE_ONE
         player.prepare()
-        player.play()
+        player.playWhenReady = position == activePosition
         holder.playerView.player = player
         holder.player = player
         activePlayers.add(player)
@@ -103,25 +115,32 @@ class ReelsAdapter(
         scope.launch { repo.recordView(reel.id) }
 
         holder.likeButton.setOnClickListener {
-            if (repo.isLiked(reel.id)) {
-                Toast.makeText(holder.itemView.context, "Already liked", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            holder.likeButton.setImageResource(android.R.drawable.btn_star_big_on)
+            val wasLiked = repo.isLiked(reel.id)
+            holder.likeButton.setImageResource(if (wasLiked) R.drawable.ic_reel_like_outline else R.drawable.ic_reel_like_filled)
             scope.launch(Dispatchers.Main) {
                 repo.like(reel.id).onSuccess { result ->
-                    repo.markLiked(reel.id)
-                    if (result.counted) {
-                        reel.likes += 1
-                        holder.likeCount.text = reel.likes.toString()
+                    val liked = result.liked ?: !wasLiked
+                    if (liked) {
+                        repo.markLiked(reel.id)
+                        if (!wasLiked) reel.likes += 1
+                    } else {
+                        repo.unmarkLiked(reel.id)
+                        if (wasLiked) reel.likes = maxOf(0, reel.likes - 1)
                     }
+                    holder.likeButton.setImageResource(if (liked) R.drawable.ic_reel_like_filled else R.drawable.ic_reel_like_outline)
+                    holder.likeCount.text = reel.likes.toString()
                 }.onFailure {
-                    holder.likeButton.setImageResource(android.R.drawable.btn_star_big_off)
+                    holder.likeButton.setImageResource(if (wasLiked) R.drawable.ic_reel_like_filled else R.drawable.ic_reel_like_outline)
+                    Toast.makeText(holder.itemView.context, it.message ?: "Please log in to like reels", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
         holder.shareButton.setOnClickListener {
+            if (repo.loggedUserId() == null) {
+                Toast.makeText(holder.itemView.context, "Please log in to share reels", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             if (repo.isShared(reel.id)) {
                 Toast.makeText(holder.itemView.context, "Already shared", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -141,7 +160,7 @@ class ReelsAdapter(
 
         holder.qualityButton.setOnClickListener {
             val qualities = reel.qualities
-            if (qualities != null && qualities.isNotEmpty()) {
+            if (!qualities.isNullOrEmpty()) {
                 val labels = qualities.keys.toTypedArray()
                 android.app.AlertDialog.Builder(holder.itemView.context)
                     .setTitle("Select Quality")
@@ -182,7 +201,7 @@ class ReelsAdapter(
         if (player.isPlaying) {
             player.pause()
             holder.isPaused = true
-            holder.playPauseIcon.setImageResource(android.R.drawable.ic_media_play)
+            holder.playPauseIcon.setImageResource(R.drawable.ic_reel_play)
             holder.playPauseIcon.visibility = android.view.View.VISIBLE
             holder.playPauseIcon.alpha = 1f
             mainHandler.postDelayed({
@@ -191,7 +210,7 @@ class ReelsAdapter(
         } else {
             player.play()
             holder.isPaused = false
-            holder.playPauseIcon.setImageResource(android.R.drawable.ic_media_pause)
+            holder.playPauseIcon.setImageResource(R.drawable.ic_reel_pause)
             holder.playPauseIcon.visibility = android.view.View.VISIBLE
             holder.playPauseIcon.alpha = 1f
             mainHandler.postDelayed({
@@ -210,6 +229,7 @@ class ReelsAdapter(
     }
 
     fun setActivePosition(position: Int) {
+        activePosition = position
         val rv = recyclerView ?: return
         for (i in 0 until rv.childCount) {
             val child = rv.getChildAt(i)
@@ -230,9 +250,7 @@ class ReelsAdapter(
     }
 
     fun resumeAll() {
-        for (player in activePlayers.toList()) {
-            if (!player.isPlaying) player.play()
-        }
+        setActivePosition(activePosition)
     }
 
     fun releaseAll() {
@@ -244,8 +262,10 @@ class ReelsAdapter(
 
     fun submitList(newItems: List<ReelVideo>) {
         releaseAll()
+        activePosition = 0
         items.clear()
         items.addAll(newItems)
         notifyDataSetChanged()
+        mainHandler.post { setActivePosition(activePosition) }
     }
 }

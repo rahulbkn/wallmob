@@ -35,6 +35,7 @@ interface ReelsApiService {
     suspend fun likeVideo(
         @Path("id") id: String,
         @Header("X-Device-Id") deviceId: String,
+        @Header("X-User-Id") userId: String,
         @Body body: InteractionRequest
     ): Response<CountedResponse>
 
@@ -43,6 +44,7 @@ interface ReelsApiService {
     suspend fun shareVideo(
         @Path("id") id: String,
         @Header("X-Device-Id") deviceId: String,
+        @Header("X-User-Id") userId: String,
         @Body body: InteractionRequest
     ): Response<CountedResponse>
 
@@ -66,6 +68,7 @@ interface ReelsApiService {
     suspend fun addComment(
         @Path("id") id: String,
         @Header("X-Device-Id") deviceId: String,
+        @Header("X-User-Id") userId: String,
         @Body body: AddCommentRequest
     ): Response<ApiEnvelope<Comment>>
 
@@ -73,6 +76,7 @@ interface ReelsApiService {
     @Multipart
     @POST("api/videos")
     suspend fun uploadVideo(
+        @Header("X-User-Id") userId: String,
         @Part video: MultipartBody.Part,
         @Part thumbnail: MultipartBody.Part? = null,
         @Part("title") title: RequestBody,

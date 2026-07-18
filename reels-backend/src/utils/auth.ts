@@ -1,0 +1,29 @@
+import type { Request } from "express";
+import { AppError } from "./errors";
+
+const USER_ID_MAX = 160;
+
+export class UnauthorizedError extends AppError {
+  constructor(message = "Login is required") {
+    super(message, 401, "UNAUTHORIZED");
+  }
+}
+
+export function normalizeUserId(raw: unknown): string | null {
+  if (typeof raw !== "string") return null;
+  const id = raw.trim().slice(0, USER_ID_MAX);
+  if (!id) return null;
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(id) && !/^[A-Za-z0-9._:@-]{3,160}$/.test(id)) return null;
+  return id;
+}
+
+export function requireLoggedUser(req: Request): string {
+  const userId = normalizeUserId(
+    req.headers["x-user-id"] ??
+    req.headers["x-user-email"] ??
+    req.body?.userId ??
+    req.body?.userEmail
+  );
+  if (!userId) throw new UnauthorizedError();
+  return userId;
+}

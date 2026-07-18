@@ -13,8 +13,10 @@ import java.util.UUID
 class ReelsRepository(context: Context) {
 
     private val api = RetrofitClient.api
+    private val appContext = context.applicationContext
+    private val sessionManager = SessionManager(appContext)
     private val prefs: SharedPreferences =
-        context.getSharedPreferences("reels_prefs", Context.MODE_PRIVATE)
+        appContext.getSharedPreferences("reels_prefs", Context.MODE_PRIVATE)
 
     fun deviceId(): String {
         prefs.getString("device_id", null)?.let { return it }
@@ -37,6 +39,12 @@ class ReelsRepository(context: Context) {
     fun markLiked(videoId: String) {
         val set = (prefs.getStringSet("liked_ids", mutableSetOf()) ?: mutableSetOf()).toMutableSet()
         set.add(videoId)
+        prefs.edit().putStringSet("liked_ids", set).apply()
+    }
+
+    fun unmarkLiked(videoId: String) {
+        val set = (prefs.getStringSet("liked_ids", mutableSetOf()) ?: mutableSetOf()).toMutableSet()
+        set.remove(videoId)
         prefs.edit().putStringSet("liked_ids", set).apply()
     }
 
@@ -72,14 +80,23 @@ class ReelsRepository(context: Context) {
         runCatching { api.recordView(id) }
     }
 
+    fun loggedUserId(): String? {
+        if (!sessionManager.isLoggedIn || sessionManager.isGuest) return null
+        return sessionManager.email?.takeIf { it.isNotBlank() }
+    }
+
+    fun requireLoggedUserId(): String = loggedUserId() ?: error("Please log in to continue")
+
     suspend fun like(id: String): Result<CountedResponse> = runCatching {
-        val body = InteractionRequest(deviceId())
-        api.likeVideo(id, deviceId(), body).body() ?: error("Like failed")
+        val userId = requireLoggedUserId()
+        val body = InteractionRequest(deviceId(), userId)
+        api.likeVideo(id, deviceId(), userId, body).body() ?: error("Like failed")
     }
 
     suspend fun share(id: String): Result<CountedResponse> = runCatching {
-        val body = InteractionRequest(deviceId())
-        api.shareVideo(id, deviceId(), body).body() ?: error("Share failed")
+        val userId = requireLoggedUserId()
+        val body = InteractionRequest(deviceId(), userId)
+        api.shareVideo(id, deviceId(), userId, body).body() ?: error("Share failed")
     }
 
     suspend fun delete(id: String): Result<Unit> = runCatching {
@@ -92,8 +109,9 @@ class ReelsRepository(context: Context) {
         runCatching { api.getComments(id, page, perPage).body() ?: error("No comments response") }
 
     suspend fun addComment(id: String, author: String, text: String): Result<Comment> = runCatching {
-        val body = AddCommentRequest(author, text, deviceId())
-        api.addComment(id, deviceId(), body).body()?.data ?: error("Comment failed")
+        val userId = requireLoggedUserId()
+        val body = AddCommentRequest(author, text, deviceId(), userId)
+        api.addComment(id, deviceId(), userId, body).body()?.data ?: error("Comment failed")
     }
 
     suspend fun uploadVideo(
@@ -110,7 +128,9 @@ class ReelsRepository(context: Context) {
         )
         fun text(v: String) = v.toRequestBody("text/plain".toMediaTypeOrNull())
 
+        val userId = requireLoggedUserId()
         val resp = api.uploadVideo(
+            userId = userId,
             video = videoPart,
             thumbnail = null,
             title = text(title),

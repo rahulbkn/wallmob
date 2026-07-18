@@ -3,6 +3,7 @@ import type { ExecutionContext, KVNamespace } from "@cloudflare/workers-types";
 import crypto from "crypto";
 import { VideoUploadService } from "../services/VideoUploadService";
 import { BadRequestError } from "../utils/errors";
+import { requireLoggedUser } from "../utils/auth";
 
 const REASSEMBLY_CONCURRENCY = 8;
 
@@ -22,6 +23,7 @@ export class ChunkedUploadController {
 
   initUpload = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const userId = requireLoggedUser(req);
       await this.checkRateLimit(req.ip || "unknown");
       const { title, description, uploader, category, hashtags, fileName, fileSize, mimeType, totalChunks } = req.body;
       if (!title?.trim()) throw new BadRequestError("title is required");
@@ -38,7 +40,8 @@ export class ChunkedUploadController {
         await this.kv.put(`upload:${uploadId}:meta`, JSON.stringify({
           title: title.trim(),
           description: description?.trim(),
-          uploader: uploader.trim(),
+          uploader: (uploader?.trim() || userId),
+          userId,
           category: category.trim(),
           hashtags: tags,
           fileName: fileName || "",
@@ -56,6 +59,7 @@ export class ChunkedUploadController {
 
   uploadChunk = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      requireLoggedUser(req);
       const uploadId = req.query.uploadId as string;
       const chunkIndex = req.query.index as string;
       if (!uploadId || chunkIndex === undefined) throw new BadRequestError("Missing uploadId or index query param");
@@ -110,6 +114,7 @@ export class ChunkedUploadController {
 
   completeUpload = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const userId = requireLoggedUser(req);
       const { uploadId } = req.body;
       if (!uploadId) throw new BadRequestError("Missing uploadId");
       if (!this.kv) throw new BadRequestError("KV namespace not available");
@@ -118,7 +123,8 @@ export class ChunkedUploadController {
       if (!metaStr) throw new BadRequestError("Upload session not found or expired");
       const meta = JSON.parse(metaStr);
 
-      const { title, description, uploader, category, hashtags, mimeType, totalChunks, fileName } = meta;
+      const { title, description, uploader, category, hashtags, mimeType, totalChunks, fileName, userId: uploadUserId } = meta;
+      if (uploadUserId && uploadUserId !== userId) throw new BadRequestError("Upload session belongs to a different user");
 
       // Fetch chunks in bounded-concurrency batches instead of one at a
       // time — this was previously a serial `for` loop awaiting each KV

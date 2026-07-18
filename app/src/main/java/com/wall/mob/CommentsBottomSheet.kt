@@ -46,6 +46,10 @@ class CommentsBottomSheet : BottomSheetDialogFragment() {
         noCommentsText = view.findViewById(R.id.noCommentsText)
         authorInput = view.findViewById(R.id.commentAuthorInput)
         textInput = view.findViewById(R.id.commentTextInput)
+        repo()?.loggedUserId()?.let { userId ->
+            authorInput?.setText(userId)
+            authorInput?.isEnabled = false
+        }
         submitButton = view.findViewById(R.id.commentSubmitButton)
 
         view.findViewById<ImageButton>(R.id.closeCommentsButton).setOnClickListener {
@@ -94,6 +98,10 @@ class CommentsBottomSheet : BottomSheetDialogFragment() {
     private fun postComment() {
         val id = videoId ?: return
         val repo = repo() ?: return
+        if (repo.loggedUserId() == null) {
+            Toast.makeText(context, "Please log in to comment", Toast.LENGTH_SHORT).show()
+            return
+        }
         val author = authorInput?.text?.toString()?.trim() ?: return
         val text = textInput?.text?.toString()?.trim() ?: return
 
