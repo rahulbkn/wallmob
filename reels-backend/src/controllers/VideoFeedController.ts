@@ -30,6 +30,7 @@ export class VideoFeedController {
 
   recordView = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      requireLoggedUser(req);
       await this.feedService.recordView(req.params.id as string);
       res.json({ success: true });
     } catch (error) {

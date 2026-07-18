@@ -13,6 +13,7 @@ export function normalizeUserId(raw: unknown): string | null {
   if (typeof raw !== "string") return null;
   const id = raw.trim().slice(0, USER_ID_MAX);
   if (!id) return null;
+  if (["unknown", "anonymous", "guest"].includes(id.toLowerCase())) return null;
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(id) && !/^[A-Za-z0-9._:@-]{3,160}$/.test(id)) return null;
   return id;
 }

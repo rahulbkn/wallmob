@@ -77,7 +77,8 @@ class ReelsRepository(context: Context) {
     }
 
     suspend fun recordView(id: String) {
-        runCatching { api.recordView(id) }
+        val userId = loggedUserId() ?: return
+        runCatching { api.recordView(id, userId) }
     }
 
     fun loggedUserId(): String? {
@@ -100,8 +101,9 @@ class ReelsRepository(context: Context) {
     }
 
     suspend fun delete(id: String): Result<Unit> = runCatching {
+        val userId = requireLoggedUserId()
         val token = ownerToken(id) ?: error("No owner token for this device")
-        val resp = api.deleteVideo(id, token)
+        val resp = api.deleteVideo(id, userId, token)
         if (!resp.isSuccessful) error("Delete failed: ${resp.code()}")
     }
 

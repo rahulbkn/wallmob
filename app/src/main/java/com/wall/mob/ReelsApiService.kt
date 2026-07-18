@@ -28,7 +28,10 @@ interface ReelsApiService {
 
     // POST /api/videos/:id/view
     @POST("api/videos/{id}/view")
-    suspend fun recordView(@Path("id") id: String): Response<SimpleSuccess>
+    suspend fun recordView(
+        @Path("id") id: String,
+        @Header("X-User-Id") userId: String
+    ): Response<SimpleSuccess>
 
     // POST /api/videos/:id/like  (body + X-Device-Id header, backend accepts either)
     @POST("api/videos/{id}/like")
@@ -52,6 +55,7 @@ interface ReelsApiService {
     @DELETE("api/videos/{id}")
     suspend fun deleteVideo(
         @Path("id") id: String,
+        @Header("X-User-Id") userId: String,
         @Query("ownerToken") ownerToken: String
     ): Response<SimpleSuccess>
 
