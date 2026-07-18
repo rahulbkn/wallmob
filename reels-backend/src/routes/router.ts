@@ -1,9 +1,20 @@
 import { Router, Request, Response } from "express";
 import type { AppContainer } from "../di/container";
 import { uploadMiddleware } from "../utils/upload";
+import { requireAdminUser } from "../utils/auth";
 
 export function buildRouter(container: AppContainer): Router {
   const router = Router();
+  const adminOnly = (req: Request, _res: Response, next: (error?: unknown) => void) => {
+    try {
+      requireAdminUser(req, container.adminUserIds);
+      next();
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  router.use("/api/videos", adminOnly);
 
   // --- Videos: upload, feed, detail, interactions, delete -----------------
   router.post("/api/videos", uploadMiddleware, container.videoUploadController.handle);

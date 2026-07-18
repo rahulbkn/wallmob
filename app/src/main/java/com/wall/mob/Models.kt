@@ -81,7 +81,8 @@ data class CommentsResponse(
 data class CountedResponse(
     val success: Boolean,
     val counted: Boolean = false,
-    val alreadyCounted: Boolean = false
+    val alreadyCounted: Boolean = false,
+    val liked: Boolean? = null
 )
 
 data class SimpleSuccess(val success: Boolean)
@@ -89,11 +90,13 @@ data class SimpleSuccess(val success: Boolean)
 data class AddCommentRequest(
     val author: String,
     val text: String,
-    val deviceId: String
+    val deviceId: String,
+    val userId: String
 )
 
 data class InteractionRequest(
-    val deviceId: String
+    val deviceId: String,
+    val userId: String
 )
 
 data class HealthResponse(

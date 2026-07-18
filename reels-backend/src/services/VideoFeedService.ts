@@ -3,7 +3,8 @@ import type { VideoRepository } from "../repositories/VideoRepository";
 import type { ClientVideoView, VideoMetadata } from "../types/video";
 import { BadRequestError, NotFoundError } from "../utils/errors";
 import type { CacheStore } from "../utils/cache";
-import { DeviceInteractionStore, normalizeDeviceId } from "../utils/deviceInteractions";
+import { DeviceInteractionStore } from "../utils/deviceInteractions";
+import { normalizeUserId } from "../utils/auth";
 
 const URL_CACHE_TTL_SECONDS = 300;
 
@@ -41,24 +42,28 @@ export class VideoFeedService {
    * One like per device per video (deviceId from client, same idea as ownerToken).
    * Returns whether the global counter was incremented.
    */
-  async like(id: string, deviceIdRaw: unknown): Promise<{ counted: boolean }> {
-    const deviceId = normalizeDeviceId(deviceIdRaw);
-    if (!deviceId) throw new BadRequestError("deviceId is required");
+  async like(id: string, userIdRaw: unknown): Promise<{ counted: boolean; liked: boolean }> {
+    const userId = normalizeUserId(userIdRaw);
+    if (!userId) throw new BadRequestError("logged user is required");
 
     const record = await this.videos.getById(id);
     if (!record) throw new NotFoundError(`Video "${id}" not found`);
 
-    const claimed = await this.interactions.claim("like", id, deviceId);
-    if (!claimed) return { counted: false };
+    const claimed = await this.interactions.claim("like", id, userId);
+    if (claimed) {
+      await this.videos.incrementCounter(id, "likes");
+      return { counted: true, liked: true };
+    }
 
-    await this.videos.incrementCounter(id, "likes");
-    return { counted: true };
+    const released = await this.interactions.release("like", id, userId);
+    if (released) await this.videos.incrementCounter(id, "likes", -1);
+    return { counted: released, liked: false };
   }
 
-  /** One share count per device per video. */
-  async share(id: string, deviceIdRaw: unknown): Promise<{ counted: boolean }> {
-    const deviceId = normalizeDeviceId(deviceIdRaw);
-    if (!deviceId) throw new BadRequestError("deviceId is required");
+  /** One share count per logged user per video. */
+  async share(id: string, userIdRaw: unknown): Promise<{ counted: boolean }> {
+    const deviceId = normalizeUserId(userIdRaw);
+    if (!deviceId) throw new BadRequestError("logged user is required");
 
     const record = await this.videos.getById(id);
     if (!record) throw new NotFoundError(`Video "${id}" not found`);

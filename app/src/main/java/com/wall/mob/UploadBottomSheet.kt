@@ -74,6 +74,11 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         categorySpinner.adapter = adapter
 
+        repo()?.loggedUserId()?.let { userId ->
+            uploaderInput.setText(userId)
+            uploaderInput.isEnabled = false
+        }
+
         submitButton.setOnClickListener {
             uploadReel()
         }
@@ -103,6 +108,10 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
         }
 
         val repo = repo() ?: return
+        if (!repo.isAdminUser()) {
+            Toast.makeText(context, "Admin access is required to upload reels", Toast.LENGTH_SHORT).show()
+            return
+        }
 
         progressContainer.visibility = View.VISIBLE
         submitButton.isEnabled = false

@@ -16,6 +16,7 @@ interface ReelsApiService {
     // GET /api/videos?page=&perPage=&category=&uploader=
     @GET("api/videos")
     suspend fun getFeed(
+        @Header("X-User-Id") userId: String,
         @Query("page") page: Int = 1,
         @Query("perPage") perPage: Int = 10,
         @Query("category") category: String? = null,
@@ -24,17 +25,24 @@ interface ReelsApiService {
 
     // GET /api/videos/:id
     @GET("api/videos/{id}")
-    suspend fun getVideo(@Path("id") id: String): Response<ApiEnvelope<ReelVideo>>
+    suspend fun getVideo(
+        @Path("id") id: String,
+        @Header("X-User-Id") userId: String
+    ): Response<ApiEnvelope<ReelVideo>>
 
     // POST /api/videos/:id/view
     @POST("api/videos/{id}/view")
-    suspend fun recordView(@Path("id") id: String): Response<SimpleSuccess>
+    suspend fun recordView(
+        @Path("id") id: String,
+        @Header("X-User-Id") userId: String
+    ): Response<SimpleSuccess>
 
     // POST /api/videos/:id/like  (body + X-Device-Id header, backend accepts either)
     @POST("api/videos/{id}/like")
     suspend fun likeVideo(
         @Path("id") id: String,
         @Header("X-Device-Id") deviceId: String,
+        @Header("X-User-Id") userId: String,
         @Body body: InteractionRequest
     ): Response<CountedResponse>
 
@@ -43,6 +51,7 @@ interface ReelsApiService {
     suspend fun shareVideo(
         @Path("id") id: String,
         @Header("X-Device-Id") deviceId: String,
+        @Header("X-User-Id") userId: String,
         @Body body: InteractionRequest
     ): Response<CountedResponse>
 
@@ -50,6 +59,7 @@ interface ReelsApiService {
     @DELETE("api/videos/{id}")
     suspend fun deleteVideo(
         @Path("id") id: String,
+        @Header("X-User-Id") userId: String,
         @Query("ownerToken") ownerToken: String
     ): Response<SimpleSuccess>
 
@@ -57,6 +67,7 @@ interface ReelsApiService {
     @GET("api/videos/{id}/comments")
     suspend fun getComments(
         @Path("id") id: String,
+        @Header("X-User-Id") userId: String,
         @Query("page") page: Int = 1,
         @Query("perPage") perPage: Int = 20
     ): Response<CommentsResponse>
@@ -66,6 +77,7 @@ interface ReelsApiService {
     suspend fun addComment(
         @Path("id") id: String,
         @Header("X-Device-Id") deviceId: String,
+        @Header("X-User-Id") userId: String,
         @Body body: AddCommentRequest
     ): Response<ApiEnvelope<Comment>>
 
@@ -73,6 +85,7 @@ interface ReelsApiService {
     @Multipart
     @POST("api/videos")
     suspend fun uploadVideo(
+        @Header("X-User-Id") userId: String,
         @Part video: MultipartBody.Part,
         @Part thumbnail: MultipartBody.Part? = null,
         @Part("title") title: RequestBody,

@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from "express";
 import type { ExecutionContext } from "@cloudflare/workers-types";
 import { VideoUploadService } from "../services/VideoUploadService";
 import { BadRequestError } from "../utils/errors";
+import { requireLoggedUser } from "../utils/auth";
 
 interface MulterFiles {
   video?: Express.Multer.File[];
@@ -13,6 +14,7 @@ export class VideoUploadController {
 
   handle = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      const userId = requireLoggedUser(req);
       const files = req.files as MulterFiles;
       const videoFile = files?.video?.[0];
       if (!videoFile) throw new BadRequestError("No video file provided in 'video' field");
@@ -32,7 +34,7 @@ export class VideoUploadController {
         hashtags,
         category: req.body.category || "",
         language: req.body.language,
-        uploader: req.body.uploader || ""
+        uploader: req.body.uploader || userId
       }, ctx ? (p) => ctx.waitUntil(p) : undefined);
 
       res.status(201).json({ success: true, data: result });

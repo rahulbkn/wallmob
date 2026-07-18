@@ -58,4 +58,20 @@ export class DeviceInteractionStore {
     await this.cache.set(key, "1", INTERACTION_TTL_SECONDS);
     return true;
   }
+
+  async release(kind: InteractionKind, videoId: string, deviceId: string): Promise<boolean> {
+    const key = interactionKey(kind, videoId, deviceId);
+    if (this.kv) {
+      const existing = await this.kv.get(key);
+      if (existing == null) return false;
+      await this.kv.delete(key);
+      return true;
+    }
+
+    const existing = await this.cache.get<string>(key);
+    if (existing == null) return false;
+    await this.cache.delete(key);
+    return true;
+  }
 }
+

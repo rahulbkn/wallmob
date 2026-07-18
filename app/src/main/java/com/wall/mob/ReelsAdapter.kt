@@ -46,6 +46,7 @@ class ReelsAdapter(
     private val activePlayers = mutableListOf<ExoPlayer>()
     private val mainHandler = Handler(Looper.getMainLooper())
     private var recyclerView: RecyclerView? = null
+    private var activePosition: Int = 0
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -102,7 +103,7 @@ class ReelsAdapter(
         player.setMediaItem(MediaItem.fromUri(reel.videoUrl))
         player.repeatMode = ExoPlayer.REPEAT_MODE_ONE
         player.prepare()
-        player.play()
+        player.playWhenReady = position == activePosition
         holder.playerView.player = player
         holder.player = player
         activePlayers.add(player)
@@ -114,25 +115,32 @@ class ReelsAdapter(
         scope.launch { repo.recordView(reel.id) }
 
         holder.likeButton.setOnClickListener {
-            if (repo.isLiked(reel.id)) {
-                Toast.makeText(holder.itemView.context, "Already liked", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            holder.likeButton.setImageResource(R.drawable.ic_reel_like_filled)
+            val wasLiked = repo.isLiked(reel.id)
+            holder.likeButton.setImageResource(if (wasLiked) R.drawable.ic_reel_like_outline else R.drawable.ic_reel_like_filled)
             scope.launch(Dispatchers.Main) {
                 repo.like(reel.id).onSuccess { result ->
-                    repo.markLiked(reel.id)
-                    if (result.counted) {
-                        reel.likes += 1
-                        holder.likeCount.text = reel.likes.toString()
+                    val liked = result.liked ?: !wasLiked
+                    if (liked) {
+                        repo.markLiked(reel.id)
+                        if (!wasLiked) reel.likes += 1
+                    } else {
+                        repo.unmarkLiked(reel.id)
+                        if (wasLiked) reel.likes = maxOf(0, reel.likes - 1)
                     }
+                    holder.likeButton.setImageResource(if (liked) R.drawable.ic_reel_like_filled else R.drawable.ic_reel_like_outline)
+                    holder.likeCount.text = reel.likes.toString()
                 }.onFailure {
-                    holder.likeButton.setImageResource(R.drawable.ic_reel_like_outline)
+                    holder.likeButton.setImageResource(if (wasLiked) R.drawable.ic_reel_like_filled else R.drawable.ic_reel_like_outline)
+                    Toast.makeText(holder.itemView.context, it.message ?: "Admin access is required to like reels", Toast.LENGTH_SHORT).show()
                 }
             }
         }
 
         holder.shareButton.setOnClickListener {
+            if (!repo.isAdminUser()) {
+                Toast.makeText(holder.itemView.context, "Admin access is required to share reels", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             if (repo.isShared(reel.id)) {
                 Toast.makeText(holder.itemView.context, "Already shared", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
@@ -221,6 +229,7 @@ class ReelsAdapter(
     }
 
     fun setActivePosition(position: Int) {
+        activePosition = position
         val rv = recyclerView ?: return
         for (i in 0 until rv.childCount) {
             val child = rv.getChildAt(i)
@@ -241,9 +250,7 @@ class ReelsAdapter(
     }
 
     fun resumeAll() {
-        for (player in activePlayers.toList()) {
-            if (!player.isPlaying) player.play()
-        }
+        setActivePosition(activePosition)
     }
 
     fun releaseAll() {
@@ -255,8 +262,10 @@ class ReelsAdapter(
 
     fun submitList(newItems: List<ReelVideo>) {
         releaseAll()
+        activePosition = 0
         items.clear()
         items.addAll(newItems)
         notifyDataSetChanged()
+        mainHandler.post { setActivePosition(activePosition) }
     }
 }

@@ -35,6 +35,11 @@ class ReelActivity : AppCompatActivity() {
         statusText = findViewById(R.id.statusText)
 
         uploadButton.setOnClickListener {
+            val repo = _repo ?: return@setOnClickListener
+            if (!repo.isAdminUser()) {
+                Toast.makeText(this, "Admin access is required to upload reels", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             UploadBottomSheet.show(supportFragmentManager) { loadFeed() }
         }
 

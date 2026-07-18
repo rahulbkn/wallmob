@@ -25,7 +25,7 @@ export function createApp(env: ConfigEnv & { DB?: D1Database; KV?: KVNamespace }
   app.use((_req: Request, res: Response, next: NextFunction) => {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Device-Id");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type, X-Device-Id, X-User-Id, X-User-Email, Authorization");
     if (_req.method === "OPTIONS") { res.status(204).end(); return; }
     next();
   });

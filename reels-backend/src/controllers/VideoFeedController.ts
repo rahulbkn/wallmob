@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { VideoFeedService } from "../services/VideoFeedService";
+import { requireLoggedUser } from "../utils/auth";
 
 export class VideoFeedController {
   constructor(private readonly feedService: VideoFeedService) {}
@@ -29,6 +30,7 @@ export class VideoFeedController {
 
   recordView = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
+      requireLoggedUser(req);
       await this.feedService.recordView(req.params.id as string);
       res.json({ success: true });
     } catch (error) {
@@ -38,9 +40,9 @@ export class VideoFeedController {
 
   like = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const deviceId = req.body?.deviceId ?? req.headers["x-device-id"];
-      const result = await this.feedService.like(req.params.id as string, deviceId);
-      res.json({ success: true, counted: result.counted, alreadyCounted: !result.counted });
+      const userId = requireLoggedUser(req);
+      const result = await this.feedService.like(req.params.id as string, userId);
+      res.json({ success: true, counted: result.counted, alreadyCounted: false, liked: result.liked });
     } catch (error) {
       next(error);
     }
@@ -48,8 +50,8 @@ export class VideoFeedController {
 
   share = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const deviceId = req.body?.deviceId ?? req.headers["x-device-id"];
-      const result = await this.feedService.share(req.params.id as string, deviceId);
+      const userId = requireLoggedUser(req);
+      const result = await this.feedService.share(req.params.id as string, userId);
       res.json({ success: true, counted: result.counted, alreadyCounted: !result.counted });
     } catch (error) {
       next(error);

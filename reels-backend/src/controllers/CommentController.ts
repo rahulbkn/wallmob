@@ -1,17 +1,18 @@
 import type { Request, Response, NextFunction } from "express";
 import { CommentService } from "../services/CommentService";
+import { requireLoggedUser } from "../utils/auth";
 
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   add = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const deviceId = req.body?.deviceId ?? req.headers["x-device-id"];
+      const userId = requireLoggedUser(req);
       const comment = await this.commentService.add(
         req.params.id as string,
         req.body?.author,
         req.body?.text,
-        deviceId
+        userId
       );
       res.status(201).json({ success: true, data: comment });
     } catch (error) {

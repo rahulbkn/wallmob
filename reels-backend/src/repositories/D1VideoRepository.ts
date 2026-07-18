@@ -227,7 +227,7 @@ export class D1VideoRepository implements VideoRepository {
     const colMap: Record<string, string> = { views: "views", likes: "likes", comments: "comments", shares: "shares" };
     const col = colMap[field];
     if (!col) return;
-    await this.db.prepare(`UPDATE videos SET ${col} = ${col} + ? WHERE id = ?`).bind(by, id).run();
+    await this.db.prepare(`UPDATE videos SET ${col} = MAX(0, ${col} + ?) WHERE id = ?`).bind(by, id).run();
   }
 
   async findByStorageUniqueId(storageUniqueId: string): Promise<VideoMetadata | null> {

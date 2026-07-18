@@ -75,7 +75,7 @@ export class InMemoryVideoRepository implements VideoRepository {
   async incrementCounter(id: string, field: "views" | "likes" | "comments" | "shares", by = 1): Promise<void> {
     const existing = this.store.get(id);
     if (!existing) throw new NotFoundError(`Video "${id}" not found`);
-    existing[field] += by;
+    existing[field] = Math.max(0, existing[field] + by);
   }
 
   async findByStorageUniqueId(storageUniqueId: string): Promise<VideoMetadata | null> {
