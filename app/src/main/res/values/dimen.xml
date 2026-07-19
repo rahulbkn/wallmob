@@ -10,6 +10,6 @@
 
     <!-- Icon size dimensions -->
     <dimen name="icon_size_small">20dp</dimen>
-    <dimen name="icon_size_normal">24dp</dimen>
-    <dimen name="icon_size_large">28dp</dimen>
+    <dimen name="icon_size_normal">26dp</dimen>
+    <dimen name="icon_size_large">30dp</dimen>
 </resources>

@@ -1,8 +1,9 @@
-package com.wall.mob
+package com.wall.mob.reels
 
 import android.content.Context
 import android.content.SharedPreferences
 import com.wall.mob.*
+import kotlinx.coroutines.runBlocking
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -68,18 +69,20 @@ class ReelsRepository(context: Context) {
 
     suspend fun getFeed(page: Int = 1, perPage: Int = 10, category: String? = null): Result<FeedResponse> =
         runCatching {
-            val resp = api.getFeed(requireAdminUserId(), page, perPage, category)
+            val userId = loggedUserId() ?: "unknown"
+            val resp = api.getFeed(userId, page, perPage, category)
             if (!resp.isSuccessful) error("Feed request failed: ${resp.code()}")
             resp.body() ?: error("Empty feed response")
         }
 
     suspend fun getVideo(id: String): Result<ReelVideo> = runCatching {
-        val resp = api.getVideo(id, requireAdminUserId())
+        val userId = loggedUserId() ?: "unknown"
+        val resp = api.getVideo(id, userId)
         resp.body()?.data ?: error("Video not found")
     }
 
     suspend fun recordView(id: String) {
-        val userId = if (isAdminUser()) loggedUserId() ?: return else return
+        val userId = loggedUserId() ?: return
         runCatching { api.recordView(id, userId) }
     }
 
@@ -111,14 +114,17 @@ class ReelsRepository(context: Context) {
     }
 
     suspend fun delete(id: String): Result<Unit> = runCatching {
-        val userId = requireLoggedUserId()
-        val token = ownerToken(id) ?: error("No owner token for this device")
-        val resp = api.deleteVideo(id, userId, token)
+        val userId = loggedUserId() ?: error("Please log in to continue")
+        val token = ownerToken(id)
+        val resp = api.deleteVideo(id, userId, token ?: "")
         if (!resp.isSuccessful) error("Delete failed: ${resp.code()}")
     }
 
     suspend fun getComments(id: String, page: Int = 1, perPage: Int = 20): Result<CommentsResponse> =
-        runCatching { api.getComments(id, requireAdminUserId(), page, perPage).body() ?: error("No comments response") }
+        runCatching {
+            val userId = loggedUserId() ?: "unknown"
+            api.getComments(id, userId, page, perPage).body() ?: error("No comments response")
+        }
 
     suspend fun addComment(id: String, author: String, text: String): Result<Comment> = runCatching {
         val userId = requireLoggedUserId()
@@ -155,5 +161,24 @@ class ReelsRepository(context: Context) {
         val result = resp.body()?.data ?: error("Upload failed: ${resp.code()}")
         saveOwnerToken(result.id, result.ownerToken)
         result
+    }
+
+    /** Blocking wrapper for Java callers. */
+    fun getFeedBlocking(page: Int = 1, perPage: Int = 10, category: String? = null): FeedResponse = runBlocking {
+        getFeed(page, perPage, category).getOrElse { throw it }
+    }
+
+    /** Blocking wrapper for Java callers (e.g. UploadWallpaperActivity). */
+    fun uploadVideoBlocking(
+        file: File,
+        title: String,
+        category: String,
+        uploader: String,
+        description: String? = null,
+        hashtagsCsv: String? = null,
+        language: String? = null
+    ): UploadVideoResult = runBlocking {
+        uploadVideo(file, title, category, uploader, description, hashtagsCsv, language)
+            .getOrElse { throw it }
     }
 }

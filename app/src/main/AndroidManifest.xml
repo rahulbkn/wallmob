@@ -178,12 +178,6 @@
 			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
 			android:exported="false" />
 		
-		<activity
-			android:name=".ReelActivity"
-			android:configChanges="orientation|screenSize|keyboardHidden|smallestScreenSize|screenLayout|uiMode|locale|layoutDirection"
-			android:hardwareAccelerated="true"
-			android:screenOrientation="portrait"
-			android:exported="false" />
 		
 		<!-- Unity Ads SDK Activities -->
 		<activity

@@ -1,7 +1,8 @@
-package com.wall.mob
+package com.wall.mob.reels
 
 import android.content.Context
 import android.net.Uri
+import com.wall.mob.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import java.io.File
 class UploadBottomSheet : BottomSheetDialogFragment() {
 
     private var onUploadSuccess: (() -> Unit)? = null
+    private var _repo: ReelsRepository? = null
     private lateinit var selectedVideoPath: TextView
     private lateinit var titleInput: EditText
     private lateinit var descInput: EditText
@@ -85,8 +87,10 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun repo(): ReelsRepository? {
-        val act = activity as? ReelActivity ?: return null
-        return act.getRepo()
+        if (_repo == null) {
+            _repo = context?.applicationContext?.let { ReelsRepository(it) }
+        }
+        return _repo
     }
 
     private fun uploadReel() {

@@ -15,14 +15,16 @@ export class VideoDeleteService {
     private readonly comments?: CommentRepository
   ) {}
 
-  async delete(id: string, ownerToken?: string): Promise<void> {
+  async delete(id: string, ownerToken?: string, isAdmin = false): Promise<void> {
     const record = await this.videos.getById(id);
     if (!record) throw new NotFoundError(`Video "${id}" not found`);
 
-    const secret = this.ownerTokenSecret || "dev-only-insecure-secret-set-OWNER_TOKEN_SECRET";
-    const expected = crypto.createHmac("sha256", secret).update(id).digest("hex");
-    if (!ownerToken || ownerToken !== expected) {
-      throw new ForbiddenError("Invalid or missing ownerToken");
+    if (!isAdmin) {
+      const secret = this.ownerTokenSecret || "dev-only-insecure-secret-set-OWNER_TOKEN_SECRET";
+      const expected = crypto.createHmac("sha256", secret).update(id).digest("hex");
+      if (!ownerToken || ownerToken !== expected) {
+        throw new ForbiddenError("Invalid or missing ownerToken");
+      }
     }
 
     if (record.thumbnailKey && record.thumbnailKey !== record.storageKey) {

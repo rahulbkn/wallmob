@@ -43,12 +43,48 @@
                 android:padding="20dp"
                 android:paddingTop="12dp">
 
-                <!-- Image picker card -->
+                <!-- Type selector: Image or Video -->
+                <com.google.android.material.button.MaterialButtonToggleGroup
+                    android:id="@+id/uploadTypeToggle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:checkedButton="@+id/typeImageButton"
+                    app:selectionRequired="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/typeImageButton"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:text="@string/upload_type_image"
+                        android:textAllCaps="false"
+                        app:cornerRadius="12dp"
+                        app:icon="@drawable/ic_add_photo"
+                        app:iconGravity="textStart" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/typeVideoButton"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="0dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:text="@string/upload_type_video"
+                        android:textAllCaps="false"
+                        app:cornerRadius="12dp"
+                        app:icon="@drawable/ic_reels_outline"
+                        app:iconGravity="textStart" />
+
+                </com.google.android.material.button.MaterialButtonToggleGroup>
+
+                <!-- Media picker card -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/imagePreviewContainer"
                     android:layout_width="match_parent"
                     android:layout_height="220dp"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="12dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:foreground="?attr/selectableItemBackground"
@@ -57,32 +93,61 @@
                     app:cardElevation="2dp"
                     app:strokeColor="@color/profile_divider"
                     app:strokeWidth="1dp">
-<FrameLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/previewImage"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_attach"
-        android:padding="24dp"
-        app:tint="@color/onSurfaceVariant" />
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/selectImageHint"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
-        android:layout_marginBottom="16dp"
-        android:text="@string/tap_to_select_image"
-        android:textSize="14sp"
-        android:fontFamily="sans-serif-medium"
-        android:textColor="@color/onSurfaceVariant" />
+                        <ImageView
+                            android:id="@+id/previewImage"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:scaleType="centerCrop"
+                            android:visibility="gone"
+                            android:contentDescription="@null" />
 
-</FrameLayout>
+                        <LinearLayout
+                            android:id="@+id/selectImageHint"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center_horizontal"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+
+                            <ImageView
+                                android:id="@+id/selectMediaIcon"
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:src="@drawable/ic_attach"
+                                android:padding="4dp"
+                                app:tint="@color/onSurfaceVariant"
+                                android:contentDescription="@null" />
+
+                            <TextView
+                                android:id="@+id/selectMediaHintText"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:text="@string/tap_to_select_image"
+                                android:textSize="14sp"
+                                android:fontFamily="sans-serif-medium"
+                                android:textColor="@color/onSurfaceVariant" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/selectedFileName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="bottom"
+                            android:background="#99000000"
+                            android:padding="10dp"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp"
+                            android:maxLines="1"
+                            android:ellipsize="middle"
+                            android:visibility="gone" />
+                    </FrameLayout>
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Title field -->
@@ -115,7 +180,7 @@
                     android:id="@+id/categoryInputLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
+                    android:layout_marginBottom="14dp"
                     android:hint="@string/wallpaper_category_hint"
                     app:boxStrokeColor="@color/text_input_box_stroke"
                     app:hintTextColor="@color/onSurfaceVariant"
@@ -127,6 +192,59 @@
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/categoryInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="@color/onSurface"
+                        android:inputType="text"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Description (video mode) -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/descriptionInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="14dp"
+                    android:hint="@string/upload_description_hint"
+                    android:visibility="gone"
+                    app:boxStrokeColor="@color/text_input_box_stroke"
+                    app:hintTextColor="@color/onSurfaceVariant"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/descriptionInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textColor="@color/onSurface"
+                        android:inputType="textMultiLine"
+                        android:minLines="2"
+                        android:maxLines="4" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Hashtags (video mode) -->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/hashtagsInputLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
+                    android:hint="@string/upload_hashtags_hint"
+                    android:visibility="gone"
+                    app:boxStrokeColor="@color/text_input_box_stroke"
+                    app:hintTextColor="@color/onSurfaceVariant"
+                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxCornerRadiusTopEnd="12dp"
+                    app:boxCornerRadiusBottomStart="12dp"
+                    app:boxCornerRadiusBottomEnd="12dp"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/hashtagsInput"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"

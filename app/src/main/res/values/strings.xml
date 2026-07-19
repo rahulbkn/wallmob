@@ -382,11 +382,29 @@
     <string name="section_recent_title">RECENT</string>
     <string name="section_recent_desc">Your recently viewed wallpapers</string>
 
-    <string name="upload_wallpaper">Upload Wallpaper</string>
+    <string name="upload_wallpaper">Upload</string>
     <string name="upload">Upload</string>
     <string name="tap_to_select_image">Tap to select image</string>
-    <string name="wallpaper_title_hint">Wallpaper title</string>
+    <string name="tap_to_select_media">Tap to select image or video</string>
+    <string name="tap_to_select_video">Tap to select video</string>
+    <string name="wallpaper_title_hint">Title</string>
     <string name="wallpaper_category_hint">Category (e.g. Nature, Abstract)</string>
+    <string name="upload_type_image">Image</string>
+    <string name="upload_type_video">Video / Reel</string>
+    <string name="upload_description_hint">Description (optional)</string>
+    <string name="upload_hashtags_hint">Hashtags (optional, comma separated)</string>
+    <string name="checking_api">Checking…</string>
+    <string name="no_reels_yet">No reels yet</string>
+    <string name="no_reels_hint">Be the first to share a reel</string>
+    <string name="upload_reel">Upload Reel</string>
+    <string name="admin_required_upload">Admin access is required to upload reels</string>
+    <string name="section_reels_desc">Short video reels</string>
+    <string name="select_media_first">Please select a file first</string>
+    <string name="video_selected">Video selected</string>
+    <string name="image_selected">Image selected</string>
+    <string name="uploading_video_label">Uploading your reel…</string>
+    <string name="upload_video_success">Reel uploaded successfully!</string>
+    <string name="failed_to_read_video">Failed to read video</string>
     
     <string name="server_unavailable">Server unavailable, please try again later</string>
     <string name="select_image_first">Please select an image first</string>

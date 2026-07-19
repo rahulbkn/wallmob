@@ -1,4 +1,4 @@
-package com.wall.mob
+package com.wall.mob.reels
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,5 +1,6 @@
-package com.wall.mob
+package com.wall.mob.reels
 
+import com.wall.mob.R
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,7 @@ import java.util.Locale
 class CommentsBottomSheet : BottomSheetDialogFragment() {
 
     private var videoId: String? = null
+    private var _repo: ReelsRepository? = null
     private var commentsRecyclerView: RecyclerView? = null
     private var adapter: CommentsAdapter? = null
     private var progressBar: ProgressBar? = null
@@ -68,8 +70,10 @@ class CommentsBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun repo(): ReelsRepository? {
-        val act = activity as? ReelActivity ?: return null
-        return act.getRepo()
+        if (_repo == null) {
+            _repo = context?.applicationContext?.let { ReelsRepository(it) }
+        }
+        return _repo
     }
 
     private fun loadComments() {

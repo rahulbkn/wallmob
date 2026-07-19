@@ -11,6 +11,7 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:windowTranslucentStatus">false</item>
         <item name="android:windowTranslucentNavigation">false</item>
+        <item name="elevationOverlayEnabled">false</item>
 
         <!-- Let Night mode control light/dark system icons; values-night overrides if needed -->
         <item name="android:windowLightStatusBar">true</item>
@@ -100,9 +101,9 @@
     <style name="CustomTextInputLayout"
     parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-    <item name="boxStrokeColor">@color/text_input_stroke</item>
-    <item name="hintTextColor">@color/gray_dark</item>
-    <item name="android:textColorHint">@color/gray_dark</item>
+    <item name="boxStrokeColor">@color/text_input_box_stroke</item>
+    <item name="hintTextColor">@color/onSurfaceVariant</item>
+    <item name="android:textColorHint">@color/onSurfaceVariant</item>
 
 </style>
 

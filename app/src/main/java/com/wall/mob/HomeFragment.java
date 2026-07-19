@@ -151,7 +151,7 @@ if (nestedScrollView != null) {
             activity.updateToolbarOnScroll(scrollY);
             activity.handleScrollDirection(scrollY - oldScrollY);
         }
-        updateStickyTab(activity, scrollY);
+        updateStickyTab(activity, scrollY, scrollY < oldScrollY);
     });
 }
 
@@ -194,9 +194,8 @@ if (nestedScrollView != null) {
     }
     
     
-    private void updateStickyTab(MainActivity activity, int scrollY) {
+    private void updateStickyTab(MainActivity activity, int scrollY, boolean scrollingUp) {
     if (activity == null || getView() == null) return;
-    
 
     if (cachedTabLayout == null || cachedTabPlaceholder == null) {
         if (sectionsFragment == null || sectionsFragment.getView() == null) return;
@@ -213,9 +212,8 @@ if (nestedScrollView != null) {
     }
     if (stickyTabContainer == null) return;
 
-    int toolbarH = 0;
     View tb = activity.findViewById(R.id.toolbar);
-    if (tb != null) toolbarH = tb.getHeight();
+    int toolbarH = tb != null ? tb.getHeight() : 0;
 
     int heroH = heroContainer != null ? heroContainer.getHeight() : 0;
     if (heroH == 0) return;
@@ -229,18 +227,40 @@ if (nestedScrollView != null) {
         tabPlaceholder.getLayoutParams().height = tabLayout.getHeight();
         tabPlaceholder.setVisibility(View.VISIBLE);
         tabOriginalParent.removeView(tabLayout);
+        stickyTabContainer.setAlpha(1f);
         stickyTabContainer.removeAllViews();
+        stickyTabContainer.setPadding(0, getStatusBarHeight(), 0, 0);
         stickyTabContainer.addView(tabLayout);
         stickyTabContainer.setVisibility(View.VISIBLE);
+        View appBar = activity.findViewById(R.id.appBarLayout);
+        if (appBar != null) {
+            appBar.animate().translationY(-toolbarH).setDuration(180).start();
+        }
     } else if (!shouldStick && tabIsSticky) {
         tabIsSticky = false;
-        stickyTabContainer.removeView(tabLayout);
-        stickyTabContainer.setVisibility(View.GONE);
-        tabPlaceholder.setVisibility(View.GONE);
-        if (tabOriginalParent != null) {
-            int index = Math.min(tabOriginalIndex, tabOriginalParent.getChildCount());
-            tabOriginalParent.addView(tabLayout, index);
+        View appBar = activity.findViewById(R.id.appBarLayout);
+        if (appBar != null) {
+            appBar.animate().translationY(0).setDuration(180).start();
         }
+        stickyTabContainer.animate()
+            .alpha(0f)
+            .setDuration(180)
+            .withEndAction(() -> {
+                stickyTabContainer.removeView(tabLayout);
+                stickyTabContainer.setVisibility(View.GONE);
+                stickyTabContainer.setAlpha(1f);
+                tabPlaceholder.setVisibility(View.GONE);
+                if (tabOriginalParent != null) {
+                    int index = Math.min(tabOriginalIndex, tabOriginalParent.getChildCount());
+                    tabOriginalParent.addView(tabLayout, index);
+                }
+            });
+    } else if (shouldStick && tabIsSticky) {
+        stickyTabContainer.setVisibility(View.VISIBLE);
+        stickyTabContainer.animate().cancel();
+        stickyTabContainer.setAlpha(1f);
+        int statusBar = getStatusBarHeight();
+        stickyTabContainer.setPadding(0, scrollingUp ? statusBar + toolbarH : statusBar, 0, 0);
     }
 }
 
@@ -883,6 +903,10 @@ public void onDestroyView() {
     if (tabIsSticky && stickyTabContainer != null && cachedTabLayout != null) {
         stickyTabContainer.removeView(cachedTabLayout);
         stickyTabContainer.setVisibility(View.GONE);
+        if (tabOriginalParent != null) {
+            int index = Math.min(tabOriginalIndex, tabOriginalParent.getChildCount());
+            tabOriginalParent.addView(cachedTabLayout, index);
+        }
     }
     tabIsSticky = false;
     stickyTabContainer = null;
@@ -901,7 +925,7 @@ public void onDestroyView() {
     private void updateHomeIconSizes() {
         if (mContext == null) return;
         SharedPreferences prefs = mContext.getSharedPreferences("settings_prefs", Context.MODE_PRIVATE);
-        String currentTextSize = prefs.getString("app_text_size", "small");
+        String currentTextSize = prefs.getString("app_text_size", "normal");
         int iconSizeDimen = R.dimen.icon_size_normal;
         
         switch (currentTextSize) {
@@ -923,6 +947,11 @@ public void onDestroyView() {
         // Currently, home layout relies heavily on dynamic lists/adapters.
     }
 
+    private int getStatusBarHeight() {
+        int resId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        return resId > 0 ? getResources().getDimensionPixelSize(resId) : 0;
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -930,5 +959,21 @@ public void onDestroyView() {
             autoScrollHandler.postDelayed(autoScrollRunnable, AUTO_SCROLL_INTERVAL_MS);
         }
         updateHomeIconSizes();
+        refreshStickyTab();
+    }
+
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+        if (!hidden) {
+            refreshStickyTab();
+        }
+    }
+
+    private void refreshStickyTab() {
+        if (nestedScrollView != null) {
+            MainActivity activity = (MainActivity) getActivity();
+            updateStickyTab(activity, nestedScrollView.getScrollY(), false);
+        }
     }
 }

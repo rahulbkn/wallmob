@@ -1,6 +1,7 @@
 package com.wall.mob;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.wall.mob.reels.ReelVideo;
+import com.wall.mob.reels.ReelsRepository;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,8 +27,8 @@ import java.util.List;
 
 public class HomeTabContentFragment extends Fragment {
 
-    private RecyclerView recyclerBestMonth, recyclerLandscape, recyclerColorTone, recyclerCategories, recyclerPremium, recyclerRecent, recyclerNasa;
-    private View premiumSectionView, landscapeSectionView, recentSection, nasaSectionView;
+    private RecyclerView recyclerBestMonth, recyclerLandscape, recyclerColorTone, recyclerCategories, recyclerPremium, recyclerRecent, recyclerNasa, recyclerReels;
+    private View premiumSectionView, landscapeSectionView, recentSection, nasaSectionView, reelsSection;
     private TextView tvSeeAllTrending, tvClearRecent;
 
     private BestMonthAdapter bestMonthAdapter, premiumAdapter, recentAdapter;
@@ -32,8 +36,10 @@ public class HomeTabContentFragment extends Fragment {
     private ColorToneAdapter colorToneAdapter;
     private CategoryGridAdapter categoryGridAdapter;
     private NasaApodAdapter nasaApodAdapter;
+    private ReelThumbnailAdapter reelThumbnailAdapter;
 
     private List<Wallpaper> currentPortraitList = new ArrayList<>();
+    private ReelsRepository reelRepo;
 
     @Nullable
     @Override
@@ -60,6 +66,8 @@ public class HomeTabContentFragment extends Fragment {
         recentSection = view.findViewById(R.id.recent_section);
         recyclerRecent = view.findViewById(R.id.recycler_recent);
         tvClearRecent = view.findViewById(R.id.tv_clear_recent);
+        recyclerReels = view.findViewById(R.id.recycler_reels);
+        reelsSection = view.findViewById(R.id.reels_section);
 
         if (tvUnlockAll != null) {
             tvUnlockAll.setOnClickListener(v -> {
@@ -86,45 +94,55 @@ public class HomeTabContentFragment extends Fragment {
     recyclerBestMonth.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
     bestMonthAdapter = new BestMonthAdapter(context, new ArrayList<>(), this::onWallpaperClick);
     recyclerBestMonth.setAdapter(bestMonthAdapter);
-    ViewPager2ConflictResolver.attach(recyclerBestMonth); // <-- FIX ADDED HERE
+    // Fix: Disable nested scrolling to prevent ViewPager2 conflict
+    recyclerBestMonth.setNestedScrollingEnabled(false);
 
     // 2. Premium Section
     recyclerPremium.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
     premiumAdapter = new BestMonthAdapter(context, new ArrayList<>(), this::onWallpaperClick);
     recyclerPremium.setAdapter(premiumAdapter);
-    ViewPager2ConflictResolver.attach(recyclerPremium); // <-- FIX ADDED HERE
+    recyclerPremium.setNestedScrollingEnabled(false);
 
     // 3. Landscape Section
     recyclerLandscape.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
     landscapeAdapter = new LandscapeAdapter(context, new ArrayList<>(), this::onWallpaperClick);
     recyclerLandscape.setAdapter(landscapeAdapter);
-    ViewPager2ConflictResolver.attach(recyclerLandscape); // <-- FIX ADDED HERE
+    recyclerLandscape.setNestedScrollingEnabled(false);
 
     // 4. Color Palettes Section
     recyclerColorTone.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
     List<String> colors = Arrays.asList("#FF0000", "#FF7F00", "#FFD700", "#32CD32", "#40E0D0", "#4169E1", "#4B0082", "#8B00FF", "#FF1493", "#2C2C2C");
     colorToneAdapter = new ColorToneAdapter(context, colors, this::onColorClick);
     recyclerColorTone.setAdapter(colorToneAdapter);
-    ViewPager2ConflictResolver.attach(recyclerColorTone); // <-- FIX ADDED HERE
+    recyclerColorTone.setNestedScrollingEnabled(false);
 
     // 5. Recent Section
     recyclerRecent.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
     recentAdapter = new BestMonthAdapter(context, new ArrayList<>(), this::onWallpaperClick);
     recyclerRecent.setAdapter(recentAdapter);
-    ViewPager2ConflictResolver.attach(recyclerRecent); // <-- FIX ADDED HERE
+    recyclerRecent.setNestedScrollingEnabled(false);
 
     // 6. NASA Section
     recyclerNasa.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
     nasaApodAdapter = new NasaApodAdapter(context, new ArrayList<>(), this::onWallpaperClick);
     recyclerNasa.setAdapter(nasaApodAdapter);
-    ViewPager2ConflictResolver.attach(recyclerNasa); // <-- FIX ADDED HERE
+    recyclerNasa.setNestedScrollingEnabled(false);
 
-    // (Note: Categories Section uses GridLayoutManager which scrolls vertically, 
-    // so it will not cause horizontal ViewPager swiping conflicts)
+    // Categories Section
     recyclerCategories.setLayoutManager(new GridLayoutManager(context, 2));
     recyclerCategories.addItemDecoration(new GridSpacingItemDecoration(2, Math.round(2 * getResources().getDisplayMetrics().density)));
     categoryGridAdapter = new CategoryGridAdapter(context, new ArrayList<>(), this::onCategoryClick);
     recyclerCategories.setAdapter(categoryGridAdapter);
+    recyclerCategories.setNestedScrollingEnabled(false);
+
+    // 7. Reels Section
+    recyclerReels.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+    reelThumbnailAdapter = new ReelThumbnailAdapter(context, new ArrayList<>(), this::onReelClick);
+    recyclerReels.setAdapter(reelThumbnailAdapter);
+    recyclerReels.setNestedScrollingEnabled(false);
+
+    reelRepo = new ReelsRepository(requireContext().getApplicationContext());
+    loadReels();
 }
 
 
@@ -163,6 +181,37 @@ public class HomeTabContentFragment extends Fragment {
             if (bestMonthAdapter != null) bestMonthAdapter.updateData(shuffled);
             Toast.makeText(getContext(), "Trending shuffled!", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private List<ReelVideo> reelList = new ArrayList<>();
+
+    private void loadReels() {
+        if (reelRepo == null) return;
+        new Thread(() -> {
+            try {
+                com.wall.mob.reels.FeedResponse feed = reelRepo.getFeedBlocking(1, 20, null);
+                if (getActivity() == null) return;
+                getActivity().runOnUiThread(() -> {
+                    if (feed.getItems().isEmpty()) {
+                        reelsSection.setVisibility(View.GONE);
+                    } else {
+                        reelList = feed.getItems();
+                        reelsSection.setVisibility(View.VISIBLE);
+                        reelThumbnailAdapter.updateData(feed.getItems());
+                    }
+                });
+            } catch (Exception e) {
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> reelsSection.setVisibility(View.GONE));
+                }
+            }
+        }).start();
+    }
+
+    private void onReelClick(ReelVideo reel) {
+        if (!isAdded() || !(getActivity() instanceof MainActivity)) return;
+        int position = reelList.indexOf(reel);
+        ((MainActivity) getActivity()).navigateToReels(Math.max(0, position));
     }
 
     private void onWallpaperClick(Wallpaper wallpaper) {

@@ -1,32 +1,39 @@
 package com.wall.mob;
 
 import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 
 import com.google.android.material.appbar.MaterialToolbar;
+import com.wall.mob.reels.ReelsRepository;
+import com.wall.mob.reels.RetrofitClient;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.color.MaterialColors;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -34,15 +41,27 @@ import java.net.URL;
 
 public class UploadWallpaperActivity extends BaseActivity {
 
+    public static final String EXTRA_UPLOAD_TYPE = "upload_type";
+    public static final String TYPE_IMAGE = "image";
+    public static final String TYPE_VIDEO = "video";
+
     private static final String UPLOAD_URL = "https://api-server.rahulkumarbknv.workers.dev/upload-wallpaper";
     private static final String BOUNDARY = "Boundary-" + System.currentTimeMillis();
     private static final String TAG = "UploadWallpaper";
 
     private ImageView previewImage;
-    private View selectImageHint;
+    private LinearLayout selectImageHint;
+    private TextView selectMediaHintText;
+    private ImageView selectMediaIcon;
+    private TextView selectedFileName;
     private TextInputEditText titleInput;
     private TextInputEditText categoryInput;
+    private TextInputEditText descriptionInput;
+    private TextInputEditText hashtagsInput;
+    private TextInputLayout descriptionInputLayout;
+    private TextInputLayout hashtagsInputLayout;
     private MaterialButton uploadButton;
+    private MaterialButtonToggleGroup uploadTypeToggle;
     private CircularProgressIndicator uploadProgressBar;
     private TextView uploadProgressText;
     private TextView uploadStatusLabel;
@@ -50,16 +69,16 @@ public class UploadWallpaperActivity extends BaseActivity {
     private View imagePreviewContainer;
     private View uploadOverlay;
 
-    private Uri selectedImageUri;
+    private Uri selectedMediaUri;
+    private String selectedDisplayName;
+    private boolean isVideoMode = false;
     private SessionManager sessionManager;
+    private ReelsRepository reelsRepository;
 
-    private final ActivityResultLauncher<String> pickImageLauncher =
+    private final ActivityResultLauncher<String> pickMediaLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
                 if (uri != null) {
-                    selectedImageUri = uri;
-                    previewImage.setImageURI(uri);
-                    previewImage.setVisibility(View.VISIBLE);
-                    selectImageHint.setVisibility(View.GONE);
+                    onMediaSelected(uri);
                 }
             });
 
@@ -75,8 +94,19 @@ public class UploadWallpaperActivity extends BaseActivity {
             return;
         }
 
+        reelsRepository = new ReelsRepository(getApplicationContext());
         initViews();
         setClickListeners();
+
+        String requestedType = getIntent() != null ? getIntent().getStringExtra(EXTRA_UPLOAD_TYPE) : null;
+        if (TYPE_VIDEO.equalsIgnoreCase(requestedType)) {
+            uploadTypeToggle.check(R.id.typeVideoButton);
+            setVideoMode(true);
+        } else {
+            uploadTypeToggle.check(R.id.typeImageButton);
+            setVideoMode(false);
+        }
+
         checkHealthAndEnableUpload();
     }
 
@@ -95,7 +125,10 @@ public class UploadWallpaperActivity extends BaseActivity {
                 if (isFinishing() || isDestroyed()) return;
 
                 try {
-                    HttpURLConnection urlConnection = (HttpURLConnection) new URL("https://tool-veyr.onrender.com/health").openConnection();
+                    String healthUrl = isVideoMode
+                            ? RetrofitClient.BASE_URL + "health"
+                            : "https://tool-veyr.onrender.com/health";
+                    HttpURLConnection urlConnection = (HttpURLConnection) new URL(healthUrl).openConnection();
                     urlConnection.setRequestMethod("GET");
                     urlConnection.setConnectTimeout(3000);
                     urlConnection.setReadTimeout(3000);
@@ -144,9 +177,17 @@ public class UploadWallpaperActivity extends BaseActivity {
         imagePreviewContainer = findViewById(R.id.imagePreviewContainer);
         previewImage = findViewById(R.id.previewImage);
         selectImageHint = findViewById(R.id.selectImageHint);
+        selectMediaHintText = findViewById(R.id.selectMediaHintText);
+        selectMediaIcon = findViewById(R.id.selectMediaIcon);
+        selectedFileName = findViewById(R.id.selectedFileName);
         titleInput = findViewById(R.id.titleInput);
         categoryInput = findViewById(R.id.categoryInput);
+        descriptionInput = findViewById(R.id.descriptionInput);
+        hashtagsInput = findViewById(R.id.hashtagsInput);
+        descriptionInputLayout = findViewById(R.id.descriptionInputLayout);
+        hashtagsInputLayout = findViewById(R.id.hashtagsInputLayout);
         uploadButton = findViewById(R.id.uploadButton);
+        uploadTypeToggle = findViewById(R.id.uploadTypeToggle);
         uploadProgressBar = findViewById(R.id.uploadProgressBar);
         uploadProgressText = findViewById(R.id.uploadProgressText);
         uploadStatusLabel = findViewById(R.id.uploadStatusLabel);
@@ -161,15 +202,125 @@ public class UploadWallpaperActivity extends BaseActivity {
             finish();
         });
 
-        imagePreviewContainer.setOnClickListener(v -> pickImageLauncher.launch("image/*"));
+        uploadTypeToggle.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+            if (!isChecked) return;
+            boolean video = checkedId == R.id.typeVideoButton;
+            if (video == isVideoMode) return;
+            setVideoMode(video);
+            clearMediaSelection();
+            checkHealthAndEnableUpload();
+        });
+
+        imagePreviewContainer.setOnClickListener(v -> {
+            if (isVideoMode) {
+                pickMediaLauncher.launch("video/*");
+            } else {
+                pickMediaLauncher.launch("image/*");
+            }
+        });
 
         uploadButton.setOnClickListener(v -> {
-            if (selectedImageUri == null) {
-                Toast.makeText(this, getString(R.string.select_image_first), Toast.LENGTH_SHORT).show();
+            if (selectedMediaUri == null) {
+                Toast.makeText(this, getString(R.string.select_media_first), Toast.LENGTH_SHORT).show();
                 return;
             }
-            uploadWallpaper();
+            if (isVideoMode) {
+                uploadReel();
+            } else {
+                uploadWallpaper();
+            }
         });
+    }
+
+    private void setVideoMode(boolean video) {
+        isVideoMode = video;
+        int videoVisibility = video ? View.VISIBLE : View.GONE;
+        descriptionInputLayout.setVisibility(videoVisibility);
+        hashtagsInputLayout.setVisibility(videoVisibility);
+
+        selectMediaHintText.setText(video
+                ? getString(R.string.tap_to_select_video)
+                : getString(R.string.tap_to_select_image));
+        selectMediaIcon.setImageResource(video ? R.drawable.ic_reels_outline : R.drawable.ic_attach);
+
+        toolbar.setTitle(video ? getString(R.string.upload_reel) : getString(R.string.upload_wallpaper));
+        uploadButton.setText(video ? getString(R.string.upload_reel) : getString(R.string.upload));
+
+        if (video && !reelsRepository.isAdminUser()) {
+            Toast.makeText(this, getString(R.string.admin_required_upload), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void clearMediaSelection() {
+        selectedMediaUri = null;
+        selectedDisplayName = null;
+        previewImage.setImageDrawable(null);
+        previewImage.setVisibility(View.GONE);
+        selectImageHint.setVisibility(View.VISIBLE);
+        selectedFileName.setVisibility(View.GONE);
+        selectedFileName.setText("");
+    }
+
+    private void onMediaSelected(Uri uri) {
+        selectedMediaUri = uri;
+        selectedDisplayName = resolveDisplayName(uri);
+
+        if (isVideoMode) {
+            Bitmap frame = extractVideoFrame(uri);
+            if (frame != null) {
+                previewImage.setImageBitmap(frame);
+                previewImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                previewImage.setVisibility(View.VISIBLE);
+                selectImageHint.setVisibility(View.GONE);
+            } else {
+                previewImage.setImageResource(R.drawable.ic_reels);
+                previewImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                previewImage.setVisibility(View.VISIBLE);
+                selectImageHint.setVisibility(View.GONE);
+            }
+            selectedFileName.setText(selectedDisplayName != null
+                    ? selectedDisplayName
+                    : getString(R.string.video_selected));
+        } else {
+            previewImage.setImageURI(uri);
+            previewImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            previewImage.setVisibility(View.VISIBLE);
+            selectImageHint.setVisibility(View.GONE);
+            selectedFileName.setText(selectedDisplayName != null
+                    ? selectedDisplayName
+                    : getString(R.string.image_selected));
+        }
+        selectedFileName.setVisibility(View.VISIBLE);
+    }
+
+    private String resolveDisplayName(Uri uri) {
+        try (android.database.Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+                if (index >= 0) {
+                    return cursor.getString(index);
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        String path = uri.getLastPathSegment();
+        return path != null ? path : "selected_file";
+    }
+
+    private Bitmap extractVideoFrame(Uri uri) {
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        try {
+            retriever.setDataSource(this, uri);
+            return retriever.getFrameAtTime(0);
+        } catch (Exception e) {
+            Log.w(TAG, "Could not extract video frame: " + e.getMessage());
+            return null;
+        } finally {
+            try {
+                retriever.release();
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     private void setUploadButtonDisabledAppearance() {
@@ -193,9 +344,12 @@ public class UploadWallpaperActivity extends BaseActivity {
 
     private void setUploadingAppearance(boolean isUploading) {
         if (isUploading) {
+            uploadProgressBar.setIndeterminate(false);
             uploadProgressBar.setProgress(0);
             uploadProgressText.setText("0%");
-            uploadStatusLabel.setText(getString(R.string.uploading_label));
+            uploadStatusLabel.setText(isVideoMode
+                    ? getString(R.string.uploading_video_label)
+                    : getString(R.string.uploading_label));
             uploadOverlay.setVisibility(View.VISIBLE);
             setUploadButtonDisabledAppearance();
         } else {
@@ -210,19 +364,132 @@ public class UploadWallpaperActivity extends BaseActivity {
                 value + "\r\n").getBytes();
     }
 
+    private void uploadReel() {
+        if (!reelsRepository.isAdminUser()) {
+            Toast.makeText(this, getString(R.string.admin_required_upload), Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        String title = titleInput.getText() != null ? titleInput.getText().toString().trim() : "";
+        String category = categoryInput.getText() != null ? categoryInput.getText().toString().trim() : "";
+        String description = descriptionInput.getText() != null ? descriptionInput.getText().toString().trim() : "";
+        String hashtags = hashtagsInput.getText() != null ? hashtagsInput.getText().toString().trim() : "";
+
+        final String effectiveTitle = title.isEmpty() ? getString(R.string.default_title) : title;
+        final String effectiveCategory = category.isEmpty() ? "entertainment" : category;
+        final String uploader = reelsRepository.loggedUserId();
+        if (uploader == null || uploader.isEmpty()) {
+            Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        setUploadingAppearance(true);
+
+        new Thread(() -> {
+            File tempFile = null;
+            try {
+                tempFile = copyUriToCache(selectedMediaUri, "upload_reel_", ".mp4");
+                if (tempFile == null) {
+                    runOnUiThread(() -> {
+                        setUploadingAppearance(false);
+                        Toast.makeText(this, getString(R.string.failed_to_read_video), Toast.LENGTH_SHORT).show();
+                    });
+                    return;
+                }
+
+                final File file = tempFile;
+                final String desc = description.isEmpty() ? null : description;
+                final String tags = hashtags.isEmpty() ? null : hashtags;
+
+                runOnUiThread(() -> {
+                    uploadProgressBar.setIndeterminate(true);
+                    uploadProgressText.setText(getString(R.string.processing_percent));
+                    uploadStatusLabel.setText(getString(R.string.uploading_video_label));
+                });
+
+                reelsRepository.uploadVideoBlocking(
+                        file,
+                        effectiveTitle,
+                        effectiveCategory,
+                        uploader,
+                        desc,
+                        tags,
+                        null
+                );
+
+                runOnUiThread(() -> {
+                    setUploadingAppearance(false);
+                    Toast.makeText(this, getString(R.string.upload_video_success), Toast.LENGTH_LONG).show();
+                    setResult(RESULT_OK);
+                    finish();
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Reel upload failed: " + e.getMessage(), e);
+                final String message = e.getMessage() != null ? e.getMessage() : getString(R.string.server_error);
+                runOnUiThread(() -> {
+                    setUploadingAppearance(false);
+                    Toast.makeText(this, getString(R.string.upload_failed_with_reason, message), Toast.LENGTH_LONG).show();
+                });
+            } finally {
+                if (tempFile != null && tempFile.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
+                    tempFile.delete();
+                }
+            }
+        }).start();
+    }
+
+    private File copyUriToCache(Uri uri, String prefix, String suffix) {
+        try (InputStream inputStream = getContentResolver().openInputStream(uri)) {
+            if (inputStream == null) return null;
+            File tempFile = File.createTempFile(prefix, suffix, getCacheDir());
+            tempFile.deleteOnExit();
+            try (FileOutputStream output = new FileOutputStream(tempFile)) {
+                byte[] buffer = new byte[8192];
+                int len;
+                long written = 0;
+                long estimated = estimateSize(uri);
+                while ((len = inputStream.read(buffer)) != -1) {
+                    output.write(buffer, 0, len);
+                    written += len;
+                    if (estimated > 0) {
+                        publishProgress(written, estimated);
+                    }
+                }
+            }
+            return tempFile;
+        } catch (Exception e) {
+            Log.e(TAG, "copyUriToCache failed: " + e.getMessage(), e);
+            return null;
+        }
+    }
+
+    private long estimateSize(Uri uri) {
+        try (android.database.Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
+            if (cursor != null && cursor.moveToFirst()) {
+                int index = cursor.getColumnIndex(OpenableColumns.SIZE);
+                if (index >= 0) {
+                    return cursor.getLong(index);
+                }
+            }
+        } catch (Exception ignored) {
+        }
+        return -1;
+    }
+
     private void uploadWallpaper() {
         String title = titleInput.getText() != null ? titleInput.getText().toString().trim() : "";
         String category = categoryInput.getText() != null ? categoryInput.getText().toString().trim() : "";
         final String effectiveTitle = title.isEmpty() ? getString(R.string.default_title) : title;
         final String effectiveCategory = category.isEmpty() ? getString(R.string.default_category) : category;
 
-        Log.d(TAG, "uploadWallpaper: title=" + effectiveTitle + " category=" + effectiveCategory + " uri=" + selectedImageUri);
+        Log.d(TAG, "uploadWallpaper: title=" + effectiveTitle + " category=" + effectiveCategory + " uri=" + selectedMediaUri);
         setUploadingAppearance(true);
 
         new Thread(() -> {
             try {
                 Log.d(TAG, "Opening input stream");
-                InputStream inputStream = getContentResolver().openInputStream(selectedImageUri);
+                InputStream inputStream = getContentResolver().openInputStream(selectedMediaUri);
                 if (inputStream == null) {
                     Log.e(TAG, "inputStream is null");
                     runOnUiThread(() -> {
@@ -424,8 +691,9 @@ public class UploadWallpaperActivity extends BaseActivity {
     private void publishProgress(long written, long total) {
         int progress = total > 0 ? (int) ((written * 100) / total) : 0;
         runOnUiThread(() -> {
-            uploadProgressBar.setProgress(progress);
-            uploadProgressText.setText(progress + "%");
+            uploadProgressBar.setIndeterminate(false);
+            uploadProgressBar.setProgress(Math.min(progress, 100));
+            uploadProgressText.setText(Math.min(progress, 100) + "%");
         });
     }
 

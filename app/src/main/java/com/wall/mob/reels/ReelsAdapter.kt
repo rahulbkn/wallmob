@@ -1,4 +1,4 @@
-package com.wall.mob
+package com.wall.mob.reels
 
 import android.os.Handler
 import android.os.Looper
@@ -7,8 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.wall.mob.R
-import com.wall.mob.ReelVideo
-import com.wall.mob.ReelsRepository
+import com.wall.mob.reels.ReelsRepository
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.PlayerView

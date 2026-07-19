@@ -34,16 +34,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageButton
-            android:id="@+id/backButton"
-            android:layout_width="44dp"
-            android:layout_height="44dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:contentDescription="@string/back_button"
-            android:padding="10dp"
-            android:src="@drawable/ic_arrow_back"
-            android:tint="#FFFFFF" />
-
         <TextView
             android:id="@+id/reelsTitle"
             android:layout_width="0dp"
@@ -115,18 +105,6 @@
             android:textColor="#A0FFFFFF"
             android:textSize="14sp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/emptyUploadButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/upload_reel"
-            android:textAllCaps="false"
-            app:cornerRadius="24dp"
-            app:icon="@drawable/ic_add"
-            app:iconGravity="textStart"
-            app:backgroundTint="#FF005C" />
-
     </LinearLayout>
 
     <ProgressBar
@@ -137,21 +115,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Upload FAB -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/uploadButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="20dp"
-        android:contentDescription="@string/upload"
-        android:src="@drawable/ic_add"
-        app:backgroundTint="#FF005C"
-        app:tint="#FFFFFF"
-        app:fabSize="normal"
-        app:elevation="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

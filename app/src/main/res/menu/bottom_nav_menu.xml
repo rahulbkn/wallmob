@@ -7,14 +7,15 @@
         android:title="@string/home"/>
 
     <item
-        android:id="@+id/nav_premium"
-        android:icon="@drawable/ic_premium_selector"
-        android:title="@string/premium"/>
-
-    <item
         android:id="@+id/nav_reel"
         android:icon="@drawable/ic_reels_selector"
         android:title="@string/reels"/>
+        
+        <item
+        android:id="@+id/nav_spacer"
+        android:title=""
+        android:enabled="false"/>
+        
 
     <item
         android:id="@+id/nav_favorite"

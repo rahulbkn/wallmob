@@ -14,10 +14,8 @@ export function buildRouter(container: AppContainer): Router {
     }
   };
 
-  router.use("/api/videos", adminOnly);
-
   // --- Videos: upload, feed, detail, interactions, delete -----------------
-  router.post("/api/videos", uploadMiddleware, container.videoUploadController.handle);
+  router.post("/api/videos", adminOnly, uploadMiddleware, container.videoUploadController.handle);
   router.get("/api/videos", container.videoFeedController.getFeed);
   router.get("/api/videos/:id", container.videoFeedController.getById);
   router.post("/api/videos/:id/view", container.videoFeedController.recordView);
@@ -27,17 +25,17 @@ export function buildRouter(container: AppContainer): Router {
 
   // --- Comments -------------------------------------------------------------
   router.get("/api/videos/:id/comments", container.commentController.list);
-  router.post("/api/videos/:id/comments", container.commentController.add);
+  router.post("/api/videos/:id/comments", adminOnly, container.commentController.add);
 
   // --- Chunked upload (query params: ?uploadId=xxx&index=N) --------------
-  router.post("/api/videos/upload-chunk", container.chunkedUploadController.uploadChunk);
+  router.post("/api/videos/upload-chunk", adminOnly, container.chunkedUploadController.uploadChunk);
 
   // --- Chunked upload metadata endpoints ---------------------------------
-  router.post("/api/videos/init-upload", container.chunkedUploadController.initUpload);
-  router.post("/api/videos/complete-upload", container.chunkedUploadController.completeUpload);
+  router.post("/api/videos/init-upload", adminOnly, container.chunkedUploadController.initUpload);
+  router.post("/api/videos/complete-upload", adminOnly, container.chunkedUploadController.completeUpload);
 
   // --- Transcode callback (called by the Render transcoder) -------------
-  router.post("/api/videos/transcode-callback", container.transcodeController.callback);
+  router.post("/api/videos/transcode-callback", adminOnly, container.transcodeController.callback);
 
   // --- Generic media stream — works for whichever provider is active -----
   router.get("/stream", container.streamController.handle);

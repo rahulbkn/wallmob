@@ -47,7 +47,9 @@ import android.net.Uri;
 import android.app.NotificationManager;
 import android.app.NotificationChannel;
 
+import com.wall.mob.reels.ReelFragment;
 import com.bumptech.glide.Glide;
+import android.view.Window;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.messaging.FirebaseMessaging;
@@ -65,7 +67,7 @@ public class MainActivity extends BaseActivity {
 
     private LinearLayout searchLayout;
     private FrameLayout contentFrame;
-    private ImageView notificationButton, profileButton, btn_menu, settingsButton;
+    private ImageView notificationButton, profileButton, btn_menu, settingsButton, btnPremium;
     private Toolbar toolbar;
     private AppBarLayout appBarLayout;
     private TextView textview1;
@@ -73,7 +75,8 @@ public class MainActivity extends BaseActivity {
     private Fragment homeFragment;
     private Fragment premiumFragment;
     private Fragment favoriteFragment;
-    private Fragment downloadsFragment; 
+    private Fragment downloadsFragment;
+    private Fragment reelFragment;
     
     private static final int NOTIFICATION_PERMISSION_CODE = 100;
     private static final int BATTERY_OPTIMIZATION_CODE = 101;
@@ -98,6 +101,13 @@ public class MainActivity extends BaseActivity {
     // Profile photo state
     private boolean hasProfilePhoto = false;
     
+    // Sticky tab container
+    private FrameLayout stickyTabContainer;
+    
+    // UI visibility state
+    private boolean uiElementsHidden = false;
+    private boolean isToolbarHidden = false;
+    private boolean isBottomNavHidden = false;
 
     // Coin update receiver
     private BroadcastReceiver coinsUpdateReceiver = new BroadcastReceiver() {
@@ -333,6 +343,7 @@ public class MainActivity extends BaseActivity {
         int currentIconColor = ColorUtils.blendARGB(Color.WHITE, targetIconColor, alpha);
 
         if (btn_menu != null) btn_menu.setColorFilter(currentIconColor);
+                if (btnPremium != null) btnPremium.setColorFilter(currentIconColor);
         if (notificationButton != null) notificationButton.setColorFilter(currentIconColor);
         if (profileButton != null && !hasProfilePhoto) profileButton.setColorFilter(currentIconColor);
         if (settingsButton != null) settingsButton.setColorFilter(currentIconColor);
@@ -355,20 +366,64 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private boolean uiElementsHidden = false;
-
     public void handleScrollDirection(int dy) {
+        // Only handle for Home fragment
         if (currentPosition != 0) return;
+        
         if (dy > 0 && !uiElementsHidden) {
+            // Scrolling down - hide both toolbar and bottom navigation
             uiElementsHidden = true;
-            if (bottomNavigationContainer != null) {
-                bottomNavigationContainer.animate().translationY(bottomNavigationContainer.getHeight()).setDuration(200);
-            }
+            hideToolbarAndBottomNav();
         } else if (dy < 0 && uiElementsHidden) {
+            // Scrolling up - show both toolbar and bottom navigation
             uiElementsHidden = false;
-            if (bottomNavigationContainer != null) {
-                bottomNavigationContainer.animate().translationY(0).setDuration(200);
-            }
+            showToolbarAndBottomNav();
+        }
+    }
+
+    private void hideToolbarAndBottomNav() {
+        if (appBarLayout != null && !isToolbarHidden) {
+            appBarLayout.animate()
+                .translationY(-appBarLayout.getHeight())
+                .setDuration(200)
+                .start();
+            isToolbarHidden = true;
+        }
+        if (bottomNavigationContainer != null && !isBottomNavHidden) {
+            bottomNavigationContainer.animate()
+                .translationY(bottomNavigationContainer.getHeight())
+                .setDuration(200)
+                .start();
+            isBottomNavHidden = true;
+        }
+    }
+
+    private void showToolbarAndBottomNav() {
+        if (appBarLayout != null && isToolbarHidden) {
+            appBarLayout.animate()
+                .translationY(0)
+                .setDuration(200)
+                .start();
+            isToolbarHidden = false;
+        }
+        if (bottomNavigationContainer != null && isBottomNavHidden) {
+            bottomNavigationContainer.animate()
+                .translationY(0)
+                .setDuration(200)
+                .start();
+            isBottomNavHidden = false;
+        }
+    }
+
+    private void resetUIVisibility() {
+        uiElementsHidden = false;
+        if (appBarLayout != null) {
+            appBarLayout.setTranslationY(0);
+            isToolbarHidden = false;
+        }
+        if (bottomNavigationContainer != null) {
+            bottomNavigationContainer.setTranslationY(0);
+            isBottomNavHidden = false;
         }
     }
 
@@ -383,11 +438,9 @@ public class MainActivity extends BaseActivity {
             }
         }
         
-        
         if (appBarLayout != null) {
             appBarLayout.setOnApplyWindowInsetsListener((v, insets) -> {
                 v.setPadding(0, insets.getSystemWindowInsetTop(), 0, 0);
-                // We return the insets so the carousel underneath STILL draws behind the status bar!
                 return insets;
             });
         }
@@ -400,12 +453,16 @@ public class MainActivity extends BaseActivity {
         searchLayout = findViewById(R.id.searchLayout);
         profileButton = findViewById(R.id.imageview4);
         settingsButton= findViewById(R.id.btn_settings);
+        btnPremium = findViewById(R.id.btn_premium);
         btn_menu = findViewById(R.id.btn_menu);
         textview1 = findViewById(R.id.textview1);
 
         toolbarCoinsTextView = findViewById(R.id.toolbarCoinsTextView);
         coinDisplayLayout = findViewById(R.id.coinDisplayLayout);
         swipeRefresh = findViewById(R.id.swipeRefreshLayout);
+        
+        // Initialize sticky tab container
+        stickyTabContainer = findViewById(R.id.sticky_tab_container);
     }
 
     private void setupNavigation() {
@@ -415,18 +472,14 @@ public class MainActivity extends BaseActivity {
                 if (itemId == R.id.nav_home) {
                     if (currentPosition != 0) showFragment(0);
                     return true;
-                } else if (itemId == R.id.nav_premium) {
-                    if (currentPosition != 1) showFragment(1);
+                } else if (itemId == R.id.nav_reel) {
+                    if (currentPosition != 4) showFragment(4);
                     return true;
                 } else if (itemId == R.id.nav_favorite) {
                     if (currentPosition != 2) showFragment(2);
                     return true;
-                } else if (itemId == R.id.nav_downloads) { // NEW: Downloads Tab Logic
+                } else if (itemId == R.id.nav_downloads) {
                     if (currentPosition != 3) showFragment(3);
-                    return true;
-                } else if (itemId == R.id.nav_reel) {
-                    Intent intent = new Intent(MainActivity.this, ReelActivity.class);
-                    startActivity(intent);
                     return true;
                 }
                 return false;
@@ -466,6 +519,10 @@ public class MainActivity extends BaseActivity {
             startActivity(intent);
         });
 
+        btnPremium.setOnClickListener(v -> {
+            showFragment(1);
+        });
+
         fabUpload.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, UploadWallpaperActivity.class);
             startActivity(intent);
@@ -503,7 +560,7 @@ public class MainActivity extends BaseActivity {
 
     private void updateMainIconSizes() {
         SharedPreferences prefs = getSharedPreferences("settings_prefs", MODE_PRIVATE);
-        String currentTextSize = prefs.getString("app_text_size", "small");
+        String currentTextSize = prefs.getString("app_text_size", "normal");
         int iconSizeDimen = R.dimen.icon_size_normal;
         
         switch (currentTextSize) {
@@ -525,6 +582,7 @@ public class MainActivity extends BaseActivity {
             R.id.btn_menu,
             R.id.btn_settings,
             R.id.imageview3,
+            R.id.btn_premium,
             R.id.cardview1
         };
         
@@ -554,7 +612,6 @@ public class MainActivity extends BaseActivity {
         loadProfilePhoto();
         updateMainIconSizes();
     }
-
 
     private void refreshCoins() {
         currentCoins = sharedPrefs.getInt(COINS_KEY, 0);
@@ -671,6 +728,16 @@ public class MainActivity extends BaseActivity {
         bottomSheet.show();
     }
 
+    /**
+     * Show or hide the sticky tab container
+     * @param show true to show, false to hide
+     */
+    public void showStickyTabs(boolean show) {
+        if (stickyTabContainer != null) {
+            stickyTabContainer.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
+
     private void showFragment(int position) {
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -678,7 +745,8 @@ public class MainActivity extends BaseActivity {
         if (homeFragment != null) ft.hide(homeFragment);
         if (premiumFragment != null) ft.hide(premiumFragment);
         if (favoriteFragment != null) ft.hide(favoriteFragment);
-        if (downloadsFragment != null) ft.hide(downloadsFragment); 
+        if (downloadsFragment != null) ft.hide(downloadsFragment);
+        if (reelFragment != null) ft.hide(reelFragment);
 
         switch (position) {
             case 0:
@@ -697,6 +765,7 @@ public class MainActivity extends BaseActivity {
                 } else {
                     ft.show(premiumFragment);
                 }
+                showStickyTabs(false);
                 break;
                 
             case 2:
@@ -706,6 +775,7 @@ public class MainActivity extends BaseActivity {
                 } else {
                     ft.show(favoriteFragment);
                 }
+                showStickyTabs(false);
                 break;
 
             case 3: 
@@ -715,105 +785,108 @@ public class MainActivity extends BaseActivity {
                 } else {
                     ft.show(downloadsFragment);
                 }
+                showStickyTabs(false);
+                break;
+
+            case 4:
+                if (reelFragment == null) {
+                    reelFragment = ReelFragment.newInstance(Math.max(0, pendingReelPosition));
+                    ft.add(R.id.content_frame, reelFragment, "REEL");
+                } else {
+                    ft.show(reelFragment);
+                    if (pendingReelPosition >= 0) {
+                        ((ReelFragment) reelFragment).scrollToPosition(pendingReelPosition);
+                    }
+                }
+                pendingReelPosition = -1;
+                showStickyTabs(false);
                 break;
         }
         
         ft.commit();
         currentPosition = position;
+        
+        // Reset UI visibility when switching fragments
+        resetUIVisibility();
+        
         updateNavigationSelection(position);
-
-        // Toggle sticky tab container when switching between Home and other tabs
-        FrameLayout stickyContainer = findViewById(R.id.sticky_tab_container);
-        if (stickyContainer != null) {
-            if (position == 0) {
-                stickyContainer.setVisibility(View.VISIBLE);
-            } else {
-                stickyContainer.setVisibility(View.GONE);
-            }
-        }
 
         // THEME SWITCHING LOGIC
         if (position == 1) {
             enablePremiumTheme();
+        } else if (position == 4) {
+            enableReelTheme();
         } else {
             enableNormalTheme();
+        }
+
+        // Hide toolbar for full-bleed reels
+        if (appBarLayout != null) {
+            appBarLayout.setVisibility(position == 4 ? View.GONE : View.VISIBLE);
         }
 
         // Transparent/scroll toolbar for Home and Premium only
         if (position == 0 || position == 1) {
             updateToolbarOnScroll(0);
         }
-
-        // Reset toolbar/bottom nav visibility when switching fragments
-        showToolbarAndBottomNav();
     }
 
-    private void showToolbarAndBottomNav() {
-        uiElementsHidden = false;
-        if (appBarLayout != null) {
-            appBarLayout.animate().translationY(0).setDuration(200);
-        }
-        if (bottomNavigationContainer != null) {
-            bottomNavigationContainer.animate().translationY(0).setDuration(200);
-        }
-    }
-    
     private void enablePremiumTheme() {
-        int darkColor = ContextCompat.getColor(this, R.color.premium_background);
-        int goldColor = ContextCompat.getColor(this, R.color.premium_gold);
-        int whiteColor = ContextCompat.getColor(this, R.color.white);
+int darkColor = ContextCompat.getColor(this, R.color.premium_background);
+int goldColor = ContextCompat.getColor(this, R.color.premium_gold);
+int whiteColor = ContextCompat.getColor(this, R.color.white);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Window window = getWindow();
-            int flags = window.getDecorView().getSystemUiVisibility();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-            }
-            window.getDecorView().setSystemUiVisibility(flags);
-            window.setNavigationBarColor(darkColor);
-        }
+if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {  
+        Window window = getWindow();  
+        int flags = window.getDecorView().getSystemUiVisibility();  
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {  
+            flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;  
+        }  
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {  
+            flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;  
+        }  
+        window.getDecorView().setSystemUiVisibility(flags);  
+        window.setNavigationBarColor(darkColor);  
+    }  
 
-        if (toolbar != null) toolbar.setBackgroundColor(darkColor);
+    if (toolbar != null) toolbar.setBackgroundColor(darkColor);  
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getWindow().setStatusBarColor(darkColor);
-        }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {  
+        getWindow().setStatusBarColor(darkColor);  
+    }  
 
-        if (btn_menu != null) btn_menu.setColorFilter(goldColor);
-        if (notificationButton != null) notificationButton.setColorFilter(goldColor);
-        if (profileButton != null && !hasProfilePhoto) profileButton.setColorFilter(goldColor);
-        if (textview1 != null) textview1.setTextColor(whiteColor);
+    if (btn_menu != null) btn_menu.setColorFilter(goldColor);  
+    if (notificationButton != null) notificationButton.setColorFilter(goldColor);  
+    if (profileButton != null && !hasProfilePhoto) profileButton.setColorFilter(goldColor);  
+    if (textview1 != null) textview1.setTextColor(whiteColor);  
 
-        if (searchLayout != null) {
-            searchLayout.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ContextCompat.getColor(this, R.color.search_premium_bg)));
-            if (searchLayout.getChildAt(0) instanceof ImageView) {
-                ((ImageView) searchLayout.getChildAt(0)).setColorFilter(goldColor);
-            }
-            if (searchLayout.getChildAt(1) instanceof TextView) {
-                ((TextView) searchLayout.getChildAt(1)).setTextColor(ContextCompat.getColor(this, R.color.gray_medium));
-            }
-            // Tint the new filter icon in premium mode
-            ImageView settingsBtn = findViewById(R.id.btn_settings);
-            if (settingsBtn != null) {
-                settingsBtn.setColorFilter(goldColor);
-            }
-        }
+    if (searchLayout != null) {  
+        searchLayout.setBackgroundTintList(android.content.res.ColorStateList.valueOf(ContextCompat.getColor(this, R.color.search_premium_bg)));  
+        if (searchLayout.getChildAt(0) instanceof ImageView) {  
+            ((ImageView) searchLayout.getChildAt(0)).setColorFilter(goldColor);  
+        }  
+        if (searchLayout.getChildAt(1) instanceof TextView) {  
+            ((TextView) searchLayout.getChildAt(1)).setTextColor(ContextCompat.getColor(this, R.color.gray_medium));  
+        }  
+        ImageView settingsBtn = findViewById(R.id.btn_settings);  
+        if (settingsBtn != null) {  
+            settingsBtn.setColorFilter(goldColor);  
+        }  
+    }  
 
-        if (bottomNavigationView != null) {
-            bottomNavigationView.setBackgroundColor(darkColor);
-            int[][] states = new int[][] {
-                new int[] { android.R.attr.state_checked },
-                new int[] { -android.R.attr.state_checked }
-            };
-            int[] colors = new int[] { goldColor, Color.GRAY };
-            android.content.res.ColorStateList colorStateList = new android.content.res.ColorStateList(states, colors);
-            
-            bottomNavigationView.setItemIconTintList(colorStateList);
-            bottomNavigationView.setItemTextColor(colorStateList);
-        }
+    if (bottomNavigationView != null) {  
+        bottomNavigationView.setBackgroundColor(darkColor);  
+        int[][] states = new int[][] {  
+            new int[] { android.R.attr.state_checked },  
+            new int[] { -android.R.attr.state_checked }  
+        };  
+        int[] colors = new int[] { goldColor, Color.GRAY };  
+        android.content.res.ColorStateList colorStateList = new android.content.res.ColorStateList(states, colors);  
+          
+        bottomNavigationView.setItemIconTintList(colorStateList);  
+        bottomNavigationView.setItemTextColor(colorStateList);  
+    }  
+      
         
         if (fabUpload != null) {
             fabUpload.setBackgroundTintList(ColorStateList.valueOf(goldColor));
@@ -857,6 +930,7 @@ public class MainActivity extends BaseActivity {
         }
 
         if (btn_menu != null) btn_menu.setColorFilter(onSurfaceColor);
+        if (btnPremium != null) btnPremium.setColorFilter(onSurfaceColor);
         if (notificationButton != null) notificationButton.setColorFilter(onSurfaceColor);
         if (profileButton != null && !hasProfilePhoto) profileButton.setColorFilter(onSurfaceColor);
         if (textview1 != null) textview1.setTextColor(onSurfaceColor);
@@ -870,7 +944,6 @@ public class MainActivity extends BaseActivity {
             if (searchLayout.getChildAt(1) instanceof TextView) {
                 ((TextView) searchLayout.getChildAt(1)).setTextColor(grayColor);
             }
-            // Revert the new filter icon in normal mode
             ImageView settingsBtn = findViewById(R.id.btn_settings);
             if (settingsBtn != null) {
                 settingsBtn.setColorFilter(onSurfaceColor);
@@ -895,6 +968,39 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+    private void enableReelTheme() {
+        int blackColor = ContextCompat.getColor(this, android.R.color.black);
+        int whiteColor = ContextCompat.getColor(this, android.R.color.white);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            int flags = window.getDecorView().getSystemUiVisibility();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                flags &= ~View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+            }
+            window.getDecorView().setSystemUiVisibility(flags);
+            window.setStatusBarColor(blackColor);
+            window.setNavigationBarColor(blackColor);
+        }
+
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setBackgroundColor(blackColor);
+            int[][] states = new int[][] {
+                new int[] { android.R.attr.state_checked },
+                new int[] { -android.R.attr.state_checked }
+            };
+            int[] colors = new int[] { whiteColor, Color.GRAY };
+            android.content.res.ColorStateList colorStateList = new android.content.res.ColorStateList(states, colors);
+            bottomNavigationView.setItemIconTintList(colorStateList);
+            bottomNavigationView.setItemTextColor(colorStateList);
+        }
+
+
+    }
+
     private void updateNavigationSelection(int position) {
         if (bottomNavigationView != null) {
             bottomNavigationView.setOnItemSelectedListener(null); 
@@ -903,13 +1009,19 @@ public class MainActivity extends BaseActivity {
                     bottomNavigationView.setSelectedItemId(R.id.nav_home);
                     break;
                 case 1:
-                    bottomNavigationView.setSelectedItemId(R.id.nav_premium);
+                    int size = bottomNavigationView.getMenu().size();
+                    for (int i = 0; i < size; i++) {
+                        bottomNavigationView.getMenu().getItem(i).setChecked(false);
+                    }
                     break;
                 case 2:
                     bottomNavigationView.setSelectedItemId(R.id.nav_favorite);
                     break;
-                case 3: // NEW: Select Downloads tab
+                case 3:
                     bottomNavigationView.setSelectedItemId(R.id.nav_downloads);
+                    break;
+                case 4:
+                    bottomNavigationView.setSelectedItemId(R.id.nav_reel);
                     break;
             }
             setupNavigation(); 
@@ -930,6 +1042,9 @@ public class MainActivity extends BaseActivity {
         }
         if (downloadsFragment instanceof DownloadsFragment) {
             ((DownloadsFragment) downloadsFragment).refreshData();
+        }
+        if (reelFragment instanceof ReelFragment) {
+            ((ReelFragment) reelFragment).loadFeed();
         }
     }
 
@@ -953,7 +1068,14 @@ public class MainActivity extends BaseActivity {
                 }
                 break;
             case 3:
-                // Add refresh logic for DownloadsFragment if applicable
+                if (downloadsFragment instanceof DownloadsFragment) {
+                    ((DownloadsFragment) downloadsFragment).refreshData();
+                }
+                break;
+            case 4:
+                if (reelFragment instanceof ReelFragment) {
+                    ((ReelFragment) reelFragment).loadFeed();
+                }
                 break;
         }
 
@@ -978,11 +1100,16 @@ public class MainActivity extends BaseActivity {
         }
         return false;
     }
-    
+
     public void navigateToPremium() {
-        if (bottomNavigationView != null) {
-            bottomNavigationView.setSelectedItemId(R.id.nav_premium);
-        }
+        showFragment(1);
+    }
+
+    private int pendingReelPosition = -1;
+
+    public void navigateToReels(int position) {
+        pendingReelPosition = position;
+        showFragment(4);
     }
 
     @Override

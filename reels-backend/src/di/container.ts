@@ -64,7 +64,7 @@ export function buildContainer(env: Env & { DB?: D1Database; KV?: KVNamespace })
     comments,
     videoUploadController: new VideoUploadController(uploadService),
     videoFeedController: new VideoFeedController(feedService),
-    videoDeleteController: new VideoDeleteController(deleteService),
+    videoDeleteController: new VideoDeleteController(deleteService, adminUserIds),
     commentController: new CommentController(commentService),
     streamController: new StreamController(storage),
     hlsController: new HlsController(videos),

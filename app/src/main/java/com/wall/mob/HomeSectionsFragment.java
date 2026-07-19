@@ -72,6 +72,13 @@ public class HomeSectionsFragment extends Fragment {
     private void setupViewPager() {
         pagerAdapter = new SectionsPagerAdapter(this);
         viewPager.setAdapter(pagerAdapter);
+        viewPager.setUserInputEnabled(false);
+
+        viewPager.post(() -> {
+            if (viewPager.getChildAt(0) instanceof ViewGroup) {
+                ((ViewGroup) viewPager.getChildAt(0)).setNestedScrollingEnabled(false);
+            }
+        });
 
         new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
             View customView = LayoutInflater.from(mContext).inflate(R.layout.custom_tab_item, null);

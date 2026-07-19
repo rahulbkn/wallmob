@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Light palette -->
-    <color name="colorAccent">#2196F3</color>
+    <color name="colorAccent">#5E5CE6</color>
     <color name="colorPrimary">#000000</color>
     <color name="colorPrimaryDark">#222222</color>
     <color name="colorControlHighlight">#212121</color>
@@ -12,7 +12,7 @@
     <color name="transparent">#00000000</color>
 
     <!-- Semantic colors -->
-    <color name="background">#F8F9FA</color>
+    <color name="background">#FFFFFF</color>
     <color name="onBackground">#1A1A1A</color>
     <color name="surface">#FFFFFF</color>
     <color name="onSurface">#1A1A1A</color>
@@ -54,8 +54,8 @@
     <color name="search_premium_bg">#2A2A2A</color>
 
     <!-- TextInputLayout stroke colors -->
-    <color name="text_input_box_stroke">#000000</color>
-    <color name="text_input_box_stroke_focused">#000000</color>
+    <color name="text_input_box_stroke">#303030</color>
+    <color name="text_input_box_stroke_focused">#303030</color>
 
     <!-- Crash Activity Colors -->
     <color name="background_color">#FFFFFF</color>

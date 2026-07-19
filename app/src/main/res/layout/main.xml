@@ -112,6 +112,18 @@
                             android:clickable="true"
                             android:focusable="true"/>
 
+                        <ImageView
+                            android:id="@+id/btn_premium"
+                            android:layout_width="@dimen/icon_size_normal"
+                            android:layout_height="@dimen/icon_size_normal"
+                            android:layout_marginEnd="16dp"
+                            android:src="@drawable/ic_crown"
+                            app:tint="@color/onSurface"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:visibility="visible"/>
+
                         <LinearLayout
                             android:id="@+id/coinDisplayLayout"
                             android:layout_width="wrap_content"
@@ -176,26 +188,29 @@
 
                     </LinearLayout>
                 </androidx.appcompat.widget.Toolbar>
-                
-                
+
+            </LinearLayout>
+            
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
 <FrameLayout
     android:id="@+id/sticky_tab_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="0dp"
     android:visibility="gone"
-    android:background="@color/surface"/>
-    
-            </LinearLayout>
-    </com.google.android.material.appbar.AppBarLayout>
+    android:background="@android:color/transparent"
+    android:elevation="8dp"/>
     
     
-    
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/bottomNavigationContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@android:color/transparent">
+<androidx.constraintlayout.widget.ConstraintLayout
+android:id="@+id/bottomNavigationContainer"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:layout_gravity="bottom"
+android:background="@android:color/transparent">
 
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottomNavigationView"
@@ -204,32 +219,35 @@
             android:layout_marginTop="28dp" 
             android:background="@color/surface"
             app:elevation="16dp"
+            app:itemIconSize="26dp"
             app:itemIconTint="@color/nav_item_colors"
             app:itemTextColor="@color/nav_item_colors"
-            app:labelVisibilityMode="labeled"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:menu="@menu/bottom_nav_menu" />
-
+    app:labelVisibilityMode="labeled"  
+    app:layout_constraintBottom_toBottomOf="parent"  
+    app:layout_constraintEnd_toEndOf="parent"  
+    app:layout_constraintStart_toStartOf="parent"  
+    app:menu="@menu/bottom_nav_menu" />  
+    
 <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab_upload"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:contentDescription="@string/upload"
-            android:src="@drawable/ic_add"
-            android:elevation="18dp"
-            app:elevation="18dp"
-            app:backgroundTint="@color/colorAccent"
-            app:fabSize="normal"
-            app:tint="@color/white"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/bottomNavigationView"
-            app:layout_constraintBottom_toTopOf="@+id/bottomNavigationView" />
-
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
+android:id="@+id/fab_upload"
+android:layout_width="wrap_content"
+android:layout_height="wrap_content"
+android:contentDescription="@string/upload"
+android:src="@drawable/ic_add"
+android:elevation="16dp"
+app:elevation="16dp"
+app:backgroundTint="@color/colorAccent"
+app:fabSize="mini"
+app:tint="@color/white"
+app:layout_constraintEnd_toEndOf="parent"
+app:layout_constraintStart_toStartOf="parent"
+app:layout_constraintTop_toTopOf="@id/bottomNavigationView"
+app:layout_constraintBottom_toBottomOf="@id/bottomNavigationView"
+android:layout_marginTop="8dp"
+android:layout_marginBottom="8dp" />
+    
+</androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
