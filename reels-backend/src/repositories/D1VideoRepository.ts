@@ -27,6 +27,7 @@ interface Row {
   qualities: string;
   hls_playlists: string | null;
   quality_meta: string | null;
+  master_playlist_url: string | null;
 }
 
 function rowToMetadata(row: Row): VideoMetadata {
@@ -51,7 +52,8 @@ function rowToMetadata(row: Row): VideoMetadata {
     thumbnailKey: row.thumbnail_key ?? undefined,
     qualities: row.qualities ? JSON.parse(row.qualities) : undefined,
     hlsPlaylists: row.hls_playlists ? JSON.parse(row.hls_playlists) : undefined,
-    qualityMeta: row.quality_meta ? JSON.parse(row.quality_meta) : undefined
+    qualityMeta: row.quality_meta ? JSON.parse(row.quality_meta) : undefined,
+    masterPlaylistUrl: row.master_playlist_url ?? undefined
   };
 }
 
@@ -66,7 +68,8 @@ const CREATE_TABLE_SQL =
   "shares INTEGER NOT NULL DEFAULT 0, storage_provider TEXT NOT NULL, " +
   "storage_key TEXT NOT NULL, thumbnail_key TEXT, " +
   "storage_unique_id TEXT UNIQUE, qualities TEXT NOT NULL DEFAULT '{}', " +
-  "hls_playlists TEXT NOT NULL DEFAULT '{}', quality_meta TEXT NOT NULL DEFAULT '{}')";
+  "hls_playlists TEXT NOT NULL DEFAULT '{}', quality_meta TEXT NOT NULL DEFAULT '{}', " +
+  "master_playlist_url TEXT)";
 
 const INDEX_STATEMENTS = [
   "CREATE INDEX IF NOT EXISTS idx_videos_upload_date ON videos(upload_date DESC)",
@@ -78,7 +81,8 @@ const INDEX_STATEMENTS = [
 // Adds columns to tables created before this migration, without wiping data.
 const MIGRATION_STATEMENTS = [
   "ALTER TABLE videos ADD COLUMN hls_playlists TEXT NOT NULL DEFAULT '{}'",
-  "ALTER TABLE videos ADD COLUMN quality_meta TEXT NOT NULL DEFAULT '{}'"
+  "ALTER TABLE videos ADD COLUMN quality_meta TEXT NOT NULL DEFAULT '{}'",
+  "ALTER TABLE videos ADD COLUMN master_playlist_url TEXT"
 ];
 
 let schemaInitialized = false;
@@ -106,8 +110,8 @@ export class D1VideoRepository implements VideoRepository {
 
     await this.db
       .prepare(
-        `INSERT INTO videos (id, title, description, hashtags, category, language, duration, width, height, uploader, upload_date, storage_provider, storage_key, thumbnail_key, qualities, hls_playlists, quality_meta)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        `INSERT INTO videos (id, title, description, hashtags, category, language, duration, width, height, uploader, upload_date, storage_provider, storage_key, thumbnail_key, qualities, hls_playlists, quality_meta, master_playlist_url)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
       )
       .bind(
         id,
@@ -126,7 +130,8 @@ export class D1VideoRepository implements VideoRepository {
         data.thumbnailKey ?? null,
         JSON.stringify(data.qualities ?? {}),
         JSON.stringify(data.hlsPlaylists ?? {}),
-        JSON.stringify(data.qualityMeta ?? {})
+        JSON.stringify(data.qualityMeta ?? {}),
+        data.masterPlaylistUrl ?? null
       )
       .run();
 
@@ -151,7 +156,8 @@ export class D1VideoRepository implements VideoRepository {
       thumbnailKey: data.thumbnailKey,
       qualities: data.qualities,
       hlsPlaylists: data.hlsPlaylists,
-      qualityMeta: data.qualityMeta
+      qualityMeta: data.qualityMeta,
+      masterPlaylistUrl: data.masterPlaylistUrl
     };
   }
 
@@ -211,6 +217,7 @@ export class D1VideoRepository implements VideoRepository {
     if (patch.qualities !== undefined) { sets.push("qualities = ?"); bindings.push(JSON.stringify(patch.qualities)); }
     if (patch.hlsPlaylists !== undefined) { sets.push("hls_playlists = ?"); bindings.push(JSON.stringify(patch.hlsPlaylists)); }
     if (patch.qualityMeta !== undefined) { sets.push("quality_meta = ?"); bindings.push(JSON.stringify(patch.qualityMeta)); }
+    if (patch.masterPlaylistUrl !== undefined) { sets.push("master_playlist_url = ?"); bindings.push(patch.masterPlaylistUrl ?? null); }
 
     if (sets.length === 0) return;
     bindings.push(id);

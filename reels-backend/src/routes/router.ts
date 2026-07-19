@@ -34,8 +34,8 @@ export function buildRouter(container: AppContainer): Router {
   router.post("/api/videos/init-upload", adminOnly, container.chunkedUploadController.initUpload);
   router.post("/api/videos/complete-upload", adminOnly, container.chunkedUploadController.completeUpload);
 
-  // --- Transcode callback (called by the Render transcoder) -------------
-  router.post("/api/videos/transcode-callback", adminOnly, container.transcodeController.callback);
+  // --- Transcode callback (called by the Render transcoder, no auth — shared secret in body)
+  router.post("/api/videos/transcode-callback", container.transcodeController.callback);
 
   // --- Generic media stream — works for whichever provider is active -----
   router.get("/stream", container.streamController.handle);

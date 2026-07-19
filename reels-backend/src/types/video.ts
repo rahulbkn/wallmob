@@ -39,6 +39,13 @@ export interface VideoMetadata {
   /** Static per-quality bandwidth/resolution used to build the
    *  EXT-X-STREAM-INF lines in the master playlist. */
   qualityMeta?: Record<string, { bandwidth: number; width: number; height: number }>;
+
+  /**
+   * Full URL to the HLS master playlist served by the remote Transcoder
+   * (e.g. https://trascoder.onrender.com/video/{id}/master.m3u8).
+   * When set, clients should play this URL instead of the legacy videoUrl.
+   */
+  masterPlaylistUrl?: string;
 }
 
 export type CreateVideoMetadata = Omit<
@@ -75,6 +82,8 @@ export interface ClientVideoView {
   /** True once at least one HLS rendition exists, so the client knows
    *  whether to attach hls.js at /hls/master or fall back to videoUrl. */
   hasHls?: boolean;
+  /** Full URL to the HLS master playlist on the remote Transcoder. */
+  masterPlaylistUrl?: string;
 }
 
 export interface UploadVideoResult extends ClientVideoView {

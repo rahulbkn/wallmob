@@ -54,6 +54,7 @@ export function buildContainer(env: Env & { DB?: D1Database; KV?: KVNamespace })
   const adminUserIds = parseAdminUserIds(env.ADMIN_USER_IDS);
 
   const uploadService = new VideoUploadService(storage, videos, env.TRANSCODER_URL, env.TRANSCODER_SECRET, env.OWNER_TOKEN_SECRET);
+  uploadService.getCallbackUrl = () => env.TRANSCODER_CALLBACK_URL || `${env.PUBLIC_BASE_URL || ""}/api/videos/transcode-callback`;
   const feedService = new VideoFeedService(storage, videos, cache, interactions);
   const deleteService = new VideoDeleteService(storage, videos, env.OWNER_TOKEN_SECRET, comments);
   const commentService = new CommentService(comments, videos, interactions);

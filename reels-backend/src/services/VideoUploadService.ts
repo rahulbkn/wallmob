@@ -32,6 +32,9 @@ const CACHE_NS = "reels-video-cache";
 export const pendingVideoCache = new Map<string, { data: Buffer; mimeType: string }>();
 
 export class VideoUploadService {
+  /** Optional callback that returns the base URL for the transcode callback endpoint. */
+  public getCallbackUrl?: () => string;
+
   constructor(
     private readonly storage: StorageProvider,
     private readonly videos: VideoRepository,
@@ -159,10 +162,13 @@ export class VideoUploadService {
     if (!this.transcoderUrl || !this.transcoderSecret) return;
     try {
       const { fileId } = decodeTelegramStorageKey(storageKey);
+      const callbackUrl = this.getCallbackUrl
+        ? this.getCallbackUrl()
+        : undefined;
       const resp = await fetch(this.transcoderUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ fileId, videoId: recordId, secret: this.transcoderSecret })
+        body: JSON.stringify({ file_id: fileId, video_id: recordId, secret: this.transcoderSecret, callback_url: callbackUrl })
       });
       if (!resp.ok) logger.error("transcode trigger failed", { id: recordId, status: resp.status });
     } catch (e) {
@@ -183,9 +189,10 @@ export class VideoUploadService {
     recordId: string,
     qualities: Record<string, string>,
     hlsPlaylists?: Record<string, string>,
-    qualityMeta?: Record<string, { bandwidth: number; width: number; height: number }>
+    qualityMeta?: Record<string, { bandwidth: number; width: number; height: number }>,
+    masterPlaylistUrl?: string
   ): Promise<void> {
-    await this.videos.patch(recordId, { qualities, hlsPlaylists, qualityMeta });
+    await this.videos.patch(recordId, { qualities, hlsPlaylists, qualityMeta, masterPlaylistUrl });
   }
 
   async resolveUrls(storageKey: string, thumbnailKey?: string): Promise<{ videoUrl: string; thumbnailUrl: string }> {

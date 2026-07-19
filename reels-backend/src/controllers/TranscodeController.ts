@@ -10,15 +10,22 @@ export class TranscodeController {
 
   callback = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { videoId, qualities, playlists, qualityMeta, secret } = req.body;
+      const { videoId, qualities, playlists, qualityMeta, masterPlaylistUrl, secret } = req.body;
       if (secret !== this.transcoderSecret) {
         throw new BadRequestError("Invalid secret");
       }
-      if (!videoId || !qualities) {
-        throw new BadRequestError("videoId and qualities required");
+      if (!videoId) {
+        throw new BadRequestError("videoId required");
       }
 
-      await this.uploadService.updateQualities(videoId, qualities, playlists, qualityMeta);
+      if (qualities && Object.keys(qualities).length > 0) {
+        await this.uploadService.updateQualities(videoId, qualities, playlists, qualityMeta);
+      }
+
+      if (masterPlaylistUrl) {
+        await this.uploadService.updateQualities(videoId, {}, undefined, undefined, masterPlaylistUrl);
+      }
+
       res.json({ success: true });
     } catch (error) {
       next(error);

@@ -10,6 +10,7 @@ import com.wall.mob.R
 import com.wall.mob.reels.ReelsRepository
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -85,9 +86,10 @@ class ReelsAdapter(
         holder.shareCount.text = reel.shares.toString()
 
         val hasAlternateQualities = !reel.qualities.isNullOrEmpty()
-        holder.qualityButton.isEnabled = hasAlternateQualities
-        holder.qualityButton.alpha = if (hasAlternateQualities) 1f else 0.45f
-        holder.qualityText.text = if (hasAlternateQualities) "Auto" else "HD"
+        val isHls = reel.hasHls == true
+        holder.qualityButton.isEnabled = hasAlternateQualities || isHls
+        holder.qualityButton.alpha = if (hasAlternateQualities || isHls) 1f else 0.45f
+        holder.qualityText.text = if (isHls) "Auto" else if (hasAlternateQualities) "Auto" else "HD"
 
         val canDelete = repo.ownerToken(reel.id) != null
         holder.deleteButton.visibility = if (canDelete) android.view.View.VISIBLE else android.view.View.GONE
@@ -98,7 +100,10 @@ class ReelsAdapter(
             else R.drawable.ic_reel_like_outline
         )
 
-        val player = ExoPlayer.Builder(holder.itemView.context).build()
+        val trackSelector = DefaultTrackSelector(holder.itemView.context)
+        val player = ExoPlayer.Builder(holder.itemView.context)
+            .setTrackSelector(trackSelector)
+            .build()
         player.setMediaItem(MediaItem.fromUri(reel.videoUrl))
         player.repeatMode = ExoPlayer.REPEAT_MODE_ONE
         player.prepare()
@@ -159,24 +164,34 @@ class ReelsAdapter(
 
         holder.qualityButton.setOnClickListener {
             val qualities = reel.qualities
+            val labels = mutableListOf("Auto")
             if (!qualities.isNullOrEmpty()) {
-                val labels = qualities.keys.toTypedArray()
-                android.app.AlertDialog.Builder(holder.itemView.context)
-                    .setTitle("Select Quality")
-                    .setItems(labels) { _, which ->
-                        val selected = labels[which]
-                        holder.qualityText.text = selected
-                        val url = qualities[selected] ?: reel.videoUrl
+                labels.addAll(qualities.keys)
+            }
+            android.app.AlertDialog.Builder(holder.itemView.context)
+                .setTitle("Select Quality")
+                .setItems(labels.toTypedArray()) { _, which ->
+                    if (which == 0) {
+                        holder.qualityText.text = "Auto"
                         holder.player?.stop()
-                        holder.player?.setMediaItem(MediaItem.fromUri(url))
+                        holder.player?.setMediaItem(MediaItem.fromUri(reel.videoUrl))
                         holder.player?.prepare()
                         holder.player?.play()
-                        Toast.makeText(holder.itemView.context, "Quality: $selected", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(holder.itemView.context, "Quality: Auto", Toast.LENGTH_SHORT).show()
+                    } else {
+                        val selected = labels[which]
+                        val url = qualities?.get(selected)
+                        if (url != null) {
+                            holder.qualityText.text = selected
+                            holder.player?.stop()
+                            holder.player?.setMediaItem(MediaItem.fromUri(url))
+                            holder.player?.prepare()
+                            holder.player?.play()
+                            Toast.makeText(holder.itemView.context, "Quality: $selected", Toast.LENGTH_SHORT).show()
+                        }
                     }
-                    .show()
-            } else {
-                Toast.makeText(holder.itemView.context, "No alternate qualities available", Toast.LENGTH_SHORT).show()
-            }
+                }
+                .show()
         }
 
         holder.deleteButton.setOnClickListener {

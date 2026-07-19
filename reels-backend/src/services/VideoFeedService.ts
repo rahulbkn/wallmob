@@ -94,6 +94,18 @@ export class VideoFeedService {
     // existence signal (see hasHls below); it is NOT meant to be played
     // directly since it points at raw .ts bytes for HLS renditions.
     const hasHls = Boolean(record.hlsPlaylists && Object.keys(record.hlsPlaylists).length > 0);
+    const hasMasterUrl = Boolean(record.masterPlaylistUrl);
+
+    // Build quality URL map from masterPlaylistUrl + qualityMeta.
+    // Each quality label maps to its variant playlist URL on the Transcoder.
+    let qualities: Record<string, string> | undefined = undefined;
+    if (hasMasterUrl && record.masterPlaylistUrl && record.qualityMeta) {
+      const base = record.masterPlaylistUrl.replace(/\/master\.m3u8$/, "");
+      qualities = {};
+      for (const label of Object.keys(record.qualityMeta)) {
+        qualities[label] = `${base}/${label}/stream.m3u8`;
+      }
+    }
 
     return {
       id: record.id,
@@ -111,10 +123,12 @@ export class VideoFeedService {
       likes: record.likes,
       comments: record.comments,
       shares: record.shares,
-      videoUrl: urls.videoUrl,
+      videoUrl: hasMasterUrl ? record.masterPlaylistUrl! : urls.videoUrl,
       thumbnailUrl: urls.thumbnailUrl,
+      qualities,
       qualityMeta: hasHls ? record.qualityMeta : undefined,
-      hasHls
+      hasHls: hasMasterUrl || hasHls,
+      masterPlaylistUrl: record.masterPlaylistUrl
     };
   }
 }
