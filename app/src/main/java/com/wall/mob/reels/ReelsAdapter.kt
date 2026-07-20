@@ -7,10 +7,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.wall.mob.R
-import com.wall.mob.reels.ReelsRepository
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.PlayerView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,19 +33,32 @@ class ReelsAdapter(
         val shareCount: android.widget.TextView = view.findViewById(R.id.shareCount)
         val qualityButton: android.widget.ImageButton = view.findViewById(R.id.qualityButton)
         val qualityText: android.widget.TextView = view.findViewById(R.id.qualityText)
-        val deleteButton: android.widget.ImageButton = view.findViewById(R.id.deleteButton)
-        val deleteText: android.widget.TextView = view.findViewById(R.id.deleteText)
         val uploaderHandle: android.widget.TextView = view.findViewById(R.id.uploaderHandle)
         val reelTitle: android.widget.TextView = view.findViewById(R.id.reelTitle)
         val reelDescription: android.widget.TextView = view.findViewById(R.id.reelDescription)
+        val deleteButton: android.widget.ImageButton = view.findViewById(R.id.deleteButton)
+        val deleteText: android.widget.TextView = view.findViewById(R.id.deleteText)
         var player: ExoPlayer? = null
-        var isPaused: Boolean = false
+        /** User manually paused this item (tap). Cleared when leaving the item. */
+        var userPaused: Boolean = false
+        var boundVideoId: String? = null
+        var currentVideoUrl: String? = null
     }
 
-    private val activePlayers = mutableListOf<ExoPlayer>()
     private val mainHandler = Handler(Looper.getMainLooper())
     private var recyclerView: RecyclerView? = null
-    private var activePosition: Int = 0
+
+    /** Index of the snap-centered reel that is allowed to play. */
+    private var activePosition: Int = RecyclerView.NO_POSITION
+
+    /** False while fragment is paused, hidden, or off-screen — no audio/video. */
+    private var playbackAllowed: Boolean = false
+
+    /** True while the user is dragging the list — keep everything paused. */
+    private var isScrolling: Boolean = false
+
+    /** Per-video quality choice: videoId -> "Auto" | "720p" | "480" etc. */
+    private val qualityByVideoId = mutableMapOf<String, String>()
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -67,60 +79,68 @@ class ReelsAdapter(
 
     override fun onBindViewHolder(holder: ReelViewHolder, position: Int) {
         val reel = items[position]
+        releasePlayer(holder)
 
-        holder.player?.let { oldPlayer ->
-            activePlayers.remove(oldPlayer)
-            oldPlayer.release()
-        }
-        holder.player = null
-        holder.isPaused = false
+        holder.boundVideoId = reel.id
+        holder.userPaused = false
         holder.playPauseIcon.visibility = android.view.View.GONE
 
         holder.uploaderHandle.text = "@${reel.uploader}"
         holder.reelTitle.text = reel.title.ifBlank { "Untitled reel" }
         val description = reel.description.orEmpty().trim()
         holder.reelDescription.text = description
-        holder.reelDescription.visibility = if (description.isBlank()) android.view.View.GONE else android.view.View.VISIBLE
+        holder.reelDescription.visibility =
+            if (description.isBlank()) android.view.View.GONE else android.view.View.VISIBLE
         holder.likeCount.text = reel.likes.toString()
         holder.commentCount.text = reel.comments.toString()
         holder.shareCount.text = reel.shares.toString()
 
-        val hasAlternateQualities = !reel.qualities.isNullOrEmpty()
-        val isHls = reel.hasHls == true
-        holder.qualityButton.isEnabled = hasAlternateQualities || isHls
-        holder.qualityButton.alpha = if (hasAlternateQualities || isHls) 1f else 0.45f
-        holder.qualityText.text = if (isHls) "Auto" else if (hasAlternateQualities) "Auto" else "HD"
-
         val canDelete = repo.ownerToken(reel.id) != null
-        holder.deleteButton.visibility = if (canDelete) android.view.View.VISIBLE else android.view.View.GONE
-        holder.deleteText.visibility = if (canDelete) android.view.View.VISIBLE else android.view.View.GONE
+        holder.deleteButton.visibility =
+            if (canDelete) android.view.View.VISIBLE else android.view.View.GONE
+        holder.deleteText.visibility =
+            if (canDelete) android.view.View.VISIBLE else android.view.View.GONE
 
         holder.likeButton.setImageResource(
             if (repo.isLiked(reel.id)) R.drawable.ic_reel_like_filled
             else R.drawable.ic_reel_like_outline
         )
 
-        val trackSelector = DefaultTrackSelector(holder.itemView.context)
-        val player = ExoPlayer.Builder(holder.itemView.context)
-            .setTrackSelector(trackSelector)
-            .build()
-        player.setMediaItem(MediaItem.fromUri(reel.videoUrl))
-        player.repeatMode = ExoPlayer.REPEAT_MODE_ONE
-        player.prepare()
-        player.playWhenReady = position == activePosition
+        val selectedQuality = qualityByVideoId[reel.id] ?: "Auto"
+        updateQualityLabel(holder, selectedQuality, reel)
+
+        val available = availableQualityLabels(reel)
+        // Hide quality control when this video has no alternate renditions
+        val hasChoices = available.size > 1
+        holder.qualityButton.visibility =
+            if (hasChoices) android.view.View.VISIBLE else android.view.View.GONE
+        holder.qualityText.visibility =
+            if (hasChoices) android.view.View.VISIBLE else android.view.View.GONE
+
+        val videoUrl = getVideoUrlForQuality(reel, selectedQuality)
+        holder.currentVideoUrl = videoUrl
+
+        val player = ExoPlayer.Builder(holder.itemView.context).build().also {
+            it.setMediaItem(MediaItem.fromUri(videoUrl))
+            it.repeatMode = Player.REPEAT_MODE_ONE
+            it.volume = 1f
+            // Never auto-start from bind — only syncPlayback() starts the active item.
+            it.playWhenReady = false
+            it.prepare()
+        }
         holder.playerView.player = player
         holder.player = player
-        activePlayers.add(player)
 
-        holder.playerView.setOnClickListener {
-            togglePlayPause(holder)
-        }
+        holder.playerView.setOnClickListener { togglePlayPause(holder) }
+        holder.qualityButton.setOnClickListener { showQualityDialog(holder, reel) }
 
         scope.launch { repo.recordView(reel.id) }
 
         holder.likeButton.setOnClickListener {
             val wasLiked = repo.isLiked(reel.id)
-            holder.likeButton.setImageResource(if (wasLiked) R.drawable.ic_reel_like_outline else R.drawable.ic_reel_like_filled)
+            holder.likeButton.setImageResource(
+                if (wasLiked) R.drawable.ic_reel_like_outline else R.drawable.ic_reel_like_filled
+            )
             scope.launch(Dispatchers.Main) {
                 repo.like(reel.id).onSuccess { result ->
                     val liked = result.liked ?: !wasLiked
@@ -131,18 +151,30 @@ class ReelsAdapter(
                         repo.unmarkLiked(reel.id)
                         if (wasLiked) reel.likes = maxOf(0, reel.likes - 1)
                     }
-                    holder.likeButton.setImageResource(if (liked) R.drawable.ic_reel_like_filled else R.drawable.ic_reel_like_outline)
+                    holder.likeButton.setImageResource(
+                        if (liked) R.drawable.ic_reel_like_filled else R.drawable.ic_reel_like_outline
+                    )
                     holder.likeCount.text = reel.likes.toString()
                 }.onFailure {
-                    holder.likeButton.setImageResource(if (wasLiked) R.drawable.ic_reel_like_filled else R.drawable.ic_reel_like_outline)
-                    Toast.makeText(holder.itemView.context, it.message ?: "Admin access is required to like reels", Toast.LENGTH_SHORT).show()
+                    holder.likeButton.setImageResource(
+                        if (wasLiked) R.drawable.ic_reel_like_filled else R.drawable.ic_reel_like_outline
+                    )
+                    Toast.makeText(
+                        holder.itemView.context,
+                        it.message ?: "Admin access is required to like reels",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
 
         holder.shareButton.setOnClickListener {
             if (!repo.isAdminUser()) {
-                Toast.makeText(holder.itemView.context, "Admin access is required to share reels", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    holder.itemView.context,
+                    "Admin access is required to share reels",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
             if (repo.isShared(reel.id)) {
@@ -162,124 +194,343 @@ class ReelsAdapter(
 
         holder.commentButton.setOnClickListener { onCommentClick(reel) }
 
-        holder.qualityButton.setOnClickListener {
-            val qualities = reel.qualities
-            val labels = mutableListOf("Auto")
-            if (!qualities.isNullOrEmpty()) {
-                labels.addAll(qualities.keys)
-            }
-            android.app.AlertDialog.Builder(holder.itemView.context)
-                .setTitle("Select Quality")
-                .setItems(labels.toTypedArray()) { _, which ->
-                    if (which == 0) {
-                        holder.qualityText.text = "Auto"
-                        holder.player?.stop()
-                        holder.player?.setMediaItem(MediaItem.fromUri(reel.videoUrl))
-                        holder.player?.prepare()
-                        holder.player?.play()
-                        Toast.makeText(holder.itemView.context, "Quality: Auto", Toast.LENGTH_SHORT).show()
-                    } else {
-                        val selected = labels[which]
-                        val url = qualities?.get(selected)
-                        if (url != null) {
-                            holder.qualityText.text = selected
-                            holder.player?.stop()
-                            holder.player?.setMediaItem(MediaItem.fromUri(url))
-                            holder.player?.prepare()
-                            holder.player?.play()
-                            Toast.makeText(holder.itemView.context, "Quality: $selected", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-                .show()
-        }
-
         holder.deleteButton.setOnClickListener {
             val token = repo.ownerToken(reel.id)
             if (token == null) {
-                Toast.makeText(holder.itemView.context, "Delete only works for reels you uploaded on this device", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    holder.itemView.context,
+                    "Delete only works for reels you uploaded on this device",
+                    Toast.LENGTH_SHORT
+                ).show()
                 return@setOnClickListener
             }
             scope.launch {
                 repo.delete(reel.id).onSuccess {
                     Toast.makeText(holder.itemView.context, "Reel deleted", Toast.LENGTH_SHORT).show()
                 }.onFailure {
-                    Toast.makeText(holder.itemView.context, "Delete failed: ${it.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        holder.itemView.context,
+                        "Delete failed: ${it.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+
+        // After bind, enforce single-player rule for currently visible holders.
+        syncPlayback()
+    }
+
+    /**
+     * Labels actually present for this reel.
+     * Always includes Auto when a default URL exists; other entries come only from qualities map.
+     */
+    private fun availableQualityLabels(reel: ReelVideo): List<String> {
+        val labels = linkedSetOf<String>()
+        labels.add("Auto")
+        val map = reel.qualities
+        if (!map.isNullOrEmpty()) {
+            // Prefer higher quality first for nicer dialog order
+            val sorted = map.keys.sortedByDescending { key ->
+                key.filter { it.isDigit() }.toIntOrNull() ?: 0
+            }
+            for (key in sorted) {
+                labels.add(formatQualityLabel(key))
+            }
+        }
+        return labels.toList()
+    }
+
+    private fun formatQualityLabel(raw: String): String {
+        val trimmed = raw.trim()
+        if (trimmed.equals("Auto", ignoreCase = true)) return "Auto"
+        return if (trimmed.endsWith("p", ignoreCase = true)) trimmed else "${trimmed}p"
+    }
+
+    private fun normalizeQualityKey(label: String): String {
+        return label.trim().removeSuffix("p").removeSuffix("P")
+    }
+
+    private fun getVideoUrlForQuality(reel: ReelVideo, quality: String): String {
+        if (quality.equals("Auto", ignoreCase = true) || quality.isBlank()) {
+            return reel.videoUrl
+        }
+        val map = reel.qualities ?: return reel.videoUrl
+        val key = normalizeQualityKey(quality)
+        // Match either "720" or "720p" style keys from the API
+        return map[key]
+            ?: map["${key}p"]
+            ?: map[quality]
+            ?: map.entries.firstOrNull {
+                normalizeQualityKey(it.key).equals(key, ignoreCase = true)
+            }?.value
+            ?: reel.videoUrl
+    }
+
+    private fun updateQualityLabel(holder: ReelViewHolder, quality: String, reel: ReelVideo) {
+        val available = availableQualityLabels(reel)
+        val resolved = if (available.any { it.equals(quality, ignoreCase = true) }) {
+            available.first { it.equals(quality, ignoreCase = true) }
+        } else {
+            "Auto"
+        }
+        holder.qualityText.text = resolved
+    }
+
+    private fun showQualityDialog(holder: ReelViewHolder, reel: ReelVideo) {
+        val available = availableQualityLabels(reel)
+        if (available.size <= 1) {
+            Toast.makeText(
+                holder.itemView.context,
+                "Only default quality available",
+                Toast.LENGTH_SHORT
+            ).show()
+            return
+        }
+
+        val current = qualityByVideoId[reel.id] ?: "Auto"
+        val checked = available.indexOfFirst { it.equals(current, ignoreCase = true) }
+            .let { if (it >= 0) it else 0 }
+
+        android.app.AlertDialog.Builder(holder.itemView.context)
+            .setTitle("Video quality")
+            .setSingleChoiceItems(available.toTypedArray(), checked) { dialog, which ->
+                val quality = available[which]
+                applyQualityForVideo(holder, reel, quality)
+                dialog.dismiss()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun applyQualityForVideo(holder: ReelViewHolder, reel: ReelVideo, quality: String) {
+        qualityByVideoId[reel.id] = quality
+        updateQualityLabel(holder, quality, reel)
+
+        val newUrl = getVideoUrlForQuality(reel, quality)
+        if (holder.currentVideoUrl == newUrl) return
+
+        holder.currentVideoUrl = newUrl
+        val player = holder.player ?: return
+        val positionMs = player.currentPosition
+        val shouldResume =
+            holder.bindingAdapterPosition == activePosition &&
+                playbackAllowed &&
+                !isScrolling &&
+                !holder.userPaused
+
+        player.playWhenReady = false
+        player.stop()
+        player.setMediaItem(MediaItem.fromUri(newUrl))
+        player.prepare()
+        player.seekTo(positionMs)
+
+        if (shouldResume) {
+            player.playWhenReady = true
+            player.play()
+        } else {
+            player.pause()
+            player.playWhenReady = false
+        }
+        // Ensure siblings stay silent after quality swap
+        syncPlayback()
+    }
+
+    private fun togglePlayPause(holder: ReelViewHolder) {
+        val player = holder.player ?: return
+        val pos = holder.bindingAdapterPosition
+        if (pos != activePosition || !playbackAllowed || isScrolling) return
+
+        if (player.isPlaying) {
+            holder.userPaused = true
+            player.playWhenReady = false
+            player.pause()
+            flashIcon(holder, R.drawable.ic_reel_play)
+        } else {
+            holder.userPaused = false
+            // Only this item may play
+            pauseAllExcept(pos)
+            player.playWhenReady = true
+            player.play()
+            flashIcon(holder, R.drawable.ic_reel_pause)
+        }
+    }
+
+    private fun flashIcon(holder: ReelViewHolder, resId: Int) {
+        holder.playPauseIcon.setImageResource(resId)
+        holder.playPauseIcon.visibility = android.view.View.VISIBLE
+        holder.playPauseIcon.alpha = 1f
+        mainHandler.postDelayed({
+            holder.playPauseIcon.visibility = android.view.View.GONE
+        }, 300)
+    }
+
+    private fun releasePlayer(holder: ReelViewHolder) {
+        holder.playerView.player = null
+        holder.player?.let { player ->
+            player.playWhenReady = false
+            player.stop()
+            player.release()
+        }
+        holder.player = null
+        holder.currentVideoUrl = null
+        holder.boundVideoId = null
+        holder.userPaused = false
+    }
+
+    override fun onViewRecycled(holder: ReelViewHolder) {
+        releasePlayer(holder)
+        super.onViewRecycled(holder)
+    }
+
+    override fun onViewAttachedToWindow(holder: ReelViewHolder) {
+        super.onViewAttachedToWindow(holder)
+        syncPlayback()
+    }
+
+    override fun onViewDetachedFromWindow(holder: ReelViewHolder) {
+        // Leaving the screen: always stop this player so nothing plays off-screen.
+        holder.player?.let { player ->
+            player.playWhenReady = false
+            player.pause()
+        }
+        super.onViewDetachedFromWindow(holder)
+    }
+
+    /**
+     * Mark which reel is the snap-centered one. Only that item may play.
+     */
+    fun setActivePosition(position: Int) {
+        if (position < 0 || position >= items.size) return
+        if (activePosition != position) {
+            // Reset manual pause when user swipes to a different reel
+            findHolder(activePosition)?.userPaused = false
+            activePosition = position
+        } else {
+            activePosition = position
+        }
+        syncPlayback()
+    }
+
+    fun setScrolling(scrolling: Boolean) {
+        isScrolling = scrolling
+        if (scrolling) {
+            // While dragging, mute all players immediately (no double audio mid-swipe)
+            pauseAllPlayers()
+        } else {
+            syncPlayback()
+        }
+    }
+
+    /**
+     * Called from fragment lifecycle. When false, nothing plays (background / other tab).
+     */
+    fun setPlaybackAllowed(allowed: Boolean) {
+        playbackAllowed = allowed
+        if (!allowed) {
+            pauseAllPlayers()
+        } else {
+            syncPlayback()
+        }
+    }
+
+    /**
+     * Single source of truth: at most one ExoPlayer has playWhenReady=true.
+     */
+    private fun syncPlayback() {
+        val rv = recyclerView ?: return
+        for (i in 0 until rv.childCount) {
+            val child = rv.getChildAt(i) ?: continue
+            val holder = rv.getChildViewHolder(child) as? ReelViewHolder ?: continue
+            val player = holder.player ?: continue
+            val pos = holder.bindingAdapterPosition
+            if (pos == RecyclerView.NO_POSITION) {
+                player.playWhenReady = false
+                player.pause()
+                continue
+            }
+
+            val shouldPlay =
+                playbackAllowed &&
+                    !isScrolling &&
+                    pos == activePosition &&
+                    !holder.userPaused
+
+            if (shouldPlay) {
+                if (!player.isPlaying) {
+                    player.playWhenReady = true
+                    player.play()
+                }
+            } else {
+                if (player.playWhenReady || player.isPlaying) {
+                    player.playWhenReady = false
+                    player.pause()
                 }
             }
         }
     }
 
-    private fun togglePlayPause(holder: ReelViewHolder) {
-        val player = holder.player ?: return
-        if (player.isPlaying) {
-            player.pause()
-            holder.isPaused = true
-            holder.playPauseIcon.setImageResource(R.drawable.ic_reel_play)
-            holder.playPauseIcon.visibility = android.view.View.VISIBLE
-            holder.playPauseIcon.alpha = 1f
-            mainHandler.postDelayed({
-                holder.playPauseIcon.visibility = android.view.View.GONE
-            }, 300)
-        } else {
-            player.play()
-            holder.isPaused = false
-            holder.playPauseIcon.setImageResource(R.drawable.ic_reel_pause)
-            holder.playPauseIcon.visibility = android.view.View.VISIBLE
-            holder.playPauseIcon.alpha = 1f
-            mainHandler.postDelayed({
-                holder.playPauseIcon.visibility = android.view.View.GONE
-            }, 300)
-        }
-    }
-
-    override fun onViewRecycled(holder: ReelViewHolder) {
-        holder.player?.let {
-            activePlayers.remove(it)
-            it.release()
-        }
-        holder.player = null
-        super.onViewRecycled(holder)
-    }
-
-    fun setActivePosition(position: Int) {
-        activePosition = position
-        val rv = recyclerView ?: return
-        for (i in 0 until rv.childCount) {
-            val child = rv.getChildAt(i)
-            val holder = rv.getChildViewHolder(child) as? ReelViewHolder ?: continue
-            val player = holder.player ?: continue
-            if (holder.bindingAdapterPosition == position) {
-                if (!player.isPlaying) player.play()
-            } else {
-                if (player.isPlaying) player.pause()
+    private fun pauseAllPlayers() {
+        val rv = recyclerView
+        if (rv != null) {
+            for (i in 0 until rv.childCount) {
+                val child = rv.getChildAt(i) ?: continue
+                val holder = rv.getChildViewHolder(child) as? ReelViewHolder ?: continue
+                holder.player?.let { player ->
+                    player.playWhenReady = false
+                    player.pause()
+                }
             }
         }
     }
 
-    fun pauseAll() {
-        for (player in activePlayers.toList()) {
-            if (player.isPlaying) player.pause()
+    private fun pauseAllExcept(exceptPosition: Int) {
+        val rv = recyclerView ?: return
+        for (i in 0 until rv.childCount) {
+            val child = rv.getChildAt(i) ?: continue
+            val holder = rv.getChildViewHolder(child) as? ReelViewHolder ?: continue
+            val pos = holder.bindingAdapterPosition
+            if (pos != exceptPosition) {
+                holder.player?.let { player ->
+                    player.playWhenReady = false
+                    player.pause()
+                }
+            }
         }
     }
 
-    fun resumeAll() {
-        setActivePosition(activePosition)
+    private fun findHolder(position: Int): ReelViewHolder? {
+        if (position < 0) return null
+        return recyclerView?.findViewHolderForAdapterPosition(position) as? ReelViewHolder
+    }
+
+    fun pauseAll() {
+        pauseAllPlayers()
     }
 
     fun releaseAll() {
-        for (player in activePlayers.toList()) {
-            player.release()
+        val rv = recyclerView
+        if (rv != null) {
+            for (i in 0 until rv.childCount) {
+                val child = rv.getChildAt(i) ?: continue
+                val holder = rv.getChildViewHolder(child) as? ReelViewHolder ?: continue
+                releasePlayer(holder)
+            }
         }
-        activePlayers.clear()
+        activePosition = RecyclerView.NO_POSITION
     }
 
     fun submitList(newItems: List<ReelVideo>) {
         releaseAll()
-        activePosition = 0
         items.clear()
         items.addAll(newItems)
+        // Keep quality choices for videos that remain; drop orphaned ids lazily on next open
         notifyDataSetChanged()
-        mainHandler.post { setActivePosition(activePosition) }
+    }
+
+    fun addItems(newItems: List<ReelVideo>) {
+        val startIndex = items.size
+        items.addAll(newItems)
+        notifyItemRangeInserted(startIndex, newItems.size)
     }
 }

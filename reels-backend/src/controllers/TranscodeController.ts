@@ -18,13 +18,13 @@ export class TranscodeController {
         throw new BadRequestError("videoId required");
       }
 
-      if (qualities && Object.keys(qualities).length > 0) {
-        await this.uploadService.updateQualities(videoId, qualities, playlists, qualityMeta);
-      }
-
-      if (masterPlaylistUrl) {
-        await this.uploadService.updateQualities(videoId, {}, undefined, undefined, masterPlaylistUrl);
-      }
+      await this.uploadService.updateQualities(
+        videoId,
+        qualities && Object.keys(qualities).length > 0 ? qualities : undefined,
+        playlists,
+        qualityMeta,
+        masterPlaylistUrl,
+      );
 
       res.json({ success: true });
     } catch (error) {

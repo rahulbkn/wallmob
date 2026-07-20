@@ -187,7 +187,7 @@ export class VideoUploadService {
    */
   async updateQualities(
     recordId: string,
-    qualities: Record<string, string>,
+    qualities?: Record<string, string>,
     hlsPlaylists?: Record<string, string>,
     qualityMeta?: Record<string, { bandwidth: number; width: number; height: number }>,
     masterPlaylistUrl?: string

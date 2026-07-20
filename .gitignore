@@ -68,7 +68,7 @@ lint/tmp/
 
 # dependencies
 node_modules/
-
+reels-backend/node_modules/
 # build artifacts
 dist/
 .wrangler/
