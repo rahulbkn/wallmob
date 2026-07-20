@@ -1,0 +1,2548 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+		<title>Reels Backend</title>
+		<style>
+			:root {
+				color-scheme: dark;
+				font-family:
+					Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+					"Segoe UI", sans-serif;
+				background: #050507;
+				color: #fff;
+				--stage-radius: 2rem;
+				--bottom-ui: 5.5rem;
+				--action-size: 3.1rem;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html,
+			body {
+				overscroll-behavior: none;
+				-webkit-text-size-adjust: 100%;
+			}
+
+			body {
+				min-width: 320px;
+				min-height: 100vh;
+				min-height: 100dvh;
+				min-height: 100svh;
+				margin: 0;
+				overflow: hidden;
+				background: #050507;
+				touch-action: none;
+				user-select: none;
+				-webkit-user-select: none;
+			}
+
+			button {
+				border: 0;
+				font: inherit;
+				color: inherit;
+				cursor: pointer;
+				-webkit-tap-highlight-color: transparent;
+				touch-action: manipulation;
+			}
+
+			button:disabled {
+				cursor: not-allowed;
+				opacity: 0.55;
+			}
+
+			input,
+			textarea,
+			select {
+				user-select: text;
+				-webkit-user-select: text;
+				touch-action: auto;
+			}
+
+			.app-shell {
+				min-height: 100vh;
+				min-height: 100dvh;
+				min-height: 100svh;
+				display: grid;
+				grid-template-columns: minmax(0, 1fr);
+				place-items: center;
+				padding: max(0.75rem, env(safe-area-inset-top)) 0.75rem max(0.75rem, env(safe-area-inset-bottom));
+			}
+
+			.short-stage {
+				position: relative;
+				width: min(100%, 430px);
+				height: min(860px, calc(100dvh - 1.5rem), calc(100svh - 1.5rem));
+				min-height: min(560px, 100dvh);
+				overflow: hidden;
+				border: 1px solid rgb(255 255 255 / 14%);
+				border-radius: var(--stage-radius);
+				background: #111;
+				box-shadow: 0 2rem 5rem rgb(0 0 0 / 45%);
+				isolation: isolate;
+				touch-action: none;
+				cursor: grab;
+			}
+
+			.short-stage:active {
+				cursor: grabbing;
+			}
+
+			.short-stage.is-swiping .bottom-panel,
+			.short-stage.is-swiping .action-rail,
+			.short-stage.is-swiping .nav-controls {
+				opacity: 0.55;
+				transition: opacity 120ms ease;
+			}
+
+			.short-stage::before {
+				position: absolute;
+				inset: 0;
+				z-index: -1;
+				content: "";
+				background: #0a0a0c;
+			}
+
+			.stage-media {
+				position: absolute;
+				inset: 0;
+				z-index: 0;
+				overflow: hidden;
+				background: #000;
+				will-change: transform, opacity;
+			}
+
+			.stage-media video {
+				width: 100%;
+				height: 100%;
+				object-fit: cover;
+				background: #000;
+				display: block;
+				pointer-events: none;
+			}
+
+			.stage-scrim {
+				position: absolute;
+				inset: 0;
+				background: linear-gradient(180deg, rgb(0 0 0 / 58%), transparent 26%, transparent 58%, rgb(0 0 0 / 80%));
+				pointer-events: none;
+			}
+
+			.swipe-layer {
+				position: absolute;
+				inset: 0;
+				z-index: 1;
+				touch-action: none;
+				cursor: inherit;
+			}
+
+			.play-pause-icon {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				z-index: 2;
+				width: 4.5rem;
+				height: 4.5rem;
+				transform: translate(-50%, -50%);
+				pointer-events: none;
+				opacity: 0;
+				filter: drop-shadow(0 0.4rem 1rem rgb(0 0 0 / 55%));
+			}
+
+			.play-pause-icon.show {
+				opacity: 1;
+				animation: fadeOut 0.6s ease forwards 0.25s;
+			}
+
+			@keyframes fadeOut {
+				to {
+					opacity: 0;
+				}
+			}
+
+			@keyframes reelIn {
+				from {
+					opacity: 0.35;
+					transform: translateY(18px) scale(0.985);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0) scale(1);
+				}
+			}
+
+			.stage-media.reel-enter {
+				animation: reelIn 280ms cubic-bezier(0.22, 1, 0.36, 1);
+			}
+
+			.top-bar,
+			.bottom-panel,
+			.action-rail,
+			.nav-controls,
+			.swipe-hint {
+				position: absolute;
+				z-index: 3;
+			}
+
+			.top-bar {
+				top: 0;
+				left: 0;
+				right: 0;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 0.5rem;
+				padding: max(0.85rem, env(safe-area-inset-top)) 0.9rem 0.75rem;
+				text-shadow: 0 0.2rem 1rem rgb(0 0 0 / 45%);
+				pointer-events: none;
+			}
+
+			.top-bar .brand,
+			.top-bar .top-actions {
+				pointer-events: auto;
+			}
+
+			.brand {
+				display: flex;
+				align-items: center;
+				gap: 0.6rem;
+				font-weight: 800;
+				letter-spacing: -0.03em;
+			}
+
+			.brand-mark {
+				display: grid;
+				width: 2rem;
+				height: 2rem;
+				place-items: center;
+				border-radius: 0.75rem;
+				background: linear-gradient(135deg, #ff003d, #ff8a00);
+				box-shadow: 0 0.5rem 1.5rem rgb(255 0 61 / 36%);
+			}
+
+			.top-actions {
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+			}
+
+			.status-pill {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.4rem;
+				padding: 0.4rem 0.65rem;
+				border: 1px solid rgb(255 255 255 / 18%);
+				border-radius: 999px;
+				background: rgb(0 0 0 / 28%);
+				-webkit-backdrop-filter: blur(12px);
+				backdrop-filter: blur(12px);
+				font-size: 0.78rem;
+				max-width: 9.5rem;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.status-pill #statusText {
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+
+			.status-dot {
+				width: 0.55rem;
+				height: 0.55rem;
+				border-radius: 50%;
+				background: #a3a3a3;
+				box-shadow: 0 0 0.75rem currentColor;
+			}
+
+			.status-pill[data-state="online"] .status-dot {
+				background: #27f58c;
+				color: #27f58c;
+			}
+
+			.status-pill[data-state="offline"] .status-dot {
+				background: #ff4f6d;
+				color: #ff4f6d;
+			}
+
+			.upload-pill {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.35rem;
+				padding: 0.4rem 0.75rem;
+				border: 1px solid rgb(255 255 255 / 18%);
+				border-radius: 999px;
+				background: linear-gradient(135deg, #ff005c, #ff8a00);
+				font-weight: 800;
+				font-size: 0.82rem;
+				box-shadow: 0 0.5rem 1.2rem rgb(255 0 92 / 30%);
+			}
+
+			.action-rail {
+				right: 0.55rem;
+				bottom: calc(var(--bottom-ui) + env(safe-area-inset-bottom, 0px));
+				display: grid;
+				gap: 0.55rem;
+				justify-items: center;
+				pointer-events: none;
+			}
+
+			.action-rail > * {
+				pointer-events: auto;
+				display: grid;
+				justify-items: center;
+				gap: 0.15rem;
+			}
+
+			.action-button {
+				display: grid;
+				width: var(--action-size);
+				height: var(--action-size);
+				place-items: center;
+				border: 1px solid rgb(255 255 255 / 18%);
+				border-radius: 50%;
+				background: rgb(0 0 0 / 32%);
+				-webkit-backdrop-filter: blur(10px);
+				backdrop-filter: blur(10px);
+				font-size: 1.25rem;
+				transition: transform 160ms ease, background 160ms ease;
+			}
+
+			.action-button:hover,
+			.action-button:focus-visible {
+				background: rgb(255 255 255 / 22%);
+				transform: translateY(-2px) scale(1.03);
+			}
+
+			.action-button[aria-pressed="true"] {
+				background: rgb(255 0 92 / 42%);
+			}
+
+			.action-count {
+				font-size: 0.75rem;
+				font-weight: 800;
+				text-align: center;
+				text-shadow: 0 0.2rem 0.8rem rgb(0 0 0 / 70%);
+			}
+
+			.bottom-panel {
+				left: 0.7rem;
+				right: calc(var(--action-size) + 1.1rem);
+				bottom: calc(var(--bottom-ui) + env(safe-area-inset-bottom, 0px));
+				display: flex;
+				flex-direction: column;
+				gap: 0.15rem;
+				max-width: min(100%, 14.5rem);
+				padding: 0.4rem 0.55rem;
+				border: 1px solid rgb(255 255 255 / 14%);
+				border-radius: 0.8rem;
+				background: rgb(0 0 0 / 42%);
+				-webkit-backdrop-filter: blur(14px);
+				backdrop-filter: blur(14px);
+				box-shadow: 0 0.35rem 1rem rgb(0 0 0 / 28%);
+				text-shadow: 0 0.1rem 0.5rem rgb(0 0 0 / 55%);
+				pointer-events: auto;
+				cursor: pointer;
+				transition: max-width 180ms ease, padding 180ms ease;
+			}
+
+			.bottom-panel[data-expanded="true"] {
+				max-width: min(100%, 18rem);
+				padding: 0.55rem 0.7rem;
+				gap: 0.25rem;
+			}
+
+			.panel-header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 0.4rem;
+				min-width: 0;
+			}
+
+			.panel-expand-hint {
+				flex-shrink: 0;
+				color: rgb(255 255 255 / 55%);
+				font-size: 0.65rem;
+				font-weight: 700;
+				letter-spacing: 0.02em;
+				white-space: nowrap;
+			}
+
+			.bottom-panel[data-expanded="true"] .panel-expand-hint {
+				color: rgb(255 255 255 / 72%);
+			}
+
+			.panel-details {
+				display: none;
+				flex-direction: column;
+				gap: 0.2rem;
+				min-width: 0;
+			}
+
+			.bottom-panel[data-expanded="true"] .panel-details {
+				display: flex;
+			}
+
+			.handle {
+				display: flex;
+				align-items: center;
+				gap: 0.4rem;
+				min-width: 0;
+				font-weight: 800;
+				font-size: 0.88rem;
+			}
+
+			.handle #creatorHandle {
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.avatar {
+				display: grid;
+				width: 1.45rem;
+				height: 1.45rem;
+				flex-shrink: 0;
+				place-items: center;
+				border: 1.5px solid #fff;
+				border-radius: 50%;
+				background: #2a2a30;
+				font-size: 0.52rem;
+				text-transform: uppercase;
+			}
+
+			.now-playing {
+				display: none;
+			}
+
+			.reel-title {
+				margin: 0;
+				font-size: 0.95rem;
+				line-height: 1.2;
+				letter-spacing: -0.02em;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.bottom-panel[data-expanded="true"] .reel-title {
+				white-space: normal;
+				overflow-wrap: anywhere;
+				font-size: 1.05rem;
+			}
+
+			.caption,
+			.meta-row,
+			.reel-description {
+				margin: 0;
+				line-height: 1.35;
+			}
+
+			.caption {
+				font-weight: 600;
+				font-size: 0.8rem;
+				overflow-wrap: anywhere;
+			}
+
+			.reel-description {
+				color: rgb(255 255 255 / 76%);
+				font-size: 0.78rem;
+				overflow-wrap: anywhere;
+				display: -webkit-box;
+				-webkit-line-clamp: 3;
+				-webkit-box-orient: vertical;
+				overflow: hidden;
+			}
+
+			.meta-row {
+				color: rgb(255 255 255 / 70%);
+				font-size: 0.75rem;
+			}
+
+			.uuid-chip {
+				display: inline-block;
+				max-width: 100%;
+				align-self: flex-start;
+				padding: 0.22rem 0.4rem;
+				border: 1px solid rgb(255 255 255 / 16%);
+				border-radius: 0.5rem;
+				background: rgb(0 0 0 / 30%);
+				font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+				font-size: 0.62rem;
+				word-break: break-all;
+			}
+
+			.nav-controls {
+				left: 50%;
+				bottom: calc(0.7rem + env(safe-area-inset-bottom, 0px));
+				display: flex;
+				align-items: center;
+				gap: 0.5rem;
+				transform: translateX(-50%);
+				pointer-events: none;
+			}
+
+			.nav-controls > * {
+				pointer-events: auto;
+			}
+
+			.nav-button {
+				padding: 0.62rem 0.9rem;
+				border: 1px solid rgb(255 255 255 / 20%);
+				border-radius: 999px;
+				background: rgb(0 0 0 / 38%);
+				-webkit-backdrop-filter: blur(12px);
+				backdrop-filter: blur(12px);
+				font-weight: 800;
+				font-size: 0.85rem;
+				box-shadow: 0 0.75rem 1.5rem rgb(0 0 0 / 18%);
+			}
+
+			.swipe-hint {
+				left: 50%;
+				bottom: calc(3.15rem + env(safe-area-inset-bottom, 0px));
+				transform: translateX(-50%);
+				display: flex;
+				align-items: center;
+				gap: 0.35rem;
+				padding: 0.28rem 0.65rem;
+				border-radius: 999px;
+				background: rgb(0 0 0 / 35%);
+				-webkit-backdrop-filter: blur(10px);
+				backdrop-filter: blur(10px);
+				border: 1px solid rgb(255 255 255 / 12%);
+				color: rgb(255 255 255 / 72%);
+				font-size: 0.72rem;
+				font-weight: 700;
+				letter-spacing: 0.02em;
+				white-space: nowrap;
+				pointer-events: none;
+				opacity: 1;
+				transition: opacity 300ms ease;
+			}
+
+			.swipe-hint[data-hidden="true"] {
+				opacity: 0;
+			}
+
+			.swipe-hint .hint-arrow {
+				display: inline-block;
+				animation: hintBounce 1.2s ease-in-out infinite;
+			}
+
+			@keyframes hintBounce {
+				0%,
+				100% {
+					transform: translateY(0);
+				}
+				50% {
+					transform: translateY(-3px);
+				}
+			}
+
+			.reel-progress {
+				position: absolute;
+				top: calc(0.55rem + env(safe-area-inset-top, 0px));
+				left: 50%;
+				z-index: 3;
+				display: flex;
+				gap: 0.28rem;
+				transform: translateX(-50%);
+				pointer-events: none;
+			}
+
+			.reel-progress span {
+				width: 1.35rem;
+				height: 0.18rem;
+				border-radius: 999px;
+				background: rgb(255 255 255 / 28%);
+			}
+
+			.reel-progress span[data-active="true"] {
+				background: #fff;
+			}
+
+			.toast {
+				position: absolute;
+				left: 1rem;
+				right: 1rem;
+				top: 4.75rem;
+				z-index: 3;
+				padding: 0.8rem 1rem;
+				border: 1px solid rgb(255 255 255 / 18%);
+				border-radius: 1rem;
+				background: rgb(0 0 0 / 58%);
+				-webkit-backdrop-filter: blur(12px);
+				backdrop-filter: blur(12px);
+				box-shadow: 0 1rem 3rem rgb(0 0 0 / 20%);
+				transform: translateY(-0.5rem);
+				opacity: 0;
+				pointer-events: none;
+				transition: opacity 180ms ease, transform 180ms ease;
+			}
+
+			.toast[data-visible="true"] {
+				transform: translateY(0);
+				opacity: 1;
+			}
+
+			.visually-hidden {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				padding: 0;
+				margin: -1px;
+				overflow: hidden;
+				clip: rect(0, 0, 0, 0);
+				white-space: nowrap;
+				border: 0;
+			}
+
+			/* ---------- Sheets (upload + comments) ---------- */
+
+			.sheet-overlay {
+				position: absolute;
+				inset: 0;
+				z-index: 5;
+				display: none;
+				align-items: flex-end;
+				justify-content: center;
+				background: rgb(0 0 0 / 68%);
+				-webkit-backdrop-filter: blur(6px);
+				backdrop-filter: blur(6px);
+				touch-action: auto;
+			}
+
+			.sheet-overlay[data-open="true"] {
+				display: flex;
+			}
+
+			.sheet {
+				width: 100%;
+				max-height: 88%;
+				overflow-y: auto;
+				-webkit-overflow-scrolling: touch;
+				overscroll-behavior: contain;
+				touch-action: pan-y;
+				padding: 1.25rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));
+				border: 1px solid rgb(255 255 255 / 16%);
+				border-radius: 1.5rem 1.5rem 0 0;
+				background: #0c0c10;
+				box-shadow: 0 -1rem 3rem rgb(0 0 0 / 45%);
+			}
+
+			.sheet h2 {
+				margin: 0 0 1rem;
+				font-size: 1.15rem;
+				letter-spacing: -0.02em;
+			}
+
+			.sheet .close-btn {
+				float: right;
+				display: grid;
+				width: 2rem;
+				height: 2rem;
+				place-items: center;
+				border-radius: 50%;
+				background: rgb(255 255 255 / 10%);
+				font-size: 1.1rem;
+			}
+
+			.sheet label {
+				display: block;
+				margin-bottom: 0.3rem;
+				font-size: 0.78rem;
+				font-weight: 700;
+				color: rgb(255 255 255 / 65%);
+				text-transform: uppercase;
+				letter-spacing: 0.04em;
+			}
+
+			.sheet input,
+			.sheet textarea,
+			.sheet select {
+				width: 100%;
+				margin-bottom: 0.85rem;
+				padding: 0.65rem 0.8rem;
+				border: 1px solid rgb(255 255 255 / 16%);
+				border-radius: 0.8rem;
+				background: rgb(255 255 255 / 6%);
+				color: #fff;
+				font: inherit;
+				font-size: 0.9rem;
+			}
+
+			.sheet textarea {
+				min-height: 4.5rem;
+				resize: vertical;
+			}
+
+			.sheet input[type="file"] {
+				padding: 0.5rem;
+			}
+
+			.sheet input[type="file"]::file-selector-button {
+				padding: 0.45rem 0.8rem;
+				margin-right: 0.6rem;
+				border: 0;
+				border-radius: 0.6rem;
+				background: rgb(255 255 255 / 14%);
+				color: #fff;
+				font-weight: 700;
+			}
+
+			.btn-submit {
+				width: 100%;
+				padding: 0.85rem;
+				border-radius: 0.9rem;
+				background: linear-gradient(135deg, #ff005c, #ff8a00);
+				font-weight: 800;
+				font-size: 0.95rem;
+				box-shadow: 0 0.6rem 1.4rem rgb(255 0 92 / 30%);
+			}
+
+			.btn-submit:disabled {
+				opacity: 0.65;
+			}
+
+			.action-button--danger {
+				background: rgb(255 40 70 / 28%);
+			}
+
+			.action-button--danger:hover,
+			.action-button--danger:focus-visible {
+				background: rgb(255 40 70 / 48%);
+			}
+
+			.comments-list {
+				display: flex;
+				flex-direction: column;
+				gap: 0.75rem;
+				min-height: 6rem;
+				max-height: min(42svh, 20rem);
+				margin: 0 0 1rem;
+				overflow-y: auto;
+				padding-right: 0.2rem;
+			}
+
+			.comment-item {
+				padding: 0.75rem 0.85rem;
+				border: 1px solid rgb(255 255 255 / 12%);
+				border-radius: 0.9rem;
+				background: rgb(255 255 255 / 5%);
+			}
+
+			.comment-meta {
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				gap: 0.5rem;
+				margin-bottom: 0.3rem;
+			}
+
+			.comment-author {
+				font-weight: 800;
+				font-size: 0.88rem;
+			}
+
+			.comment-time {
+				color: rgb(255 255 255 / 48%);
+				font-size: 0.72rem;
+				white-space: nowrap;
+			}
+
+			.comment-text {
+				margin: 0;
+				color: rgb(255 255 255 / 88%);
+				font-size: 0.9rem;
+				line-height: 1.4;
+				overflow-wrap: anywhere;
+			}
+
+			.comments-empty,
+			.comments-loading,
+			.comments-error {
+				margin: 0;
+				padding: 1.5rem 0.5rem;
+				text-align: center;
+				color: rgb(255 255 255 / 55%);
+				font-size: 0.9rem;
+			}
+
+			.comments-error {
+				color: #ffb3c0;
+			}
+
+			.comment-compose {
+				display: grid;
+				gap: 0.35rem;
+				padding-top: 0.25rem;
+				border-top: 1px solid rgb(255 255 255 / 10%);
+			}
+
+			.comment-compose textarea {
+				min-height: 3.2rem;
+				margin-bottom: 0.5rem;
+			}
+
+			.comment-compose .btn-submit {
+				margin-top: 0.15rem;
+			}
+
+			.upload-status {
+				display: none;
+				margin-top: 0.75rem;
+				padding: 0.65rem 0.8rem;
+				border-radius: 0.8rem;
+				font-size: 0.82rem;
+				line-height: 1.4;
+			}
+
+			.upload-status[data-kind="info"] {
+				display: block;
+				border: 1px solid rgb(0 213 255 / 40%);
+				background: rgb(0 213 255 / 10%);
+				color: #9fe9ff;
+			}
+
+			.upload-status[data-kind="success"] {
+				display: block;
+				border: 1px solid rgb(39 245 140 / 40%);
+				background: rgb(39 245 140 / 10%);
+				color: #a6f9cd;
+			}
+
+			.upload-status[data-kind="error"] {
+				display: block;
+				border: 1px solid rgb(255 79 109 / 45%);
+				background: rgb(255 79 109 / 10%);
+				color: #ffb3c0;
+			}
+
+			.progress-track {
+				display: none;
+				height: 0.4rem;
+				margin-top: 0.75rem;
+				border-radius: 999px;
+				background: rgb(255 255 255 / 10%);
+				overflow: hidden;
+			}
+
+			.progress-track[data-visible="true"] {
+				display: block;
+			}
+
+			.progress-fill {
+				height: 100%;
+				width: 0%;
+				border-radius: 999px;
+				background: linear-gradient(90deg, #ff005c, #ff8a00);
+				transition: width 160ms ease;
+			}
+
+			.empty-state {
+				position: absolute;
+				inset: 0;
+				z-index: 4;
+				display: none;
+				place-items: center;
+				padding: 2rem;
+				text-align: center;
+				color: rgb(255 255 255 / 70%);
+				background: rgb(0 0 0 / 35%);
+				pointer-events: none;
+			}
+
+			/* `.display: grid` must not override the HTML hidden attribute */
+			.empty-state:not([hidden]) {
+				display: grid;
+			}
+
+			.empty-state[hidden] {
+				display: none !important;
+			}
+
+			.quality-selector {
+				position: absolute;
+				top: calc(3.6rem + env(safe-area-inset-top, 0px));
+				right: 0.7rem;
+				z-index: 4;
+				display: none;
+				flex-direction: column;
+				align-items: flex-end;
+				gap: 0.3rem;
+				pointer-events: none;
+			}
+
+			.quality-selector[data-visible="true"] {
+				display: flex;
+			}
+
+			.quality-selector > * {
+				pointer-events: auto;
+			}
+
+			.quality-btn {
+				min-width: 3.4rem;
+				padding: 0.28rem 0.55rem;
+				border: 1px solid rgb(255 255 255 / 28%);
+				border-radius: 0.5rem;
+				background: rgb(0 0 0 / 55%);
+				-webkit-backdrop-filter: blur(10px);
+				backdrop-filter: blur(10px);
+				color: #fff;
+				font-size: 0.68rem;
+				font-weight: 800;
+				letter-spacing: 0.02em;
+				text-transform: uppercase;
+				box-shadow: 0 0.35rem 0.9rem rgb(0 0 0 / 25%);
+				transition: background 140ms ease, border-color 140ms ease, transform 140ms ease;
+			}
+
+			.quality-btn:hover,
+			.quality-btn:focus-visible {
+				background: rgb(59 130 246 / 55%);
+				border-color: rgb(59 130 246 / 80%);
+				transform: translateY(-1px);
+			}
+
+			.quality-btn[aria-pressed="true"],
+			.quality-btn.active {
+				background: #3b82f6;
+				border-color: #3b82f6;
+			}
+
+			@media (max-width: 640px) {
+				:root {
+					--stage-radius: 0;
+					--bottom-ui: 4.75rem;
+					--action-size: 2.95rem;
+				}
+
+				.app-shell {
+					padding: 0;
+				}
+
+				.short-stage {
+					width: 100vw;
+					width: 100dvw;
+					height: 100svh;
+					height: 100dvh;
+					min-height: 100svh;
+					min-height: 100dvh;
+					border: 0;
+					border-radius: 0;
+					box-shadow: none;
+				}
+
+				.top-bar {
+					padding-left: 0.75rem;
+					padding-right: 0.75rem;
+				}
+
+				.bottom-panel {
+					left: 0.55rem;
+					right: calc(var(--action-size) + 0.85rem);
+					max-width: min(100%, 13.5rem);
+					padding: 0.35rem 0.5rem;
+					border-radius: 0.75rem;
+				}
+
+				.bottom-panel[data-expanded="true"] {
+					max-width: min(100%, 16.5rem);
+					padding: 0.5rem 0.65rem;
+				}
+
+				.reel-title {
+					font-size: 0.9rem;
+				}
+
+				.bottom-panel[data-expanded="true"] .reel-title {
+					font-size: 1rem;
+				}
+
+				.reel-description {
+					-webkit-line-clamp: 3;
+					font-size: 0.76rem;
+				}
+
+				.meta-row {
+					font-size: 0.72rem;
+				}
+
+				.nav-button {
+					padding: 0.55rem 0.8rem;
+					font-size: 0.8rem;
+				}
+
+				.sheet {
+					border-radius: 1.25rem 1.25rem 0 0;
+					max-height: 92%;
+				}
+
+				.status-pill {
+					max-width: 7.5rem;
+					font-size: 0.72rem;
+				}
+			}
+
+			@media (min-width: 900px) {
+				.short-stage {
+					width: min(100%, 420px);
+					height: min(820px, calc(100dvh - 2rem));
+				}
+
+				.swipe-hint .desktop-only {
+					display: inline;
+				}
+			}
+
+			.desktop-only {
+				display: none;
+			}
+
+			@media (hover: hover) and (pointer: fine) {
+				.desktop-only {
+					display: inline;
+				}
+
+				.swipe-hint .mobile-only {
+					display: none;
+				}
+			}
+
+			@media (hover: none) {
+				.swipe-hint .desktop-only {
+					display: none;
+				}
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				*,
+				*::before,
+				*::after {
+					scroll-behavior: auto !important;
+					transition-duration: 0.01ms !important;
+					animation-duration: 0.01ms !important;
+					animation-iteration-count: 1 !important;
+				}
+
+				.swipe-hint .hint-arrow {
+					animation: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<main class="app-shell">
+			<section class="short-stage" id="shortStage" aria-label="Reels backend shorts feed">
+				<div class="stage-media" id="stageMedia">
+					<video
+						id="reelVideo"
+						playsinline
+						webkit-playsinline
+						muted
+						loop
+						preload="auto"
+						aria-label="Current reel video"
+					></video>
+					<div class="stage-scrim" aria-hidden="true"></div>
+					<div class="swipe-layer" id="swipeLayer" aria-hidden="true"></div>
+					<svg class="play-pause-icon" id="playPauseIcon" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+						<path d="M8 5v14l11-7z"></path>
+					</svg>
+				</div>
+
+				<div class="empty-state" id="emptyState" hidden>
+					<div>
+						<p style="font-size: 1.1rem; font-weight: 700; margin: 0 0 0.4rem;">No reels yet</p>
+						<p style="margin: 0;">Tap Upload to add the first one.</p>
+					</div>
+				</div>
+
+				<header class="top-bar">
+					<div class="brand" aria-label="Reels Backend">
+						<span class="brand-mark" aria-hidden="true">▶</span>
+						<span>Reels</span>
+					</div>
+					<div class="top-actions">
+						<button class="upload-pill" id="openUpload" type="button">
+							<span aria-hidden="true">＋</span>
+							Upload
+						</button>
+						<div class="status-pill" id="statusPill" data-state="checking" role="status" aria-live="polite">
+							<span class="status-dot" aria-hidden="true"></span>
+							<span id="statusText">Checking API</span>
+						</div>
+					</div>
+				</header>
+
+				<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+				<div class="quality-selector" id="qualitySelector" data-visible="false" aria-label="Video quality"></div>
+
+				<aside class="action-rail" aria-label="Reel actions">
+					<div>
+						<button class="action-button" id="likeButton" type="button" aria-pressed="false">
+							<span aria-hidden="true" id="likeIcon">♡</span>
+							<span class="visually-hidden">Like this reel</span>
+						</button>
+						<div class="action-count" id="likeCount">0</div>
+					</div>
+					<div>
+						<button class="action-button" id="commentButton" type="button">
+							<span aria-hidden="true">💬</span>
+							<span class="visually-hidden">Open comments</span>
+						</button>
+						<div class="action-count" id="commentCount">0</div>
+					</div>
+					<div>
+						<button class="action-button" id="shareButton" type="button">
+							<span aria-hidden="true">↗</span>
+							<span class="visually-hidden">Share reel</span>
+						</button>
+						<div class="action-count" id="shareCount">0</div>
+					</div>
+					<div>
+						<button class="action-button action-button--danger" id="deleteButton" type="button">
+							<span aria-hidden="true">🗑</span>
+							<span class="visually-hidden">Delete this reel</span>
+						</button>
+						<div class="action-count">Del</div>
+					</div>
+				</aside>
+
+				<section
+					class="bottom-panel"
+					id="bottomPanel"
+					aria-label="Current reel details"
+					aria-live="polite"
+					data-expanded="false"
+					role="button"
+					tabindex="0"
+					aria-expanded="false"
+					title="Tap to expand"
+				>
+					<div class="panel-header">
+						<div class="handle">
+							<span class="avatar" id="avatarInitials" aria-hidden="true">--</span>
+							<span id="creatorHandle">@—</span>
+						</div>
+						<span class="panel-expand-hint" id="panelExpandHint" aria-hidden="true">tap</span>
+					</div>
+					<h1 class="reel-title" id="reelTitle">Loading…</h1>
+					<div class="panel-details" id="panelDetails">
+						<p class="reel-description" id="reelDescription">Fetching the feed.</p>
+						<p class="caption" id="caption">Loading caption…</p>
+						<p class="meta-row" id="metaRow">—</p>
+						<span class="uuid-chip" id="uuidChip">Waiting for /api/videos</span>
+					</div>
+				</section>
+
+				<div class="swipe-hint" id="swipeHint">
+					<span class="hint-arrow" aria-hidden="true">↑</span>
+					<span class="mobile-only">Swipe up for next</span>
+					<span class="desktop-only">Scroll / drag for next</span>
+				</div>
+
+				<nav class="nav-controls" aria-label="Reel navigation">
+					<button class="nav-button" id="unmuteButton" type="button" style="background: rgb(255 0 92 / 50%);">Unmute</button>
+					<button class="nav-button" id="previousButton" type="button">↑ Prev</button>
+					<button class="nav-button" id="nextButton" type="button">Next ↓</button>
+				</nav>
+
+				<div class="sheet-overlay" id="uploadOverlay" data-open="false">
+					<div class="sheet">
+						<button class="close-btn" id="closeUpload" type="button" aria-label="Close upload">&times;</button>
+						<h2>Upload a reel</h2>
+						<form id="uploadForm">
+							<label for="videoFile">Video *</label>
+							<input type="file" id="videoFile" accept="video/*" required />
+
+							<label for="titleInput">Title *</label>
+							<input type="text" id="titleInput" placeholder="My cool reel" required />
+
+							<label for="descriptionInput">Description</label>
+							<textarea id="descriptionInput" placeholder="Optional…"></textarea>
+
+							<label for="uploaderInput">Uploader *</label>
+							<input type="text" id="uploaderInput" value="demo-user" required />
+
+							<label for="categoryInput">Category</label>
+							<select id="categoryInput">
+								<option value="entertainment">Entertainment</option>
+								<option value="music">Music</option>
+								<option value="sports">Sports</option>
+								<option value="education">Education</option>
+								<option value="gaming">Gaming</option>
+								<option value="news">News</option>
+								<option value="other">Other</option>
+							</select>
+
+							<label for="hashtagsInput">Hashtags (comma separated)</label>
+							<input type="text" id="hashtagsInput" placeholder="fun, viral" />
+
+							<button type="submit" class="btn-submit" id="uploadSubmit">Upload</button>
+							<div class="upload-status" id="uploadStatus"></div>
+							<div class="progress-track" id="progressTrack">
+								<div class="progress-fill" id="progressFill"></div>
+							</div>
+						</form>
+					</div>
+				</div>
+
+				<div class="sheet-overlay" id="commentsOverlay" data-open="false">
+					<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="commentsTitle">
+						<button class="close-btn" id="closeComments" type="button" aria-label="Close comments">&times;</button>
+						<h2 id="commentsTitle">Comments</h2>
+						<div class="comments-list" id="commentsList">
+							<p class="comments-loading">Loading comments…</p>
+						</div>
+						<form class="comment-compose" id="commentForm">
+							<label for="commentAuthor">Name</label>
+							<input type="text" id="commentAuthor" maxlength="80" placeholder="Your name" value="demo-user" />
+							<label for="commentText">Comment</label>
+							<textarea id="commentText" maxlength="2000" placeholder="Say something…" required></textarea>
+							<button type="submit" class="btn-submit" id="commentSubmit">Post comment</button>
+						</form>
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<script>
+			(() => {
+				const API = "";
+				// Smaller binary chunks are more reliable on Workers (CPU + network).
+				const CHUNK_SIZE = 512 * 1024; // 512 KB
+				const CHUNK_PARALLEL = 2;
+				const CHUNK_TIMEOUT_MS = 120000;
+				const CHUNK_RETRIES = 4;
+				const OWNER_TOKENS_KEY = "reels.ownerTokens";
+				const COMMENT_AUTHOR_KEY = "reels.commentAuthor";
+				const DEVICE_ID_KEY = "reels.deviceId";
+				const LIKED_KEY = "reels.likedIds";
+				const SHARED_KEY = "reels.sharedIds";
+				const COMMENTED_KEY = "reels.commentedIds";
+				const UPLOADED_FILES_KEY = "reels.uploadedFiles";
+
+				const el = (id) => document.getElementById(id);
+				const elements = {
+					stageMedia: el("stageMedia"),
+					video: el("reelVideo"),
+					playPauseIcon: el("playPauseIcon"),
+					emptyState: el("emptyState"),
+					shortStage: el("shortStage"),
+					swipeLayer: el("swipeLayer"),
+					swipeHint: el("swipeHint"),
+					qualitySelector: el("qualitySelector"),
+					statusPill: el("statusPill"),
+					statusText: el("statusText"),
+					toast: el("toast"),
+					reelTitle: el("reelTitle"),
+					reelDescription: el("reelDescription"),
+					bottomPanel: el("bottomPanel"),
+					panelExpandHint: el("panelExpandHint"),
+					likeButton: el("likeButton"),
+					likeIcon: el("likeIcon"),
+					likeCount: el("likeCount"),
+					commentButton: el("commentButton"),
+					commentCount: el("commentCount"),
+					shareButton: el("shareButton"),
+					shareCount: el("shareCount"),
+					deleteButton: el("deleteButton"),
+					avatarInitials: el("avatarInitials"),
+					creatorHandle: el("creatorHandle"),
+					caption: el("caption"),
+					metaRow: el("metaRow"),
+					uuidChip: el("uuidChip"),
+					previousButton: el("previousButton"),
+					nextButton: el("nextButton"),
+					openUpload: el("openUpload"),
+					closeUpload: el("closeUpload"),
+					uploadOverlay: el("uploadOverlay"),
+					uploadForm: el("uploadForm"),
+					uploadStatus: el("uploadStatus"),
+					progressTrack: el("progressTrack"),
+					progressFill: el("progressFill"),
+					videoFile: el("videoFile"),
+					titleInput: el("titleInput"),
+					descriptionInput: el("descriptionInput"),
+					uploaderInput: el("uploaderInput"),
+					categoryInput: el("categoryInput"),
+					hashtagsInput: el("hashtagsInput"),
+					uploadSubmit: el("uploadSubmit"),
+					unmuteButton: el("unmuteButton"),
+					commentsOverlay: el("commentsOverlay"),
+					closeComments: el("closeComments"),
+					commentsList: el("commentsList"),
+					commentForm: el("commentForm"),
+					commentAuthor: el("commentAuthor"),
+					commentText: el("commentText"),
+					commentSubmit: el("commentSubmit"),
+				};
+
+				let reels = [];
+				let currentIndex = 0;
+				let liked = loadIdSet(LIKED_KEY);
+				let shared = loadIdSet(SHARED_KEY);
+				let commented = loadIdSet(COMMENTED_KEY);
+				let toastTimer;
+				let viewedIds = new Set();
+				let commentsLoading = false;
+				let hintHidden = false;
+				let moveLock = false;
+				let selectedQuality = localStorage.getItem("reelQuality") || "original";
+
+				function loadIdSet(key) {
+					try {
+						const raw = JSON.parse(localStorage.getItem(key) || "[]");
+						return new Set(Array.isArray(raw) ? raw.map(String) : []);
+					} catch {
+						return new Set();
+					}
+				}
+
+				function saveIdSet(key, set) {
+					localStorage.setItem(key, JSON.stringify([...set]));
+				}
+
+				function getDeviceId() {
+					try {
+						let id = localStorage.getItem(DEVICE_ID_KEY);
+						if (id && /^[A-Za-z0-9_-]{8,80}$/.test(id)) return id;
+						id =
+							typeof crypto !== "undefined" && crypto.randomUUID
+								? crypto.randomUUID().replace(/-/g, "")
+								: `d${Date.now().toString(36)}${Math.random().toString(36).slice(2, 12)}`;
+						id = String(id).replace(/[^A-Za-z0-9_-]/g, "").slice(0, 80);
+						if (id.length < 8) id = `device${Date.now()}`;
+						localStorage.setItem(DEVICE_ID_KEY, id);
+						return id;
+					} catch {
+						return `fallback${Date.now()}`;
+					}
+				}
+
+				function markLiked(videoId) {
+					liked.add(videoId);
+					saveIdSet(LIKED_KEY, liked);
+				}
+
+				function markShared(videoId) {
+					shared.add(videoId);
+					saveIdSet(SHARED_KEY, shared);
+				}
+
+				function markCommented(videoId) {
+					commented.add(videoId);
+					saveIdSet(COMMENTED_KEY, commented);
+				}
+
+				function loadOwnerTokens() {
+					try {
+						return JSON.parse(localStorage.getItem(OWNER_TOKENS_KEY) || "{}") || {};
+					} catch {
+						return {};
+					}
+				}
+
+				function saveOwnerToken(videoId, ownerToken) {
+					if (!videoId || !ownerToken) return;
+					const tokens = loadOwnerTokens();
+					tokens[videoId] = ownerToken;
+					localStorage.setItem(OWNER_TOKENS_KEY, JSON.stringify(tokens));
+				}
+
+				function getOwnerToken(videoId) {
+					return loadOwnerTokens()[videoId] || "";
+				}
+
+				function removeOwnerToken(videoId) {
+					const tokens = loadOwnerTokens();
+					delete tokens[videoId];
+					localStorage.setItem(OWNER_TOKENS_KEY, JSON.stringify(tokens));
+				}
+
+				function escapeHtml(value) {
+					return String(value ?? "")
+						.replace(/&/g, "&amp;")
+						.replace(/</g, "&lt;")
+						.replace(/>/g, "&gt;")
+						.replace(/"/g, "&quot;")
+						.replace(/'/g, "&#39;");
+				}
+
+				function formatCommentTime(ts) {
+					if (!ts) return "";
+					const date = new Date(ts);
+					if (Number.isNaN(date.getTime())) return "";
+					const diff = Date.now() - date.getTime();
+					const mins = Math.floor(diff / 60000);
+					if (mins < 1) return "just now";
+					if (mins < 60) return `${mins}m`;
+					const hours = Math.floor(mins / 60);
+					if (hours < 24) return `${hours}h`;
+					const days = Math.floor(hours / 24);
+					if (days < 7) return `${days}d`;
+					return date.toLocaleDateString();
+				}
+
+				function showToast(message) {
+					window.clearTimeout(toastTimer);
+					elements.toast.textContent = message;
+					elements.toast.dataset.visible = "true";
+					toastTimer = window.setTimeout(() => {
+						elements.toast.dataset.visible = "false";
+					}, 2200);
+				}
+
+				function setStatus(state, message) {
+					elements.statusPill.dataset.state = state;
+					elements.statusText.textContent = message;
+				}
+
+				function fmtDuration(seconds) {
+					if (!seconds) return "0:00";
+					const m = Math.floor(seconds / 60);
+					const s = Math.floor(seconds % 60);
+					return `${m}:${String(s).padStart(2, "0")}`;
+				}
+
+				function setPanelExpanded(expanded) {
+					const open = Boolean(expanded);
+					if (!elements.bottomPanel) return;
+					elements.bottomPanel.dataset.expanded = String(open);
+					elements.bottomPanel.setAttribute("aria-expanded", String(open));
+					elements.bottomPanel.title = open ? "Tap to collapse" : "Tap to expand";
+					if (elements.panelExpandHint) {
+						elements.panelExpandHint.textContent = open ? "less" : "tap";
+					}
+				}
+
+				function togglePanelExpanded() {
+					if (!elements.bottomPanel) return;
+					setPanelExpanded(elements.bottomPanel.dataset.expanded !== "true");
+				}
+
+				function initials(name) {
+					if (!name) return "--";
+					return name.trim().slice(0, 2).toUpperCase();
+				}
+
+				async function readJson(response) {
+					const data = await response.json().catch(() => ({}));
+					if (!response.ok) {
+						const message = data?.message || data?.error || `Request failed with ${response.status}`;
+						throw new Error(message);
+					}
+					return data;
+				}
+
+				async function checkHealth() {
+					try {
+						const data = await fetch(`${API}/health`).then(readJson);
+						setStatus("online", data?.provider ? `Online · ${data.provider}` : "API online");
+					} catch {
+						setStatus("offline", "API offline");
+					}
+				}
+
+				async function loadFeed({ preserveIndex } = {}) {
+					elements.previousButton.disabled = true;
+					elements.nextButton.disabled = true;
+					try {
+						const data = await fetch(`${API}/api/videos?perPage=50`).then(readJson);
+						reels = data.items || [];
+						if (!preserveIndex) currentIndex = 0;
+						currentIndex = Math.min(currentIndex, Math.max(reels.length - 1, 0));
+						renderReel();
+						setStatus("online", "API online");
+					} catch (error) {
+						elements.emptyState.hidden = false;
+						const title = elements.emptyState.querySelector("p");
+						if (title) title.textContent = "Couldn't load the feed";
+						const sub = elements.emptyState.querySelector("p + p");
+						if (sub) sub.textContent = "Check the API and try again.";
+						renderQualitySelector(null);
+						setStatus("offline", "API offline");
+						showToast(error instanceof Error ? error.message : "Failed to load feed");
+					} finally {
+						elements.previousButton.disabled = reels.length < 2;
+						elements.nextButton.disabled = reels.length < 2;
+					}
+				}
+
+				function renderReel({ animate = false } = {}) {
+					if (reels.length === 0) {
+						elements.emptyState.hidden = false;
+						elements.video.pause();
+						elements.video.removeAttribute("src");
+						elements.video.removeAttribute("poster");
+						elements.reelTitle.textContent = "No reels yet";
+						elements.reelDescription.textContent = "Tap Upload to add the first one.";
+						elements.reelDescription.hidden = false;
+						elements.caption.textContent = "";
+						elements.caption.hidden = true;
+						elements.metaRow.textContent = "—";
+						elements.uuidChip.textContent = "Waiting for /api/videos";
+						elements.likeCount.textContent = "0";
+						elements.shareCount.textContent = "0";
+						elements.commentCount.textContent = "0";
+						elements.creatorHandle.textContent = "@—";
+						elements.avatarInitials.textContent = "--";
+						elements.deleteButton.hidden = false;
+						elements.deleteButton.disabled = true;
+						setPanelExpanded(false);
+						if (elements.swipeHint) elements.swipeHint.dataset.hidden = "true";
+						renderQualitySelector(null);
+						return;
+					}
+
+					elements.emptyState.hidden = true;
+					const reel = reels[currentIndex];
+					renderQualitySelector(reel);
+					setPanelExpanded(false);
+
+					if (elements.swipeHint && reels.length > 1 && !hintHidden) {
+						elements.swipeHint.dataset.hidden = "false";
+					} else if (elements.swipeHint && reels.length < 2) {
+						elements.swipeHint.dataset.hidden = "true";
+					}
+
+					elements.reelTitle.textContent = reel.title || "Untitled";
+					const description = (reel.description || "").trim();
+					elements.reelDescription.textContent = description;
+					elements.reelDescription.hidden = !description;
+					elements.creatorHandle.textContent = `@${reel.uploader || "unknown"}`;
+					elements.avatarInitials.textContent = initials(reel.uploader);
+
+					const hashtagLine = reel.hashtags?.length ? reel.hashtags.map((h) => `#${h}`).join(" ") : null;
+					// Prefer hashtags for caption; avoid repeating description under the title.
+					elements.caption.textContent = hashtagLine || "";
+					elements.caption.hidden = !hashtagLine;
+					elements.metaRow.textContent = `${reel.category || "uncategorized"} · ${fmtDuration(reel.duration)} · ${reel.views ?? 0} views`;
+					elements.uuidChip.textContent = reel.id;
+
+					elements.likeCount.textContent = reel.likes ?? 0;
+					elements.shareCount.textContent = reel.shares ?? 0;
+					elements.commentCount.textContent = reel.comments ?? 0;
+
+					const isLiked = liked.has(reel.id);
+					elements.likeButton.setAttribute("aria-pressed", String(isLiked));
+					elements.likeIcon.textContent = isLiked ? "♥" : "♡";
+
+					const owned = Boolean(getOwnerToken(reel.id));
+					elements.deleteButton.hidden = false;
+					elements.deleteButton.disabled = false;
+					elements.deleteButton.title = owned
+						? "Delete this reel"
+						: "Delete (only reels you uploaded on this device)";
+					elements.deleteButton.setAttribute("data-owned", String(owned));
+
+					if (animate && elements.stageMedia) {
+						elements.stageMedia.classList.remove("reel-enter");
+						// eslint-disable-next-line no-unused-expressions
+						elements.stageMedia.offsetWidth;
+						elements.stageMedia.classList.add("reel-enter");
+					}
+
+					const nextSrc = getPlaybackUrl(reel);
+					const currentSrc = elements.video.getAttribute("src") || elements.video.src || "";
+					const srcChanged =
+						!currentSrc ||
+						(currentSrc !== nextSrc && !currentSrc.endsWith(nextSrc) && !nextSrc.endsWith(currentSrc.replace(location.origin, "")));
+					if (srcChanged) {
+						elements.video.src = nextSrc;
+						if (reel.thumbnailUrl) elements.video.setAttribute("poster", reel.thumbnailUrl);
+						else elements.video.removeAttribute("poster");
+						elements.video.load();
+					}
+					elements.video.muted = false;
+					elements.video.play().catch(() => {
+						elements.video.muted = true;
+						elements.video.play().catch(() => {});
+					});
+
+					recordView(reel.id);
+				}
+
+				async function recordView(id) {
+					if (viewedIds.has(id)) return;
+					viewedIds.add(id);
+					try {
+						await fetch(`${API}/api/videos/${id}/view`, { method: "POST" });
+					} catch {}
+				}
+
+				function hideSwipeHint() {
+					if (hintHidden || !elements.swipeHint) return;
+					hintHidden = true;
+					elements.swipeHint.dataset.hidden = "true";
+				}
+
+				function move(delta, { animate = true } = {}) {
+					if (reels.length < 2 || moveLock) return false;
+					moveLock = true;
+					hideSwipeHint();
+					elements.video.pause();
+					currentIndex = (currentIndex + delta + reels.length) % reels.length;
+					resetStageTransform(true);
+					renderReel({ animate });
+					window.setTimeout(() => {
+						moveLock = false;
+					}, 320);
+					return true;
+				}
+
+				function resetStageTransform(instant) {
+					const media = elements.stageMedia;
+					if (!media) return;
+					if (instant) media.style.transition = "none";
+					else media.style.transition = "transform 220ms cubic-bezier(0.22, 1, 0.36, 1), opacity 220ms ease";
+					media.style.transform = "";
+					media.style.opacity = "";
+					if (instant) {
+						// force reflow then restore transition for next drag
+						// eslint-disable-next-line no-unused-expressions
+						media.offsetWidth;
+						media.style.transition = "";
+					}
+				}
+
+				function flashPlayPause(isPlaying) {
+					elements.playPauseIcon.innerHTML = isPlaying
+						? '<path d="M8 5v14l11-7z"></path>'
+						: '<rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect>';
+					elements.playPauseIcon.classList.remove("show");
+					// eslint-disable-next-line no-unused-expressions
+					elements.playPauseIcon.offsetWidth;
+					elements.playPauseIcon.classList.add("show");
+				}
+
+				function togglePlayPause() {
+					if (!elements.video.src) return;
+					if (elements.video.paused) {
+						elements.video.play().catch(() => {});
+						flashPlayPause(true);
+					} else {
+						elements.video.pause();
+						flashPlayPause(false);
+					}
+				}
+
+				// ---------- Gestures: swipe up/down (touch), drag (mouse), wheel (desktop) ----------
+
+				const gesture = {
+					active: false,
+					pointerId: null,
+					startX: 0,
+					startY: 0,
+					lastY: 0,
+					startTime: 0,
+					moved: false,
+					dragging: false,
+				};
+
+				const SWIPE_DISTANCE = 56;
+				const SWIPE_VELOCITY = 0.45; // px/ms
+				const DRAG_FOLLOW = 0.42;
+
+				function isUiControl(target) {
+					return Boolean(
+						target &&
+							target.closest &&
+							target.closest(
+								"button, a, input, textarea, select, label, .sheet, .nav-controls, .action-rail, .top-actions, .upload-pill, .status-pill, .uuid-chip, .quality-selector, .quality-btn, .bottom-panel"
+							)
+					);
+				}
+
+				function qualityLabels(reel) {
+					const qs = reel?.qualities;
+					if (!qs || typeof qs !== "object") return [];
+					return Object.keys(qs).sort((a, b) => {
+						const na = parseInt(a, 10);
+						const nb = parseInt(b, 10);
+						if (!Number.isNaN(na) && !Number.isNaN(nb)) return na - nb;
+						return String(a).localeCompare(String(b));
+					});
+				}
+
+				function getPlaybackUrl(reel, label = selectedQuality) {
+					if (!reel) return "";
+					if (label && label !== "original" && reel.qualities?.[label]) {
+						return reel.qualities[label];
+					}
+					return reel.videoUrl || "";
+				}
+
+				function renderQualitySelector(reel) {
+					const root = elements.qualitySelector;
+					if (!root) return;
+					if (!reel) {
+						root.innerHTML = "";
+						root.dataset.visible = "false";
+						return;
+					}
+
+					// We include all labels, including 'original'
+					const labels = ['original', ...qualityLabels(reel).filter(l => l !== 'original')];
+					if (labels.length <= 1) {
+						root.dataset.visible = "false";
+						return;
+					}
+
+					// Toggle state management
+					const isOpen = root.dataset.expanded === "true";
+					
+					// If closed, we only show the single active quality button
+					// If open, we show the list of other options
+					const buttons = [
+						`<button type="button" class="quality-btn main-btn" id="toggleQuality" aria-expanded="${isOpen}">
+							${selectedQuality === "original" ? "Original" : selectedQuality}
+						</button>`,
+						...(isOpen ? labels.filter(label => label !== selectedQuality).map(
+							(label) =>
+								`<button type="button" class="quality-btn" data-quality="${escapeHtml(label)}">${label === "original" ? "Original" : escapeHtml(label)}</button>`
+						) : [])
+					];
+					
+					root.innerHTML = buttons.join("");
+					root.dataset.visible = "true";
+				}
+
+				function applyQualityToCurrentVideo({ preserveTime = true } = {}) {
+					const reel = reels[currentIndex];
+					if (!reel || !elements.video) return;
+					const url = getPlaybackUrl(reel);
+					if (!url) return;
+
+					const current = elements.video.currentSrc || elements.video.src || "";
+					// Avoid reloading the same stream
+					if (current === url || current.endsWith(url) || url.endsWith(current.replace(location.origin, ""))) {
+						return;
+					}
+
+					const pos = preserveTime ? elements.video.currentTime || 0 : 0;
+					const wasPaused = elements.video.paused;
+					elements.video.src = url;
+					if (reel.thumbnailUrl) elements.video.setAttribute("poster", reel.thumbnailUrl);
+					elements.video.load();
+					const resume = () => {
+						if (pos > 0.25) {
+							try {
+								elements.video.currentTime = pos;
+							} catch {}
+						}
+						if (!wasPaused) {
+							elements.video.play().catch(() => {});
+						}
+						elements.video.removeEventListener("loadedmetadata", resume);
+					};
+					elements.video.addEventListener("loadedmetadata", resume);
+				}
+
+				function switchQuality(label) {
+					if (!label) return;
+					selectedQuality = label;
+					localStorage.setItem("reelQuality", label);
+					applyQualityToCurrentVideo({ preserveTime: true });
+					showToast(`Quality: ${label === "original" ? "Original" : label}`);
+				}
+
+				// Handle toggling and switching
+				elements.qualitySelector?.addEventListener("click", (event) => {
+					event.stopPropagation();
+					const toggleBtn = event.target.closest?.("#toggleQuality");
+					if (toggleBtn) {
+						elements.qualitySelector.dataset.expanded = elements.qualitySelector.dataset.expanded === "true" ? "false" : "true";
+						renderQualitySelector(reels[currentIndex]);
+						return;
+					}
+
+					const btn = event.target.closest?.(".quality-btn");
+					if (!btn) return;
+					event.preventDefault();
+					switchQuality(btn.dataset.quality);
+					elements.qualitySelector.dataset.expanded = "false";
+					renderQualitySelector(reels[currentIndex]);
+				});
+
+				function onPointerDown(event) {
+					if (anySheetOpen()) return;
+					if (event.button != null && event.button !== 0) return;
+					if (isUiControl(event.target)) return;
+					if (reels.length === 0) return;
+
+					gesture.active = true;
+					gesture.pointerId = event.pointerId;
+					gesture.startX = event.clientX;
+					gesture.startY = event.clientY;
+					gesture.lastY = event.clientY;
+					gesture.startTime = performance.now();
+					gesture.moved = false;
+					gesture.dragging = false;
+					elements.shortStage.classList.add("is-swiping");
+					elements.stageMedia.style.transition = "none";
+
+					try {
+						elements.shortStage.setPointerCapture(event.pointerId);
+					} catch {}
+				}
+
+				function onPointerMove(event) {
+					if (!gesture.active || event.pointerId !== gesture.pointerId) return;
+					const dy = event.clientY - gesture.startY;
+					const dx = event.clientX - gesture.startX;
+					gesture.lastY = event.clientY;
+
+					if (Math.abs(dy) > 6 || Math.abs(dx) > 6) gesture.moved = true;
+
+					// Prefer vertical intent
+					if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 8) {
+						gesture.dragging = true;
+						const offset = dy * DRAG_FOLLOW;
+						const opacity = Math.max(0.45, 1 - Math.abs(dy) / 520);
+						elements.stageMedia.style.transform = `translate3d(0, ${offset}px, 0)`;
+						elements.stageMedia.style.opacity = String(opacity);
+						if (event.cancelable) event.preventDefault();
+					}
+				}
+
+				function finishGesture(event) {
+					if (!gesture.active || (event && event.pointerId !== gesture.pointerId)) return;
+
+					const endY = event?.clientY ?? gesture.lastY;
+					const dy = endY - gesture.startY;
+					const dx = (event?.clientX ?? gesture.startX) - gesture.startX;
+					const dt = Math.max(1, performance.now() - gesture.startTime);
+					const velocity = dy / dt; // px per ms
+					const absDy = Math.abs(dy);
+					const absDx = Math.abs(dx);
+					const isVertical = absDy > absDx * 0.85;
+					const distanceOk = absDy >= SWIPE_DISTANCE;
+					const velocityOk = Math.abs(velocity) >= SWIPE_VELOCITY && absDy > 18;
+
+					gesture.active = false;
+					gesture.pointerId = null;
+					elements.shortStage.classList.remove("is-swiping");
+
+					if (reels.length > 1 && isVertical && (distanceOk || velocityOk)) {
+						// Finger/mouse moves up (dy < 0) => next reel (TikTok swipe up)
+						const next = dy < 0 || velocity < 0;
+						resetStageTransform(false);
+						move(next ? 1 : -1);
+						return;
+					}
+
+					// Snap back
+					resetStageTransform(false);
+
+					// Tap / click = play/pause when not a real swipe
+					if (!gesture.dragging && absDy < 12 && absDx < 12) {
+						togglePlayPause();
+					}
+				}
+
+				function onPointerUp(event) {
+					finishGesture(event);
+				}
+
+				function onPointerCancel(event) {
+					if (!gesture.active || event.pointerId !== gesture.pointerId) return;
+					gesture.active = false;
+					gesture.pointerId = null;
+					elements.shortStage.classList.remove("is-swiping");
+					resetStageTransform(false);
+				}
+
+				// Use shortStage so swipes work over the full phone frame (not only the video box)
+				elements.shortStage.addEventListener("pointerdown", onPointerDown);
+				elements.shortStage.addEventListener("pointermove", onPointerMove, { passive: false });
+				elements.shortStage.addEventListener("pointerup", onPointerUp);
+				elements.shortStage.addEventListener("pointercancel", onPointerCancel);
+				elements.shortStage.addEventListener("lostpointercapture", onPointerCancel);
+
+				// Desktop trackpad / mouse wheel
+				let wheelLockUntil = 0;
+				elements.shortStage.addEventListener(
+					"wheel",
+					(event) => {
+						if (anySheetOpen()) return;
+						if (reels.length < 2) return;
+						if (Math.abs(event.deltaY) < 8 && Math.abs(event.deltaX) < 8) return;
+						event.preventDefault();
+						const now = performance.now();
+						if (now < wheelLockUntil) return;
+						const delta = Math.abs(event.deltaY) >= Math.abs(event.deltaX) ? event.deltaY : event.deltaX;
+						if (Math.abs(delta) < 12) return;
+						wheelLockUntil = now + 420;
+						// Scroll down / swipe content up => next
+						move(delta > 0 ? 1 : -1);
+					},
+					{ passive: false }
+				);
+
+				// Legacy touch fallback for older mobile browsers without PointerEvent
+				if (!window.PointerEvent) {
+					let touchStartY = null;
+					let touchStartX = null;
+					elements.shortStage.addEventListener(
+						"touchstart",
+						(event) => {
+							if (anySheetOpen() || isUiControl(event.target)) return;
+							const t = event.touches[0];
+							if (!t) return;
+							touchStartY = t.clientY;
+							touchStartX = t.clientX;
+						},
+						{ passive: true }
+					);
+					elements.shortStage.addEventListener(
+						"touchend",
+						(event) => {
+							if (touchStartY == null) return;
+							const t = event.changedTouches[0];
+							if (!t) {
+								touchStartY = null;
+								return;
+							}
+							const dy = t.clientY - touchStartY;
+							const dx = t.clientX - touchStartX;
+							touchStartY = null;
+							touchStartX = null;
+							if (Math.abs(dy) > 50 && Math.abs(dy) > Math.abs(dx)) {
+								move(dy < 0 ? 1 : -1);
+							}
+						},
+						{ passive: true }
+					);
+				}
+
+				elements.likeButton.addEventListener("click", async () => {
+					const reel = reels[currentIndex];
+					if (!reel) return;
+					if (liked.has(reel.id)) {
+						showToast("Already liked from this device");
+						return;
+					}
+					// Optimistic UI — server only counts once per device
+					elements.likeButton.setAttribute("aria-pressed", "true");
+					elements.likeIcon.textContent = "♥";
+					elements.likeCount.textContent = (reel.likes ?? 0) + 1;
+					try {
+						const data = await fetch(`${API}/api/videos/${encodeURIComponent(reel.id)}/like`, {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+								"X-Device-Id": getDeviceId(),
+							},
+							body: JSON.stringify({ deviceId: getDeviceId() }),
+						}).then(readJson);
+						markLiked(reel.id);
+						if (data.counted) {
+							reel.likes = (reel.likes ?? 0) + 1;
+							showToast("Liked");
+						} else {
+							// Already counted server-side; keep heart, don't bump again
+							elements.likeCount.textContent = reel.likes ?? 0;
+							showToast("Already liked from this device");
+						}
+					} catch (error) {
+						elements.likeButton.setAttribute("aria-pressed", "false");
+						elements.likeIcon.textContent = "♡";
+						elements.likeCount.textContent = reel.likes ?? 0;
+						showToast(error instanceof Error ? error.message : "Couldn't like");
+					}
+				});
+
+				elements.shareButton.addEventListener("click", async () => {
+					const reel = reels[currentIndex];
+					if (!reel) return;
+
+					const shareUrl = `${location.origin}${location.pathname}?v=${encodeURIComponent(reel.id)}`;
+					// Always allow sharing the link; only count once per device
+					if (!shared.has(reel.id)) {
+						try {
+							const data = await fetch(`${API}/api/videos/${encodeURIComponent(reel.id)}/share`, {
+								method: "POST",
+								headers: {
+									"Content-Type": "application/json",
+									"X-Device-Id": getDeviceId(),
+								},
+								body: JSON.stringify({ deviceId: getDeviceId() }),
+							}).then(readJson);
+							markShared(reel.id);
+							if (data.counted) {
+								reel.shares = (reel.shares ?? 0) + 1;
+								elements.shareCount.textContent = reel.shares;
+							}
+						} catch {
+							// Link share still proceeds even if count fails
+						}
+					}
+
+					try {
+						if (navigator.share) {
+							await navigator.share({ title: reel.title, url: shareUrl });
+							return;
+						}
+					} catch {}
+					try {
+						await navigator.clipboard.writeText(shareUrl);
+						showToast(shared.has(reel.id) ? "Share link copied" : "Share link copied");
+					} catch {
+						showToast("Share link ready");
+					}
+				});
+
+				document.querySelectorAll("[data-toast]").forEach((button) => {
+					button.addEventListener("click", () => {
+						showToast(button.dataset.toast || "Action unavailable");
+					});
+				});
+
+				elements.unmuteButton.addEventListener("click", () => {
+					elements.video.muted = false;
+					elements.video.play().catch(() => {});
+					elements.unmuteButton.style.display = "none";
+				});
+
+				// Update visibility of the unmute button if audio is forced off
+				elements.video.addEventListener("volumechange", () => {
+					if (elements.video.muted || elements.video.volume === 0) {
+						elements.unmuteButton.style.display = "block";
+					} else {
+						elements.unmuteButton.style.display = "none";
+					}
+				});
+
+				// ---------- Comments ----------
+
+				function anySheetOpen() {
+					return (
+						elements.uploadOverlay.dataset.open === "true" ||
+						elements.commentsOverlay.dataset.open === "true"
+					);
+				}
+
+				function renderComments(items) {
+					if (!items?.length) {
+						elements.commentsList.innerHTML = `<p class="comments-empty">No comments yet. Be the first.</p>`;
+						return;
+					}
+					elements.commentsList.innerHTML = items
+						.map(
+							(c) => `
+						<article class="comment-item">
+							<div class="comment-meta">
+								<span class="comment-author">@${escapeHtml(c.author || "Anonymous")}</span>
+								<span class="comment-time">${escapeHtml(formatCommentTime(c.createdAt))}</span>
+							</div>
+							<p class="comment-text">${escapeHtml(c.text)}</p>
+						</article>`
+						)
+						.join("");
+				}
+
+				async function loadComments(videoId) {
+					if (!videoId) return;
+					commentsLoading = true;
+					elements.commentsList.innerHTML = `<p class="comments-loading">Loading comments…</p>`;
+					try {
+						const data = await fetch(`${API}/api/videos/${encodeURIComponent(videoId)}/comments?perPage=50`).then(readJson);
+						renderComments(data.items || []);
+						const total = data.total ?? data.items?.length ?? 0;
+						const reel = reels[currentIndex];
+						if (reel && reel.id === videoId) {
+							reel.comments = total;
+							elements.commentCount.textContent = total;
+						}
+					} catch (error) {
+						elements.commentsList.innerHTML = `<p class="comments-error">${escapeHtml(
+							error instanceof Error ? error.message : "Failed to load comments"
+						)}</p>`;
+					} finally {
+						commentsLoading = false;
+					}
+				}
+
+				function openComments() {
+					const reel = reels[currentIndex];
+					if (!reel) {
+						showToast("No reel selected");
+						return;
+					}
+					const savedAuthor = localStorage.getItem(COMMENT_AUTHOR_KEY);
+					if (savedAuthor) elements.commentAuthor.value = savedAuthor;
+					else if (elements.uploaderInput.value) elements.commentAuthor.value = elements.uploaderInput.value;
+					elements.commentText.value = "";
+					const already = commented.has(reel.id);
+					elements.commentSubmit.disabled = already;
+					elements.commentText.disabled = already;
+					elements.commentText.placeholder = already
+						? "You already commented from this device"
+						: "Say something…";
+					elements.commentsOverlay.dataset.open = "true";
+					elements.video.pause();
+					loadComments(reel.id);
+					if (!already) window.setTimeout(() => elements.commentText.focus(), 50);
+					else showToast("You already commented from this device");
+				}
+
+				function closeComments() {
+					elements.commentsOverlay.dataset.open = "false";
+				}
+
+				elements.commentButton.addEventListener("click", openComments);
+				elements.closeComments.addEventListener("click", closeComments);
+				elements.commentsOverlay.addEventListener("click", (event) => {
+					if (event.target === elements.commentsOverlay) closeComments();
+				});
+
+				elements.commentForm.addEventListener("submit", async (event) => {
+					event.preventDefault();
+					const reel = reels[currentIndex];
+					if (!reel) return;
+					if (commented.has(reel.id)) {
+						showToast("You already commented from this device");
+						return;
+					}
+					const text = elements.commentText.value.trim();
+					const author = elements.commentAuthor.value.trim() || "Anonymous";
+					if (!text) {
+						showToast("Write a comment first");
+						return;
+					}
+					elements.commentSubmit.disabled = true;
+					try {
+						const data = await fetch(`${API}/api/videos/${encodeURIComponent(reel.id)}/comments`, {
+							method: "POST",
+							headers: {
+								"Content-Type": "application/json",
+								"X-Device-Id": getDeviceId(),
+							},
+							body: JSON.stringify({ author, text, deviceId: getDeviceId() }),
+						}).then(readJson);
+						localStorage.setItem(COMMENT_AUTHOR_KEY, author);
+						markCommented(reel.id);
+						elements.commentText.value = "";
+						elements.commentSubmit.disabled = true;
+						reel.comments = (reel.comments ?? 0) + 1;
+						elements.commentCount.textContent = reel.comments;
+						// Prepend optimistically, then refresh list
+						if (data.data) {
+							const existing = elements.commentsList.querySelector(".comments-empty");
+							if (existing) elements.commentsList.innerHTML = "";
+							const item = data.data;
+							elements.commentsList.insertAdjacentHTML(
+								"afterbegin",
+								`<article class="comment-item">
+									<div class="comment-meta">
+										<span class="comment-author">@${escapeHtml(item.author || author)}</span>
+										<span class="comment-time">just now</span>
+									</div>
+									<p class="comment-text">${escapeHtml(item.text || text)}</p>
+								</article>`
+							);
+						} else {
+							await loadComments(reel.id);
+						}
+						showToast("Comment posted");
+						elements.commentText.disabled = true;
+						elements.commentText.placeholder = "You already commented from this device";
+					} catch (error) {
+						const msg = error instanceof Error ? error.message : "Couldn't post comment";
+						if (/already commented/i.test(msg)) {
+							markCommented(reel.id);
+							elements.commentText.disabled = true;
+							elements.commentSubmit.disabled = true;
+							elements.commentText.placeholder = "You already commented from this device";
+						}
+						showToast(msg);
+					} finally {
+						const locked = reel && commented.has(reel.id);
+						elements.commentSubmit.disabled = locked;
+						if (locked) elements.commentText.disabled = true;
+						else elements.commentSubmit.disabled = false;
+					}
+				});
+
+				// ---------- Delete ----------
+
+				elements.deleteButton.addEventListener("click", async () => {
+					const reel = reels[currentIndex];
+					if (!reel) {
+						showToast("No reel selected");
+						return;
+					}
+					const ownerToken = getOwnerToken(reel.id);
+					if (!ownerToken) {
+						showToast("Delete only works for reels you uploaded on this device");
+						return;
+					}
+					const ok = window.confirm(`Delete “${reel.title || "this reel"}”? This cannot be undone.`);
+					if (!ok) return;
+					elements.deleteButton.disabled = true;
+					try {
+						const deleteUrl = `${API}/api/videos/${encodeURIComponent(reel.id)}?ownerToken=${encodeURIComponent(ownerToken)}`;
+						await fetch(deleteUrl, {
+							method: "DELETE",
+							headers: { "Content-Type": "application/json" },
+							body: JSON.stringify({ ownerToken }),
+						}).then(readJson);
+						removeOwnerToken(reel.id);
+						reels.splice(currentIndex, 1);
+						if (currentIndex >= reels.length) currentIndex = Math.max(0, reels.length - 1);
+						closeComments();
+						showToast("Reel deleted");
+						renderReel();
+						elements.previousButton.disabled = reels.length < 2;
+						elements.nextButton.disabled = reels.length < 2;
+					} catch (error) {
+						showToast(error instanceof Error ? error.message : "Couldn't delete reel");
+					} finally {
+						elements.deleteButton.disabled = false;
+					}
+				});
+
+				elements.nextButton.addEventListener("click", () => move(1));
+				elements.previousButton.addEventListener("click", () => move(-1));
+
+				elements.bottomPanel?.addEventListener("click", (event) => {
+					event.stopPropagation();
+					togglePanelExpanded();
+				});
+				elements.bottomPanel?.addEventListener("keydown", (event) => {
+					if (event.key === "Enter" || event.key === " ") {
+						event.preventDefault();
+						event.stopPropagation();
+						togglePanelExpanded();
+					}
+				});
+
+				window.addEventListener("keydown", (event) => {
+					if (anySheetOpen()) {
+						if (event.key === "Escape") {
+							closeUploadSheet();
+							closeComments();
+						}
+						return;
+					}
+					if (event.key === "Escape" && elements.bottomPanel?.dataset.expanded === "true") {
+						setPanelExpanded(false);
+						return;
+					}
+					if (event.key === "ArrowDown") move(1);
+					if (event.key === "ArrowUp") move(-1);
+				});
+
+				// ---------- Upload ----------
+
+				let isUploading = false;
+
+				function fileFingerprint(file) {
+					if (!file) return "";
+					return `${file.name}|${file.size}|${file.lastModified}|${file.type || ""}`;
+				}
+
+				function loadUploadedFiles() {
+					try {
+						const raw = JSON.parse(localStorage.getItem(UPLOADED_FILES_KEY) || "[]");
+						return new Set(Array.isArray(raw) ? raw.map(String) : []);
+					} catch {
+						return new Set();
+					}
+				}
+
+				function markFileUploaded(fingerprint) {
+					if (!fingerprint) return;
+					const set = loadUploadedFiles();
+					set.add(fingerprint);
+					// Cap list so localStorage doesn't grow forever
+					const list = [...set];
+					while (list.length > 200) list.shift();
+					localStorage.setItem(UPLOADED_FILES_KEY, JSON.stringify(list));
+				}
+
+				function isFileAlreadyUploaded(file) {
+					const fp = fileFingerprint(file);
+					return Boolean(fp && loadUploadedFiles().has(fp));
+				}
+
+				function setUploadFormBusy(busy) {
+					isUploading = busy;
+					const fields = [
+						elements.videoFile,
+						elements.titleInput,
+						elements.descriptionInput,
+						elements.uploaderInput,
+						elements.categoryInput,
+						elements.hashtagsInput,
+						elements.uploadSubmit,
+						elements.closeUpload,
+					];
+					for (const field of fields) {
+						if (field) field.disabled = busy;
+					}
+					if (elements.openUpload) {
+						elements.openUpload.disabled = busy;
+						elements.openUpload.setAttribute("aria-busy", String(busy));
+					}
+					if (elements.uploadSubmit) {
+						elements.uploadSubmit.textContent = busy ? "Uploading…" : "Upload";
+					}
+				}
+
+				function openUploadSheet() {
+					if (isUploading) {
+						showToast("Upload already in progress");
+						return;
+					}
+					closeComments();
+					const savedAuthor = localStorage.getItem(COMMENT_AUTHOR_KEY);
+					if (savedAuthor) elements.uploaderInput.value = savedAuthor;
+					elements.uploadOverlay.dataset.open = "true";
+					elements.video.pause();
+				}
+				function closeUploadSheet() {
+					if (isUploading) {
+						showToast("Please wait — upload in progress");
+						return;
+					}
+					elements.uploadOverlay.dataset.open = "false";
+				}
+				elements.openUpload.addEventListener("click", openUploadSheet);
+				elements.closeUpload.addEventListener("click", closeUploadSheet);
+				elements.uploadOverlay.addEventListener("click", (event) => {
+					if (event.target === elements.uploadOverlay) closeUploadSheet();
+				});
+
+				function setUploadStatus(kind, message) {
+					elements.uploadStatus.dataset.kind = kind;
+					elements.uploadStatus.textContent = message;
+				}
+
+				elements.videoFile.addEventListener("change", () => {
+					const file = elements.videoFile.files?.[0];
+					if (!file) return;
+					if (isFileAlreadyUploaded(file)) {
+						setUploadStatus("error", "This file was already uploaded from this device. Choose another video.");
+						elements.videoFile.value = "";
+						showToast("Same file already uploaded");
+					} else if (!isUploading) {
+						setUploadStatus("", "");
+					}
+				});
+
+				let wakeLock = null;
+				async function requestWakeLock() {
+					try {
+						wakeLock = await navigator.wakeLock?.request("screen");
+					} catch {}
+				}
+				function releaseWakeLock() {
+					if (wakeLock) {
+						try {
+							wakeLock.release();
+						} catch {}
+						wakeLock = null;
+					}
+				}
+
+				elements.uploadForm.addEventListener("submit", async (event) => {
+					event.preventDefault();
+					if (isUploading) {
+						showToast("Upload already in progress");
+						return;
+					}
+
+					const file = elements.videoFile.files[0];
+					if (!file) {
+						setUploadStatus("error", "Please select a video file");
+						return;
+					}
+
+					const fingerprint = fileFingerprint(file);
+					if (isFileAlreadyUploaded(file)) {
+						setUploadStatus("error", "This file was already uploaded from this device. Choose another video.");
+						elements.videoFile.value = "";
+						showToast("Same file already uploaded");
+						return;
+					}
+
+					setUploadFormBusy(true);
+					await requestWakeLock();
+
+					const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+					const sizeMB = (file.size / 1048576).toFixed(1);
+					setUploadStatus("info", `Starting upload (${totalChunks} chunk${totalChunks === 1 ? "" : "s"}, 512KB each)…`);
+					elements.progressTrack.dataset.visible = "true";
+					elements.progressFill.style.width = "0%";
+
+					let uploadId;
+					try {
+						const initData = await fetch(`${API}/api/videos/init-upload`, {
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+							body: JSON.stringify({
+								title: elements.titleInput.value,
+								description: elements.descriptionInput.value,
+								uploader: elements.uploaderInput.value,
+								category: elements.categoryInput.value,
+								hashtags: elements.hashtagsInput.value,
+								fileName: file.name,
+								fileSize: file.size,
+								mimeType: file.type,
+								totalChunks,
+							}),
+						}).then(readJson);
+						if (!initData.uploadId) throw new Error("Init failed");
+						uploadId = initData.uploadId;
+					} catch (error) {
+						setUploadStatus("error", `Init error: ${error instanceof Error ? error.message : "unknown"}`);
+						releaseWakeLock();
+						setUploadFormBusy(false);
+						return;
+					}
+
+					let totalLoaded = 0;
+					const uploadedChunks = new Set();
+
+					async function uploadOneChunk(index, chunkBlob) {
+						const controller = new AbortController();
+						const timeoutId = setTimeout(() => controller.abort(), CHUNK_TIMEOUT_MS);
+						try {
+							const res = await fetch(
+								`${API}/api/videos/upload-chunk?uploadId=${encodeURIComponent(uploadId)}&index=${index - 1}`,
+								{
+									method: "POST",
+									headers: { "Content-Type": "application/octet-stream" },
+									// Raw binary — no base64 (smaller + faster on Workers)
+									body: chunkBlob,
+									signal: controller.signal,
+								}
+							);
+							clearTimeout(timeoutId);
+							let data = {};
+							try {
+								data = await res.json();
+							} catch {
+								data = {};
+							}
+							if (!res.ok || !data.success) {
+								throw new Error(data.message || data.error || `HTTP ${res.status}`);
+							}
+							if (!uploadedChunks.has(index)) {
+								uploadedChunks.add(index);
+								totalLoaded += chunkBlob.size;
+								const percent = Math.min(Math.round((totalLoaded / file.size) * 100), 100);
+								elements.progressFill.style.width = `${percent}%`;
+								setUploadStatus(
+									"info",
+									`Uploading ${sizeMB}MB… ${percent}% · chunk ${index}/${totalChunks}`
+								);
+							}
+							return true;
+						} catch (err) {
+							clearTimeout(timeoutId);
+							throw err;
+						}
+					}
+
+					async function uploadWithRetry(index, chunkBlob, errors) {
+						for (let attempt = 0; attempt < CHUNK_RETRIES; attempt++) {
+							try {
+								return await uploadOneChunk(index, chunkBlob);
+							} catch (err) {
+								const label =
+									err?.name === "AbortError"
+										? `timeout(${index})`
+										: err instanceof Error
+											? err.message
+											: String(err);
+								errors.push(`${label}#${attempt + 1}`);
+								// Exponential backoff: 1s, 2s, 4s…
+								if (attempt < CHUNK_RETRIES - 1) {
+									await new Promise((r) => setTimeout(r, 1000 * 2 ** attempt));
+								}
+							}
+						}
+						return false;
+					}
+
+					for (let start = 0; start < totalChunks; start += CHUNK_PARALLEL) {
+						const end = Math.min(start + CHUNK_PARALLEL, totalChunks);
+						const tasks = [];
+						const errors = [];
+						for (let j = start; j < end; j++) {
+							const idx = j + 1;
+							const chunkBlob = file.slice(j * CHUNK_SIZE, Math.min((j + 1) * CHUNK_SIZE, file.size));
+							tasks.push(uploadWithRetry(idx, chunkBlob, errors).then((ok) => ({ idx, ok })));
+						}
+						const results = await Promise.all(tasks);
+						const failed = results.filter((r) => !r.ok);
+						if (failed.length > 0) {
+							setUploadStatus(
+								"error",
+								`Chunk ${failed[0].idx} failed: ${errors.slice(-6).join(" | ")}. Tap Upload to retry.`
+							);
+							releaseWakeLock();
+							setUploadFormBusy(false);
+							return;
+						}
+					}
+
+					setUploadStatus("info", "Completing upload…");
+					try {
+						const compData = await fetch(`${API}/api/videos/complete-upload`, {
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+							body: JSON.stringify({ uploadId }),
+						}).then(readJson);
+						elements.progressTrack.dataset.visible = "false";
+						if (!compData.success) {
+							setUploadStatus("error", `Processing failed: ${compData.message || "unknown"}`);
+							releaseWakeLock();
+							setUploadFormBusy(false);
+							return;
+						}
+						const uploaded = compData.data;
+						if (uploaded?.id && uploaded?.ownerToken) {
+							saveOwnerToken(uploaded.id, uploaded.ownerToken);
+						}
+						markFileUploaded(fingerprint);
+						if (elements.uploaderInput.value.trim()) {
+							localStorage.setItem(COMMENT_AUTHOR_KEY, elements.uploaderInput.value.trim());
+						}
+						setUploadStatus("success", "Uploaded! Processing in the background…");
+						elements.uploadForm.reset();
+						elements.uploaderInput.value = "demo-user";
+						elements.categoryInput.value = "entertainment";
+						showToast("Reel uploaded");
+						setTimeout(async () => {
+							setUploadFormBusy(false);
+							closeUploadSheet();
+							await loadFeed();
+						}, 1200);
+					} catch (error) {
+						elements.progressTrack.dataset.visible = "false";
+						setUploadStatus("error", `Error: ${error instanceof Error ? error.message : "unknown"}`);
+						setUploadFormBusy(false);
+					} finally {
+						releaseWakeLock();
+					}
+				});
+
+				checkHealth();
+				loadFeed();
+			})();
+		</script>
+	</body>
+</html>

@@ -5,7 +5,7 @@ import { VideoUploadService } from "../services/VideoUploadService";
 import { BadRequestError } from "../utils/errors";
 import { requireLoggedUser } from "../utils/auth";
 
-const REASSEMBLY_CONCURRENCY = 8;
+const REASSEMBLY_CONCURRENCY = 16;
 
 export class ChunkedUploadController {
   constructor(
@@ -68,8 +68,8 @@ export class ChunkedUploadController {
       const chunk = this.parseChunkBody(req.body);
       if (chunk.length === 0) throw new BadRequestError("Empty chunk body");
       // Cloudflare KV value limit is 25 MiB; keep chunks well under that.
-      if (chunk.length > 12 * 1024 * 1024) {
-        throw new BadRequestError("Chunk too large (max 12MB)");
+      if (chunk.length > 24 * 1024 * 1024) {
+        throw new BadRequestError("Chunk too large (max 24MB)");
       }
 
       await this.kv.put(`upload:${uploadId}:chunk:${chunkIndex}`, chunk, { expirationTtl: 86400 });

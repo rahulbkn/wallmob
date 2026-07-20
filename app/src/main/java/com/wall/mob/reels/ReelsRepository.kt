@@ -4,6 +4,11 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.wall.mob.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -159,6 +164,111 @@ class ReelsRepository(context: Context) {
             language = language?.let { text(it) }
         )
         val result = resp.body()?.data ?: error("Upload failed: ${resp.code()}")
+        saveOwnerToken(result.id, result.ownerToken)
+        result
+    }
+
+    suspend fun uploadVideoChunked(
+        file: File,
+        title: String,
+        category: String,
+        uploader: String,
+        description: String? = null,
+        hashtagsCsv: String? = null,
+        onProgress: (percentage: Int, speedMBs: Double) -> Unit
+    ): Result<UploadVideoResult> = runCatching {
+        val userId = requireLoggedUserId()
+        val totalSize = file.length()
+        val chunkSize = 24 * 1024 * 1024L // 24 MB
+        val totalChunks = if (totalSize == 0L) 1 else Math.ceil(totalSize.toDouble() / chunkSize).toInt()
+
+        // 1. Init upload
+        val initResp = api.initUpload(
+            userId = userId,
+            body = InitUploadRequest(
+                title = title,
+                description = description,
+                uploader = uploader,
+                category = category,
+                hashtags = hashtagsCsv,
+                fileName = file.name,
+                fileSize = totalSize,
+                mimeType = "video/mp4",
+                totalChunks = totalChunks
+            )
+        )
+        if (!initResp.isSuccessful) {
+            error("Failed to initialize chunked upload: ${initResp.errorBody()?.string() ?: initResp.code()}")
+        }
+        val uploadId = initResp.body()?.uploadId ?: error("UploadId not returned")
+
+        // 2. Upload chunks in parallel with progress tracking
+        val bytesSentMap = java.util.concurrent.ConcurrentHashMap<Int, Long>()
+        val startTime = System.currentTimeMillis()
+
+        // Use a Semaphore to control concurrency of uploads (e.g., 4 concurrent chunk uploads max)
+        val semaphore = Semaphore(4)
+
+        fun updateProgress() {
+            val totalSent = bytesSentMap.values.sum()
+            val percentage = ((totalSent.toDouble() / totalSize) * 100).toInt().coerceIn(0, 100)
+            val timeElapsedSec = (System.currentTimeMillis() - startTime) / 1000.0
+            val speedMBs = if (timeElapsedSec > 0) (totalSent / 1024.0 / 1024.0) / timeElapsedSec else 0.0
+            onProgress(percentage, speedMBs)
+        }
+
+        coroutineScope {
+            val deferreds = (0 until totalChunks).map { index ->
+                async {
+                    semaphore.withPermit {
+                        val offset = index * chunkSize
+                        val length = Math.min(chunkSize, totalSize - offset).toInt()
+                        val chunkBytes = ByteArray(length)
+
+                        java.io.RandomAccessFile(file, "r").use { raf ->
+                            raf.seek(offset)
+                            raf.readFully(chunkBytes)
+                        }
+
+                        val requestBody = object : okhttp3.RequestBody() {
+                            override fun contentType() = "application/octet-stream".toMediaTypeOrNull()
+                            override fun contentLength() = length.toLong()
+                            override fun writeTo(sink: okio.BufferedSink) {
+                                var uploaded = 0L
+                                val bufferSize = 4096
+                                val buffer = ByteArray(bufferSize)
+                                var read: Int
+                                val ins = java.io.ByteArrayInputStream(chunkBytes)
+                                while (ins.read(buffer).also { read = it } != -1) {
+                                    sink.write(buffer, 0, read)
+                                    uploaded += read
+                                    bytesSentMap[index] = uploaded
+                                    updateProgress()
+                                }
+                            }
+                        }
+
+                        val resp = api.uploadChunk(
+                            userId = userId,
+                            uploadId = uploadId,
+                            index = index,
+                            body = requestBody
+                        )
+                        if (!resp.isSuccessful) {
+                            error("Failed to upload chunk $index: ${resp.errorBody()?.string() ?: resp.code()}")
+                        }
+                    }
+                }
+            }
+            deferreds.awaitAll()
+        }
+
+        // 3. Complete upload
+        val completeResp = api.completeUpload(
+            userId = userId,
+            body = CompleteUploadRequest(uploadId = uploadId)
+        )
+        val result = completeResp.body()?.data ?: error("Failed to complete upload: ${completeResp.errorBody()?.string() ?: completeResp.code()}")
         saveOwnerToken(result.id, result.ownerToken)
         result
     }

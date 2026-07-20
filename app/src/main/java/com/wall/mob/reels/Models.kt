@@ -103,3 +103,29 @@ data class HealthResponse(
     val success: Boolean,
     val provider: String? = null
 )
+
+data class InitUploadRequest(
+    val title: String,
+    val description: String?,
+    val uploader: String,
+    val category: String,
+    val hashtags: String?,
+    val fileName: String,
+    val fileSize: Long,
+    val mimeType: String,
+    val totalChunks: Int
+)
+
+data class InitUploadResponse(
+    val uploadId: String
+)
+
+data class UploadChunkResponse(
+    val success: Boolean,
+    val chunkIndex: Int,
+    val bytes: Int
+)
+
+data class CompleteUploadRequest(
+    val uploadId: String
+)

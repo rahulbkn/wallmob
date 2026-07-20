@@ -48,6 +48,7 @@ import android.app.NotificationManager;
 import android.app.NotificationChannel;
 
 import com.wall.mob.reels.ReelFragment;
+import com.wall.mob.reels.UploadBottomSheet;
 import com.bumptech.glide.Glide;
 import android.view.Window;
 import com.bumptech.glide.load.resource.bitmap.CircleCrop;
@@ -524,8 +525,20 @@ public class MainActivity extends BaseActivity {
         });
 
         fabUpload.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, UploadWallpaperActivity.class);
-            startActivity(intent);
+            if (currentPosition == 4) {
+                UploadBottomSheet.show(getSupportFragmentManager(), new kotlin.jvm.functions.Function0<kotlin.Unit>() {
+                    @Override
+                    public kotlin.Unit invoke() {
+                        if (reelFragment instanceof ReelFragment) {
+                            ((ReelFragment) reelFragment).loadFeed();
+                        }
+                        return kotlin.Unit.INSTANCE;
+                    }
+                });
+            } else {
+                Intent intent = new Intent(MainActivity.this, UploadWallpaperActivity.class);
+                startActivity(intent);
+            }
         });
 
     }

@@ -49,6 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="16dp"
+                    android:visibility="gone"
                     app:checkedButton="@+id/typeImageButton"
                     app:selectionRequired="true"
                     app:singleSelection="true">
@@ -63,18 +64,6 @@
                         android:textAllCaps="false"
                         app:cornerRadius="12dp"
                         app:icon="@drawable/ic_add_photo"
-                        app:iconGravity="textStart" />
-
-                    <com.google.android.material.button.MaterialButton
-                        android:id="@+id/typeVideoButton"
-                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                        android:layout_width="0dp"
-                        android:layout_height="48dp"
-                        android:layout_weight="1"
-                        android:text="@string/upload_type_video"
-                        android:textAllCaps="false"
-                        app:cornerRadius="12dp"
-                        app:icon="@drawable/ic_reels_outline"
                         app:iconGravity="textStart" />
 
                 </com.google.android.material.button.MaterialButtonToggleGroup>

@@ -71,7 +71,6 @@ public class UploadWallpaperActivity extends BaseActivity {
 
     private Uri selectedMediaUri;
     private String selectedDisplayName;
-    private boolean isVideoMode = false;
     private SessionManager sessionManager;
     private ReelsRepository reelsRepository;
 
@@ -98,15 +97,6 @@ public class UploadWallpaperActivity extends BaseActivity {
         initViews();
         setClickListeners();
 
-        String requestedType = getIntent() != null ? getIntent().getStringExtra(EXTRA_UPLOAD_TYPE) : null;
-        if (TYPE_VIDEO.equalsIgnoreCase(requestedType)) {
-            uploadTypeToggle.check(R.id.typeVideoButton);
-            setVideoMode(true);
-        } else {
-            uploadTypeToggle.check(R.id.typeImageButton);
-            setVideoMode(false);
-        }
-
         checkHealthAndEnableUpload();
     }
 
@@ -125,9 +115,7 @@ public class UploadWallpaperActivity extends BaseActivity {
                 if (isFinishing() || isDestroyed()) return;
 
                 try {
-                    String healthUrl = isVideoMode
-                            ? RetrofitClient.BASE_URL + "health"
-                            : "https://tool-veyr.onrender.com/health";
+                    String healthUrl = "https://tool-veyr.onrender.com/health";
                     HttpURLConnection urlConnection = (HttpURLConnection) new URL(healthUrl).openConnection();
                     urlConnection.setRequestMethod("GET");
                     urlConnection.setConnectTimeout(3000);
@@ -202,21 +190,8 @@ public class UploadWallpaperActivity extends BaseActivity {
             finish();
         });
 
-        uploadTypeToggle.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
-            if (!isChecked) return;
-            boolean video = checkedId == R.id.typeVideoButton;
-            if (video == isVideoMode) return;
-            setVideoMode(video);
-            clearMediaSelection();
-            checkHealthAndEnableUpload();
-        });
-
         imagePreviewContainer.setOnClickListener(v -> {
-            if (isVideoMode) {
-                pickMediaLauncher.launch("video/*");
-            } else {
-                pickMediaLauncher.launch("image/*");
-            }
+            pickMediaLauncher.launch("image/*");
         });
 
         uploadButton.setOnClickListener(v -> {
@@ -224,31 +199,8 @@ public class UploadWallpaperActivity extends BaseActivity {
                 Toast.makeText(this, getString(R.string.select_media_first), Toast.LENGTH_SHORT).show();
                 return;
             }
-            if (isVideoMode) {
-                uploadReel();
-            } else {
-                uploadWallpaper();
-            }
+            uploadWallpaper();
         });
-    }
-
-    private void setVideoMode(boolean video) {
-        isVideoMode = video;
-        int videoVisibility = video ? View.VISIBLE : View.GONE;
-        descriptionInputLayout.setVisibility(videoVisibility);
-        hashtagsInputLayout.setVisibility(videoVisibility);
-
-        selectMediaHintText.setText(video
-                ? getString(R.string.tap_to_select_video)
-                : getString(R.string.tap_to_select_image));
-        selectMediaIcon.setImageResource(video ? R.drawable.ic_reels_outline : R.drawable.ic_attach);
-
-        toolbar.setTitle(video ? getString(R.string.upload_reel) : getString(R.string.upload_wallpaper));
-        uploadButton.setText(video ? getString(R.string.upload_reel) : getString(R.string.upload));
-
-        if (video && !reelsRepository.isAdminUser()) {
-            Toast.makeText(this, getString(R.string.admin_required_upload), Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void clearMediaSelection() {
@@ -265,31 +217,13 @@ public class UploadWallpaperActivity extends BaseActivity {
         selectedMediaUri = uri;
         selectedDisplayName = resolveDisplayName(uri);
 
-        if (isVideoMode) {
-            Bitmap frame = extractVideoFrame(uri);
-            if (frame != null) {
-                previewImage.setImageBitmap(frame);
-                previewImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                previewImage.setVisibility(View.VISIBLE);
-                selectImageHint.setVisibility(View.GONE);
-            } else {
-                previewImage.setImageResource(R.drawable.ic_reels);
-                previewImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-                previewImage.setVisibility(View.VISIBLE);
-                selectImageHint.setVisibility(View.GONE);
-            }
-            selectedFileName.setText(selectedDisplayName != null
-                    ? selectedDisplayName
-                    : getString(R.string.video_selected));
-        } else {
-            previewImage.setImageURI(uri);
-            previewImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-            previewImage.setVisibility(View.VISIBLE);
-            selectImageHint.setVisibility(View.GONE);
-            selectedFileName.setText(selectedDisplayName != null
-                    ? selectedDisplayName
-                    : getString(R.string.image_selected));
-        }
+        previewImage.setImageURI(uri);
+        previewImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        previewImage.setVisibility(View.VISIBLE);
+        selectImageHint.setVisibility(View.GONE);
+        selectedFileName.setText(selectedDisplayName != null
+                ? selectedDisplayName
+                : getString(R.string.image_selected));
         selectedFileName.setVisibility(View.VISIBLE);
     }
 
@@ -305,22 +239,6 @@ public class UploadWallpaperActivity extends BaseActivity {
         }
         String path = uri.getLastPathSegment();
         return path != null ? path : "selected_file";
-    }
-
-    private Bitmap extractVideoFrame(Uri uri) {
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        try {
-            retriever.setDataSource(this, uri);
-            return retriever.getFrameAtTime(0);
-        } catch (Exception e) {
-            Log.w(TAG, "Could not extract video frame: " + e.getMessage());
-            return null;
-        } finally {
-            try {
-                retriever.release();
-            } catch (Exception ignored) {
-            }
-        }
     }
 
     private void setUploadButtonDisabledAppearance() {
@@ -347,9 +265,7 @@ public class UploadWallpaperActivity extends BaseActivity {
             uploadProgressBar.setIndeterminate(false);
             uploadProgressBar.setProgress(0);
             uploadProgressText.setText("0%");
-            uploadStatusLabel.setText(isVideoMode
-                    ? getString(R.string.uploading_video_label)
-                    : getString(R.string.uploading_label));
+            uploadStatusLabel.setText(getString(R.string.uploading_label));
             uploadOverlay.setVisibility(View.VISIBLE);
             setUploadButtonDisabledAppearance();
         } else {
@@ -362,81 +278,6 @@ public class UploadWallpaperActivity extends BaseActivity {
         return ("--" + BOUNDARY + "\r\n" +
                 "Content-Disposition: form-data; name=\"" + fieldName + "\"\r\n\r\n" +
                 value + "\r\n").getBytes();
-    }
-
-    private void uploadReel() {
-        if (!reelsRepository.isAdminUser()) {
-            Toast.makeText(this, getString(R.string.admin_required_upload), Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String title = titleInput.getText() != null ? titleInput.getText().toString().trim() : "";
-        String category = categoryInput.getText() != null ? categoryInput.getText().toString().trim() : "";
-        String description = descriptionInput.getText() != null ? descriptionInput.getText().toString().trim() : "";
-        String hashtags = hashtagsInput.getText() != null ? hashtagsInput.getText().toString().trim() : "";
-
-        final String effectiveTitle = title.isEmpty() ? getString(R.string.default_title) : title;
-        final String effectiveCategory = category.isEmpty() ? "entertainment" : category;
-        final String uploader = reelsRepository.loggedUserId();
-        if (uploader == null || uploader.isEmpty()) {
-            Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        setUploadingAppearance(true);
-
-        new Thread(() -> {
-            File tempFile = null;
-            try {
-                tempFile = copyUriToCache(selectedMediaUri, "upload_reel_", ".mp4");
-                if (tempFile == null) {
-                    runOnUiThread(() -> {
-                        setUploadingAppearance(false);
-                        Toast.makeText(this, getString(R.string.failed_to_read_video), Toast.LENGTH_SHORT).show();
-                    });
-                    return;
-                }
-
-                final File file = tempFile;
-                final String desc = description.isEmpty() ? null : description;
-                final String tags = hashtags.isEmpty() ? null : hashtags;
-
-                runOnUiThread(() -> {
-                    uploadProgressBar.setIndeterminate(true);
-                    uploadProgressText.setText(getString(R.string.processing_percent));
-                    uploadStatusLabel.setText(getString(R.string.uploading_video_label));
-                });
-
-                reelsRepository.uploadVideoBlocking(
-                        file,
-                        effectiveTitle,
-                        effectiveCategory,
-                        uploader,
-                        desc,
-                        tags,
-                        null
-                );
-
-                runOnUiThread(() -> {
-                    setUploadingAppearance(false);
-                    Toast.makeText(this, getString(R.string.upload_video_success), Toast.LENGTH_LONG).show();
-                    setResult(RESULT_OK);
-                    finish();
-                });
-            } catch (Exception e) {
-                Log.e(TAG, "Reel upload failed: " + e.getMessage(), e);
-                final String message = e.getMessage() != null ? e.getMessage() : getString(R.string.server_error);
-                runOnUiThread(() -> {
-                    setUploadingAppearance(false);
-                    Toast.makeText(this, getString(R.string.upload_failed_with_reason, message), Toast.LENGTH_LONG).show();
-                });
-            } finally {
-                if (tempFile != null && tempFile.exists()) {
-                    //noinspection ResultOfMethodCallIgnored
-                    tempFile.delete();
-                }
-            }
-        }).start();
     }
 
     private File copyUriToCache(Uri uri, String prefix, String suffix) {

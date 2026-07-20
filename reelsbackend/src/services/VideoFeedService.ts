@@ -5,6 +5,7 @@ import { BadRequestError, NotFoundError } from "../utils/errors";
 import type { CacheStore } from "../utils/cache";
 import { DeviceInteractionStore } from "../utils/deviceInteractions";
 import { normalizeUserId } from "../utils/auth";
+import { rewriteLocalTranscoderUrl } from "../utils/transcoderUrl";
 
 const URL_CACHE_TTL_SECONDS = 300;
 
@@ -19,7 +20,9 @@ export class VideoFeedService {
     private readonly storage: StorageProvider,
     private readonly videos: VideoRepository,
     private readonly cache: CacheStore,
-    private readonly interactions: DeviceInteractionStore
+    private readonly interactions: DeviceInteractionStore,
+    /** Used to rewrite loopback masterPlaylistUrl values the transcoder embeds. */
+    private readonly transcoderUrl?: string
   ) {}
 
   async getFeed(params: { page: number; perPage: number; category?: string; uploader?: string }): Promise<{ items: ClientVideoView[]; total: number; page: number; perPage: number }> {
@@ -94,13 +97,16 @@ export class VideoFeedService {
     // existence signal (see hasHls below); it is NOT meant to be played
     // directly since it points at raw .ts bytes for HLS renditions.
     const hasHls = Boolean(record.hlsPlaylists && Object.keys(record.hlsPlaylists).length > 0);
-    const hasMasterUrl = Boolean(record.masterPlaylistUrl);
+    // Transcoder may callback with http://localhost:8000/... — rewrite to
+    // the public origin from TRANSCODER_URL so clients can actually play.
+    const masterPlaylistUrl = rewriteLocalTranscoderUrl(record.masterPlaylistUrl, this.transcoderUrl);
+    const hasMasterUrl = Boolean(masterPlaylistUrl);
 
     // Build quality URL map from masterPlaylistUrl + qualityMeta.
     // Each quality label maps to its variant playlist URL on the Transcoder.
     let qualities: Record<string, string> | undefined = undefined;
-    if (hasMasterUrl && record.masterPlaylistUrl && record.qualityMeta) {
-      const base = record.masterPlaylistUrl.replace(/\/master\.m3u8$/, "");
+    if (hasMasterUrl && masterPlaylistUrl && record.qualityMeta) {
+      const base = masterPlaylistUrl.replace(/\/master\.m3u8$/, "");
       qualities = {};
       for (const label of Object.keys(record.qualityMeta)) {
         qualities[label] = `${base}/${label}/stream.m3u8`;
@@ -123,12 +129,12 @@ export class VideoFeedService {
       likes: record.likes,
       comments: record.comments,
       shares: record.shares,
-      videoUrl: hasMasterUrl ? record.masterPlaylistUrl! : urls.videoUrl,
+      videoUrl: hasMasterUrl ? masterPlaylistUrl! : urls.videoUrl,
       thumbnailUrl: urls.thumbnailUrl,
       qualities,
       qualityMeta: hasHls ? record.qualityMeta : undefined,
       hasHls: hasMasterUrl || hasHls,
-      masterPlaylistUrl: record.masterPlaylistUrl
+      masterPlaylistUrl
     };
   }
 }

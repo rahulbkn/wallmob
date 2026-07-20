@@ -5,6 +5,7 @@ import type { ClientVideoView, VideoMetadata, UploadVideoResult } from "../types
 import { BadRequestError } from "../utils/errors";
 import { createLogger } from "../utils/logger";
 import { decodeTelegramStorageKey } from "../providers/storage/telegram/TelegramStorageProvider";
+import { rewriteLocalTranscoderUrl } from "../utils/transcoderUrl";
 
 const logger = createLogger("VideoUploadService");
 
@@ -192,7 +193,14 @@ export class VideoUploadService {
     qualityMeta?: Record<string, { bandwidth: number; width: number; height: number }>,
     masterPlaylistUrl?: string
   ): Promise<void> {
-    await this.videos.patch(recordId, { qualities, hlsPlaylists, qualityMeta, masterPlaylistUrl });
+    // Don't persist loopback URLs the transcoder builds from its bind addr.
+    const publicMasterUrl = rewriteLocalTranscoderUrl(masterPlaylistUrl, this.transcoderUrl);
+    await this.videos.patch(recordId, {
+      qualities,
+      hlsPlaylists,
+      qualityMeta,
+      masterPlaylistUrl: publicMasterUrl,
+    });
   }
 
   async resolveUrls(storageKey: string, thumbnailKey?: string): Promise<{ videoUrl: string; thumbnailUrl: string }> {

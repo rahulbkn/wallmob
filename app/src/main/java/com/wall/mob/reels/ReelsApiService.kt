@@ -96,6 +96,29 @@ interface ReelsApiService {
         @Part("language") language: RequestBody? = null
     ): Response<ApiEnvelope<UploadVideoResult>>
 
+    // POST /api/videos/init-upload
+    @POST("api/videos/init-upload")
+    suspend fun initUpload(
+        @Header("X-User-Id") userId: String,
+        @Body body: InitUploadRequest
+    ): Response<InitUploadResponse>
+
+    // POST /api/videos/upload-chunk?uploadId=...&index=...
+    @POST("api/videos/upload-chunk")
+    suspend fun uploadChunk(
+        @Header("X-User-Id") userId: String,
+        @Query("uploadId") uploadId: String,
+        @Query("index") index: Int,
+        @Body body: RequestBody
+    ): Response<UploadChunkResponse>
+
+    // POST /api/videos/complete-upload
+    @POST("api/videos/complete-upload")
+    suspend fun completeUpload(
+        @Header("X-User-Id") userId: String,
+        @Body body: CompleteUploadRequest
+    ): Response<ApiEnvelope<UploadVideoResult>>
+
     // GET /health
     @GET("health")
     suspend fun health(): Response<HealthResponse>

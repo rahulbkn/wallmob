@@ -25,6 +25,8 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
     private lateinit var categorySpinner: Spinner
     private lateinit var hashtagsInput: EditText
     private lateinit var progressContainer: LinearLayout
+    private lateinit var progressBar: ProgressBar
+    private lateinit var progressText: TextView
     private lateinit var submitButton: Button
 
     private var selectedFile: File? = null
@@ -61,6 +63,8 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
         categorySpinner = view.findViewById(R.id.uploadCategorySpinner)
         hashtagsInput = view.findViewById(R.id.uploadHashtagsInput)
         progressContainer = view.findViewById(R.id.uploadProgressContainer)
+        progressBar = view.findViewById(R.id.uploadProgressBar)
+        progressText = view.findViewById(R.id.uploadProgressText)
         submitButton = view.findViewById(R.id.submitUploadButton)
 
         view.findViewById<ImageButton>(R.id.closeUploadButton).setOnClickListener {
@@ -121,13 +125,17 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
         submitButton.isEnabled = false
 
         lifecycleScope.launch {
-            repo.uploadVideo(
+            repo.uploadVideoChunked(
                 file = file,
                 title = title,
                 category = category,
                 uploader = uploader,
                 description = desc,
-                hashtagsCsv = hashtags
+                hashtagsCsv = hashtags,
+                onProgress = { percentage, speedMBs ->
+                    progressBar.progress = percentage
+                    progressText.text = "Uploading: $percentage% (${"%.2f".format(speedMBs)} MB/s)"
+                }
             ).onSuccess {
                 progressContainer.visibility = View.GONE
                 submitButton.isEnabled = true
@@ -155,6 +163,7 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
     }
 
     companion object {
+        @JvmStatic
         fun show(fm: androidx.fragment.app.FragmentManager, onSuccess: () -> Unit) {
             val fragment = UploadBottomSheet()
             fragment.onUploadSuccess = onSuccess
