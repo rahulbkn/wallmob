@@ -1,0 +1,113 @@
+# Gradle
+.gradle/
+
+# Build outputs
+build/
+**/build/
+out/
+bin/
+gen/
+
+# Wrangler
+.wrangler/
+
+# AndroidIDE
+.cg/
+
+# Local configuration
+local.properties
+
+# IDE (Android Studio / IntelliJ)
+.idea/
+*.iml
+.navigation/
+captures/
+
+# Logs
+*.log
+
+# Android signing keys
+*.jks
+*.keystore
+
+# Generated binaries
+*.apk
+*.aab
+*.aar
+*.ap_
+*.dex
+*.class
+
+# Native builds
+.externalNativeBuild/
+.cxx/
+
+# Eclipse
+proguard/
+
+# Freeline
+freeline.py
+freeline/
+freeline_project_description.json
+
+# fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/
+fastlane/readme.md
+
+# Lint
+lint/intermediates/
+lint/generated/
+lint/outputs/
+lint/tmp/
+
+# Google Services (uncomment if you don't want to commit it)
+# google-services.json
+
+# dependencies
+node_modules/
+reels-backend/node_modules/
+# build artifacts
+dist/
+.wrangler/
+
+# env
+.env
+
+# logs
+*.log
+
+# system
+.DS_Store
+
+# tests/coverage
+coverage/
+.vitest/
+
+# IDE/misc
+.vscode/
+.idea/
+
+# local storage (committed by accident)
+storage/
+
+# compiled JS (TypeScript output)
+#src/**/*.js
+# Gradle build output
+/build/
+/app/build/
+**/build/
+
+# Kotlin compiled classes
+*.class
+
+# Android Studio
+.idea/
+.gradle/
+local.properties
+
+# APK/AAB
+*.apk
+*.aab
