@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <!-- reel.videoUrl goes straight into ExoPlayer's MediaItem; the
+         backend's /stream endpoint already supports HTTP Range for
+         seeking, so no special player config is needed. -->
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:keepScreenOn="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:resize_mode="zoom"
+        app:shutter_background_color="#000000"
+        app:use_controller="false" />
+
+    <View
+        android:id="@+id/topScrim"
+        android:layout_width="0dp"
+        android:layout_height="128dp"
+        android:background="@drawable/scrim_top"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/bottomScrim"
+        android:layout_width="0dp"
+        android:layout_height="240dp"
+        android:background="@drawable/scrim_bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/playPauseIcon"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:alpha="0.9"
+        android:background="@drawable/black_transparent_circle"
+        android:padding="18dp"
+        android:src="@drawable/ic_reel_pause"
+        android:tint="#FFFFFF"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- Action rail: like / comment / share / quality / delete -->
+    <LinearLayout
+        android:id="@+id/actionRail"
+        android:layout_width="64dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="28dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:elevation="4dp"
+        app:layout_constraintBottom_toTopOf="@id/captionPanel"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageButton
+            android:id="@+id/likeButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/circle_button_bg"
+            android:contentDescription="Like"
+            android:padding="14dp"
+            android:src="@drawable/ic_reel_like_outline"
+            android:tint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/likeCount"
+            style="@style/ReelActionCount"
+            android:text="0" />
+
+        <ImageButton
+            android:id="@+id/commentButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/circle_button_bg"
+            android:contentDescription="Comments"
+            android:padding="14dp"
+            android:src="@drawable/ic_reel_comment"
+            android:tint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/commentCount"
+            style="@style/ReelActionCount"
+            android:text="0" />
+
+        <ImageButton
+            android:id="@+id/shareButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/circle_button_bg"
+            android:contentDescription="Share"
+            android:padding="14dp"
+            android:src="@drawable/ic_reel_share"
+            android:tint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/shareCount"
+            style="@style/ReelActionCount"
+            android:text="0" />
+
+        <ImageButton
+            android:id="@+id/qualityButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/circle_button_bg"
+            android:contentDescription="Quality"
+            android:padding="14dp"
+            android:src="@drawable/ic_reel_quality"
+            android:tint="#FFFFFF" />
+
+        <TextView
+            android:id="@+id/qualityText"
+            style="@style/ReelActionCount"
+            android:text="Auto" />
+
+        <ImageButton
+            android:id="@+id/deleteButton"
+            android:layout_width="52dp"
+            android:layout_height="52dp"
+            android:background="@drawable/circle_button_bg"
+            android:contentDescription="Delete"
+            android:padding="14dp"
+            android:src="@drawable/ic_reel_delete"
+            android:tint="#FF4F6D" />
+
+        <TextView
+            android:id="@+id/deleteText"
+            style="@style/ReelActionCount"
+            android:text="Del"
+            android:textColor="#FF6B83" />
+
+    </LinearLayout>
+
+    <!-- Caption / uploader panel -->
+    <LinearLayout
+        android:id="@+id/captionPanel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="28dp"
+        android:orientation="vertical"
+        android:elevation="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/actionRail"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/uploaderHandle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/black_transparent_round"
+            android:paddingStart="10dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp"
+            android:text="@string/placeholder_handle"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/reelTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:shadowColor="#CC000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="3"
+            android:text="@string/placeholder_title"
+            android:textColor="#FFFFFF"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/reelDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:shadowColor="#CC000000"
+            android:shadowDx="0"
+            android:shadowDy="1"
+            android:shadowRadius="2"
+            android:textColor="#E6FFFFFF"
+            android:textSize="14sp" />
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

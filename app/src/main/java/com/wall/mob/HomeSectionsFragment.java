@@ -239,7 +239,11 @@ public class HomeSectionsFragment extends Fragment {
     public void refreshData() {
         allWallpapers.clear();
         loadNasaApod();
-        if (homeTabContentFragment != null) homeTabContentFragment.updateRecentSection();
+        if (homeTabContentFragment != null) {
+            homeTabContentFragment.refreshAllContent();
+            // Force refresh of all sections in the current tab
+            refreshAllSectionsPublic();
+        }
     }
 
     public void setApiManager(ApiManager manager) { this.apiManager = manager; }

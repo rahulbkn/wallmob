@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     xmlns:app="http://schemas.android.com/apk/res-auto"
+     android:layout_height="match_parent"
+     android:layout_width="match_parent"
+     android:background="@color/background"
+     android:id="@+id/swipeRefreshLayout">
+
+    <FrameLayout
+         android:layout_height="match_parent"
+         android:layout_width="match_parent">
+
+        <androidx.core.widget.NestedScrollView
+             android:id="@+id/main_scroll_view"
+             android:layout_height="match_parent"
+             android:layout_width="match_parent"
+             android:fillViewport="true"
+             android:background="@color/background">
+
+            <LinearLayout
+                 android:layout_height="wrap_content"
+                 android:layout_width="match_parent"
+                 android:orientation="vertical"
+                 android:id="@+id/main_content_container">
+
+                <!-- Hero Carousel Section -->
+                <androidx.cardview.widget.CardView
+                     android:layout_height="wrap_content"
+                     android:layout_width="match_parent"
+                     android:clipChildren="false"
+                     app:cardElevation="0dp"
+                     app:cardBackgroundColor="@android:color/transparent"
+                     app:cardMaxElevation="0dp"
+                     app:cardCornerRadius="0dp">
+
+                    <FrameLayout
+                         android:layout_height="match_parent"
+                         android:id="@+id/hero_container"
+                         android:layout_width="match_parent"
+                         android:background="@color/gray_light"
+                         android:clipChildren="false"
+                         android:minHeight="200dp">
+
+                        <androidx.viewpager2.widget.ViewPager2
+                             android:layout_height="match_parent"
+                             android:layout_width="match_parent"
+                             android:clipChildren="true"
+                             android:clipToPadding="true"
+                             android:id="@+id/hero_carousel" />
+
+                        <View
+                             android:layout_width="match_parent"
+                             android:layout_height="120dp"
+                             android:layout_gravity="top"
+                             android:visibility="gone"
+                             android:background="@drawable/scrim_top" />
+
+                        <LinearLayout
+                             android:layout_height="wrap_content"
+                             android:layout_width="match_parent"
+                             android:paddingEnd="12dp"
+                             android:orientation="vertical"
+                             android:paddingBottom="12dp"
+                             android:paddingStart="12dp"
+                             android:layout_gravity="bottom"
+                             android:paddingTop="12dp">
+
+                            <TextView
+                                 android:layout_height="wrap_content"
+                                 android:layout_width="wrap_content"
+                                 android:textSize="10sp"
+                                 android:textColor="@color/white"
+                                 android:paddingStart="10dp"
+                                 android:letterSpacing="0.20"
+                                 android:paddingEnd="10dp"
+                                 android:background="@drawable/pill_black"
+                                 android:paddingBottom="4dp"
+                                 android:backgroundTint="#4D000000"
+                                 android:text="@string/section_featured"
+                                 android:textStyle="bold"
+                                 android:paddingTop="4dp" />
+
+                            <TextView
+                                 android:layout_height="wrap_content"
+                                 android:layout_width="match_parent"
+                                 android:id="@+id/hero_title"
+                                 android:textSize="18sp"
+                                 android:textColor="@color/white"
+                                 android:maxLines="2"
+                                 android:textAllCaps="true" 
+                                 android:ellipsize="end"
+                                 android:layout_marginTop="8dp"
+                                 android:lineSpacingExtra="4dp"
+                                 android:letterSpacing="-0.02"
+                                 android:text="@string/section_discover"
+                                 android:textStyle="bold" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                             android:layout_height="wrap_content"
+                             android:layout_width="wrap_content"
+                             android:paddingEnd="20dp"
+                             android:gravity="center_vertical"
+                             android:orientation="horizontal"
+                             android:paddingBottom="16dp"
+                             android:id="@+id/hero_dots"
+                             android:layout_gravity="bottom|end">
+
+                        </LinearLayout>
+
+                    </FrameLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <!-- Sections Child Fragment -->
+                <FrameLayout
+                     android:id="@+id/sections_container"
+                     android:layout_height="wrap_content"
+                     android:layout_width="match_parent" />
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+        <com.facebook.shimmer.ShimmerFrameLayout
+             android:layout_height="match_parent"
+             android:layout_width="match_parent"
+             android:visibility="gone"
+             app:shimmer_auto_start="true"
+             android:id="@+id/shimmer_view_container">
+
+            <include
+                 layout="@layout/shimmer_home" />
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
+        <LinearLayout
+             android:layout_height="wrap_content"
+             android:layout_width="match_parent"
+             android:visibility="gone"
+             android:gravity="center"
+             android:background="@color/surface"
+             android:padding="24dp"
+             android:orientation="vertical"
+             android:id="@+id/error_view"
+             android:layout_gravity="center">
+
+            <TextView
+                 android:layout_height="wrap_content"
+                 android:layout_width="wrap_content"
+                 android:layout_marginBottom="12dp"
+                 android:gravity="center"
+                 android:textSize="14sp"
+                 android:textColor="@color/onSurface"
+                 android:id="@+id/error_message"
+                 android:text="@string/failed_to_load_wallpapers" />
+
+            <Button
+                 android:layout_height="wrap_content"
+                 android:layout_width="wrap_content"
+                 android:paddingEnd="32dp"
+                 android:textSize="12sp"
+                 android:paddingBottom="12dp"
+                 android:backgroundTint="@color/colorPrimary"
+                 android:textColor="@color/colorOnPrimary"
+                 android:paddingStart="32dp"
+                 android:id="@+id/retry_button"
+                 android:text="@string/retry"
+                 android:paddingTop="12dp" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

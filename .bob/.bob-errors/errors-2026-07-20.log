@@ -1,0 +1,14 @@
+
+================================================================================
+ERROR LOGGED: 2026-07-20T22:06:47.755Z
+================================================================================
+Error Name: Error
+Error Message: Authentication timeout (3 minutes)
+
+Stack Trace:
+Error: Authentication timeout (3 minutes)
+    at Timeout._onTimeout (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2095:91)
+    at listOnTimeout (node:internal/timers:585:17)
+    at process.processTimers (node:internal/timers:521:7)
+================================================================================
+

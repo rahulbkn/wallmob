@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    
+    app:cardCornerRadius="8dp"
+    app:cardElevation="2dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:background="@color/surface">
+
+        <ImageView
+            android:id="@+id/wallpaper_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/wallpaper_image_description" />
+
+
+
+<!-- Change this line in item_wallpaper.xml: -->
+<ImageView
+    android:id="@+id/favorite_icon"
+    android:layout_width="36dp"
+    android:layout_height="36dp"
+    android:layout_margin="12dp"
+    android:src="@android:drawable/btn_star_big_on"
+    android:contentDescription="@string/add_to_favorites"
+    android:background="?android:attr/selectableItemBackgroundBorderless"
+    android:clickable="true"
+    android:focusable="true"
+    android:padding="4dp"
+    android:elevation="8dp"
+    android:layout_alignParentTop="true"
+    android:layout_alignParentEnd="true" />
+
+        <TextView
+            android:id="@+id/resolution_badge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:background="@drawable/pill_black"
+            android:backgroundTint="#B3000000"
+            android:textSize="10sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:visibility="gone"
+            android:elevation="4dp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true" />
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottie_loader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:lottie_rawRes="@raw/placeholder"  
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            android:visibility="gone"
+            android:elevation="4dp"
+            android:layout_centerInParent="true"/>
+
+        <TextView
+            android:id="@+id/wallpaper_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/gradient_overlay_bottom"
+            android:padding="16dp"
+            android:textColor="@color/onImage"
+            android:visibility="gone"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:elevation="2dp"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>
+
+
+

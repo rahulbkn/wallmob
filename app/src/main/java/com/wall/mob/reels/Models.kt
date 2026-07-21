@@ -28,7 +28,8 @@ data class ReelVideo(
     val thumbnailUrl: String,
     val qualities: Map<String, String>? = null,
     val qualityMeta: Map<String, QualityMeta>? = null,
-    val hasHls: Boolean? = false
+    val hasHls: Boolean? = false,
+    val masterPlaylistUrl: String? = null
 )
 
 data class QualityMeta(

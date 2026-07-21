@@ -60,6 +60,10 @@ class ReelsAdapter(
     /** Per-video quality choice: videoId -> "Auto" | "720p" | "480" etc. */
     private val qualityByVideoId = mutableMapOf<String, String>()
 
+    /** Preloaded players for next videos to enable instant playback */
+    private val preloadedPlayers = mutableMapOf<String, ExoPlayer>()
+    private val PRELOAD_COUNT = 2 // Preload next 2 videos
+
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
         this.recyclerView = recyclerView
@@ -120,7 +124,10 @@ class ReelsAdapter(
         val videoUrl = getVideoUrlForQuality(reel, selectedQuality)
         holder.currentVideoUrl = videoUrl
 
-        val player = ExoPlayer.Builder(holder.itemView.context).build().also {
+        // Use preloaded player if available, otherwise create new one
+        val player = preloadedPlayers.remove(reel.id)?.apply {
+            volume = 1f // Restore volume (was muted during preload)
+        } ?: ExoPlayerFactory.create(holder.itemView.context).also {
             it.setMediaItem(MediaItem.fromUri(videoUrl))
             it.repeatMode = Player.REPEAT_MODE_ONE
             it.volume = 1f
@@ -252,7 +259,13 @@ class ReelsAdapter(
     }
 
     private fun getVideoUrlForQuality(reel: ReelVideo, quality: String): String {
+        // Use HLS adaptive streaming when available and quality is Auto
         if (quality.equals("Auto", ignoreCase = true) || quality.isBlank()) {
+            val masterPlaylistUrl = reel.masterPlaylistUrl
+            if (!masterPlaylistUrl.isNullOrBlank()) {
+                // HLS master playlist enables automatic quality switching
+                return masterPlaylistUrl
+            }
             return reel.videoUrl
         }
         val map = reel.qualities ?: return reel.videoUrl
@@ -348,6 +361,8 @@ class ReelsAdapter(
             flashIcon(holder, R.drawable.ic_reel_play)
         } else {
             holder.userPaused = false
+            // Ensure volume is at full before playing
+            player.volume = 1f
             // Only this item may play
             pauseAllExcept(pos)
             player.playWhenReady = true
@@ -393,6 +408,7 @@ class ReelsAdapter(
         holder.player?.let { player ->
             player.playWhenReady = false
             player.pause()
+            player.volume = 0f // Mute to prevent any audio leakage
         }
         super.onViewDetachedFromWindow(holder)
     }
@@ -409,7 +425,49 @@ class ReelsAdapter(
         } else {
             activePosition = position
         }
+        // Ensure the new active player has full volume
+        findHolder(position)?.player?.volume = 1f
         syncPlayback()
+        preloadNextVideos(position)
+    }
+
+    /**
+     * Preload next videos for instant playback when user swipes.
+     */
+    private fun preloadNextVideos(currentPosition: Int) {
+        // Clean up old preloaded players that are too far away
+        val toRemove = preloadedPlayers.keys.filter { videoId ->
+            val idx = items.indexOfFirst { it.id == videoId }
+            idx < 0 || idx < currentPosition - 1 || idx > currentPosition + PRELOAD_COUNT + 1
+        }
+        toRemove.forEach { videoId ->
+            preloadedPlayers.remove(videoId)?.release()
+        }
+
+        // Preload next videos
+        for (i in 1..PRELOAD_COUNT) {
+            val nextPos = currentPosition + i
+            if (nextPos >= items.size) break
+            
+            val nextReel = items[nextPos]
+            if (preloadedPlayers.containsKey(nextReel.id)) continue
+
+            val quality = qualityByVideoId[nextReel.id] ?: "Auto"
+            val videoUrl = getVideoUrlForQuality(nextReel, quality)
+            
+            try {
+                val player = ExoPlayerFactory.create(recyclerView?.context ?: return).apply {
+                    setMediaItem(MediaItem.fromUri(videoUrl))
+                    repeatMode = Player.REPEAT_MODE_ONE
+                    volume = 0f // Muted during preload
+                    playWhenReady = false
+                    prepare()
+                }
+                preloadedPlayers[nextReel.id] = player
+            } catch (e: Exception) {
+                // Ignore preload failures
+            }
+        }
     }
 
     fun setScrolling(scrolling: Boolean) {
@@ -428,7 +486,14 @@ class ReelsAdapter(
     fun setPlaybackAllowed(allowed: Boolean) {
         playbackAllowed = allowed
         if (!allowed) {
+            // Completely stop all players and preloaded players when going to background
             pauseAllPlayers()
+            // Also mute and pause all preloaded players
+            preloadedPlayers.values.forEach { player ->
+                player.playWhenReady = false
+                player.pause()
+                player.volume = 0f
+            }
         } else {
             syncPlayback()
         }
@@ -457,6 +522,8 @@ class ReelsAdapter(
                     !holder.userPaused
 
             if (shouldPlay) {
+                // Ensure volume is always at full for active player
+                player.volume = 1f
                 if (!player.isPlaying) {
                     player.playWhenReady = true
                     player.play()
@@ -506,6 +573,12 @@ class ReelsAdapter(
 
     fun pauseAll() {
         pauseAllPlayers()
+        // Also stop all preloaded players
+        preloadedPlayers.values.forEach { player ->
+            player.playWhenReady = false
+            player.pause()
+            player.volume = 0f
+        }
     }
 
     fun releaseAll() {
@@ -517,6 +590,9 @@ class ReelsAdapter(
                 releasePlayer(holder)
             }
         }
+        // Release all preloaded players
+        preloadedPlayers.values.forEach { it.release() }
+        preloadedPlayers.clear()
         activePosition = RecyclerView.NO_POSITION
     }
 

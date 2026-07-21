@@ -132,20 +132,37 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
                 uploader = uploader,
                 description = desc,
                 hashtagsCsv = hashtags,
-                onProgress = { percentage, speedMBs ->
-                    progressBar.progress = percentage
-                    progressText.text = "Uploading: $percentage% (${"%.2f".format(speedMBs)} MB/s)"
+                onProgress = { percentage, speedMBs, etaSeconds ->
+                    // Update UI on main thread to avoid CalledFromWrongThreadException
+                    activity?.runOnUiThread {
+                        progressBar.progress = percentage
+                        val etaText = if (etaSeconds > 0) {
+                            val minutes = etaSeconds / 60
+                            val seconds = etaSeconds % 60
+                            when {
+                                minutes > 0 -> " • ETA: ${minutes}m ${seconds}s"
+                                else -> " • ETA: ${seconds}s"
+                            }
+                        } else ""
+                        progressText.text = "Uploading: $percentage% (${"%.2f".format(speedMBs)} MB/s)$etaText"
+                    }
                 }
             ).onSuccess {
-                progressContainer.visibility = View.GONE
-                submitButton.isEnabled = true
-                Toast.makeText(context, "Upload complete!", Toast.LENGTH_SHORT).show()
-                onUploadSuccess?.invoke()
-                dismiss()
+                // Ensure all UI updates happen on main thread
+                activity?.runOnUiThread {
+                    progressContainer.visibility = View.GONE
+                    submitButton.isEnabled = true
+                    Toast.makeText(context, "Upload complete!", Toast.LENGTH_SHORT).show()
+                    onUploadSuccess?.invoke()
+                    dismissAllowingStateLoss()
+                }
             }.onFailure { err ->
-                progressContainer.visibility = View.GONE
-                submitButton.isEnabled = true
-                Toast.makeText(context, "Upload failed: ${err.message}", Toast.LENGTH_LONG).show()
+                // Ensure all UI updates happen on main thread
+                activity?.runOnUiThread {
+                    progressContainer.visibility = View.GONE
+                    submitButton.isEnabled = true
+                    Toast.makeText(context, "Upload failed: ${err.message}", Toast.LENGTH_LONG).show()
+                }
             }
         }
     }

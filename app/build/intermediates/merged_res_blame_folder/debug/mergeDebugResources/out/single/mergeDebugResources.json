@@ -1,0 +1,1550 @@
+[
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_bg_search.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/bg_search.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_premium.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_premium.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_play_overlay_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_play_overlay_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_reel_like_filled.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_reel_like_filled.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_exit.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_exit.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/xml_backup_rules.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_nav_stroke_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/nav_stroke_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_login.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/login.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_edit.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_edit.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_tab_item.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/tab_item.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/anim_slide_in_bottom.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/anim/slide_in_bottom.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_black_transparent_round.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/black_transparent_round.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-xxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_upload_fab_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_upload_fab_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_download_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_download_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_blur_panel_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/blur_panel_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_settings.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_settings.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_coin_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/coin_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_download_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_download_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-hdpi_ic_launcher_monochrome.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-hdpi/ic_launcher_monochrome.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_dot_inactive.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/dot_inactive.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_newly_tab.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/newly_tab.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-xxxhdpi_ic_launcher_monochrome.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-xxxhdpi/ic_launcher_monochrome.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_badge_background_modern.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/badge_background_modern.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_button_lock_screen.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/button_lock_screen.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_back_button_icon.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/back_button_icon.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_settings.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/settings.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_email.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_email.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_launcher_round.webp.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_launcher_round.webp"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_download_selector.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_download_selector.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_button_home_screen.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/button_home_screen.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_menu.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/ic_menu.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_placeholder.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_placeholder.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/menu_menu_search.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/menu/menu_search.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_avatar_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_avatar_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_down.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/ic_down.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_profile.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_profile.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_activity_crash_log.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/activity_crash_log.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_admin_wallpaper.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_admin_wallpaper.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_dashboard.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_dashboard.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_home_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xhdpi/ic_home_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_gradient_top.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/gradient_top.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_email.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xhdpi/ic_email.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_reels_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_reels_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_active_indicator.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/active_indicator.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_fragment_reel.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/fragment_reel.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_dashboard.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_dashboard.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_face_grin.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_face_grin.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_rounded_blur_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/rounded_blur_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_reels_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_reels_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_favorite.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_favorite.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_avatar_background_small.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/avatar_background_small.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-mdpi_ic_launcher_monochrome.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-mdpi/ic_launcher_monochrome.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_reel_quality.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_reel_quality.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_play_regular.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_play_regular.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_premium_outline.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_premium_outline.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_facebook.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_facebook.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_premium.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_premium.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_share.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_share.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_play_solid.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_play_solid.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_icon_download_round.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/icon_download_round.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-hdpi_ic_launcher_foreground.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-hdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_activity_see_all.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/activity_see_all.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_settings.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_settings.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_rounded_hint_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/rounded_hint_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_notification.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_notification.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_tab_pill_indicator.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/tab_pill_indicator.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_google.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_google.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_reel_play.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_reel_play.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ios_slide_thumb.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ios_slide_thumb.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_public.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_public.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_premium.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_premium.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_language.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_language.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_action_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_action_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_reel_like_outline.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_reel_like_outline.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_premium.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_premium.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_profile.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_profile.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_dashboard.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_dashboard.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_pill_rounded.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/pill_rounded.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-xxhdpi_ic_launcher_foreground.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-xxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_filter.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_filter.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_notification.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_notification.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_profile.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_profile.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_home_outline.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_home_outline.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/menu_bottom_nav_menu.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/menu/bottom_nav_menu.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_sheet_handle.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_sheet_handle.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_google.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xhdpi/ic_google.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_profile.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_profile.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_crown.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_crown.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-hdpi_ic_launcher_background.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-hdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_favorite_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_favorite_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_shimmer_home.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/shimmer_home.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_notification.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_notification.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_email.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_email.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_favorite_outline.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_favorite_outline.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-mdpi_ic_launcher_background.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-mdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_description.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_description.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_reel_share.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_reel_share.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_upload_button_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/upload_button_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_info_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_info_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_no_wifi.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_no_wifi.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_star.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_star.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_reels_outline.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_reels_outline.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_home_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_home_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-xxhdpi_ic_launcher_background.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-xxhdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_forget.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/forget.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_trending.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_trending.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_crown_filled.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_crown_filled.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_default_image.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/default_image.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_shuffle.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_shuffle.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-mdpi_ic_launcher.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-mdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_settings_item_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/settings_item_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_favorite_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_favorite_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_search.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/ic_search.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_toolbar_shadow.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/toolbar_shadow.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_notification.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_notification.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_reels_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_reels_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_reel.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_reel.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-hdpi_logo.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-hdpi/logo.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_favorite.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/favorite.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_reel_comment.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_reel_comment.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_time.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_time.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_info_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xhdpi/ic_info_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_popular_tab.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/popular_tab.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_premium.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_premium.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_download_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_download_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_email.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_email.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_home_sections.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/home_sections.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/color_text_input_stroke.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/color/text_input_stroke.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_premium.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/premium.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/color_nav_item_colors.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/color/nav_item_colors.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_info.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_info.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_google.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_google.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_filter.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_filter.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_search.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/search.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_activity_no_internet.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/activity_no_internet.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_button_black_rounded.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/button_black_rounded.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_favorite_selector.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_favorite_selector.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_category.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_category.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_home.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/home.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_bg_dialog_rounded.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/bg_dialog_rounded.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_premium_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_premium_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_premium_badge.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_premium_badge.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/anim_slide_out_bottom.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/anim/slide_out_bottom.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_sheet_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_sheet_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_error_outline.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_error_outline.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_reels.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_reels.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_dialog_update.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/dialog_update.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_download_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_download_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_downloads.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/downloads.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_email.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_email.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_icon_wallpaper_round.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/icon_wallpaper_round.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_circle_button_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/circle_button_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_exit_app.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_exit_app.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_premium_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_premium_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_profile.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_profile.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_dialog_wallpaper_selection.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/dialog_wallpaper_selection.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_lock.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_lock.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_fragment_category.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/fragment_category.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_best_month.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_best_month.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_category_header.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_category_header.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_icon_arrow_back_round.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/icon_arrow_back_round.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-xhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_menu.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_menu.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_icon_privacy_tip_round.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/icon_privacy_tip_round.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_launcher_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_dialog_edit_wallpaper.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/dialog_edit_wallpaper.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_favorite_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_favorite_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_bottom_sheet.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/bottom_sheet.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_circle_accent.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_circle_accent.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_info_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_info_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/anim_slide_out_left.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/anim/slide_out_left.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_reel_delete.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_reel_delete.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_close_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_close_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_circle_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/circle_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_reels_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xhdpi/ic_reels_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_gradient_overlay_bottom.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/gradient_overlay_bottom.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_main.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/main.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_google.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_google.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_premium_cta_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/premium_cta_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/xml_data_extraction_rules.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_premium_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_premium_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_notification.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_notification.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_email.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_email.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_info_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_info_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_coin.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_coin.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_lock.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xhdpi/ic_lock.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_comment.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_comment.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_reels_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_reels_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_activity_welcome.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/activity_welcome.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_check_circle.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_check_circle.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_notification_outline.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_notification_outline.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_profile.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/ic_profile.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_dialog_comments.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/dialog_comments.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_dark.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_dark.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-xhdpi_ic_launcher_background.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-xhdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_gradient_overlay_dark.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/gradient_overlay_dark.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_dashboard.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_dashboard.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_button_cancel.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/button_cancel.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_notification_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_notification_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_lock.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_lock.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_add_photo.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_add_photo.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_home_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_home_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_dashboard.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_dashboard.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_reel_close.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_reel_close.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_icon_favorite_round.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/icon_favorite_round.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_download_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xhdpi/ic_download_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_button_google_gradient.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/button_google_gradient.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_dialog_exit.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/dialog_exit.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_controls_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/controls_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_custom_tab_item.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/custom_tab_item.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-xhdpi_ic_launcher_foreground.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-xhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_rounded_top.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/rounded_top.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_notification_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_notification_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_badge_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/badge_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_delete.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_delete.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_bg_changelog.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/bg_changelog.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_category.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/category.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_upload_wallpaper.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/upload_wallpaper.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_notification_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_notification_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_recent.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_recent.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_wallpaper_19.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/wallpaper_19.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_favorite_selector_bottom.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_favorite_selector_bottom.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/anim_slide_in_left.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/anim/slide_in_left.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_black_transparent_circle.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/black_transparent_circle.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_upload.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_upload.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_reel_pause.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_reel_pause.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_settings.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_settings.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_auto.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_auto.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_unity_ad.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/unity_ad.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_attach.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_attach.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_phone_frame_overlay.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/phone_frame_overlay.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_error_image.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/error_image.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ios_slide_track.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ios_slide_track.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_reels_selector.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_reels_selector.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_icon_send_round.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/icon_send_round.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_slide_bg_active.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/slide_bg_active.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_reel_empty.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_reel_empty.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_download_outline.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_download_outline.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_fav_button_icon.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/fav_button_icon.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/color_tab_icon_selector.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/color/tab_icon_selector.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_button_white_outlined.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/button_white_outlined.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_foryou.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_foryou.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_premium_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_premium_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_landscape.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_landscape.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_lock.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_lock.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_reel_thumbnail.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_reel_thumbnail.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_tab_background_selector.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/tab_background_selector.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_system.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_system.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_history.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_history.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_notification.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_notification.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_dashboard.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xhdpi/ic_dashboard.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_error_state.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/error_state.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_privacy_tip.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_privacy_tip.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_wallpaper.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_wallpaper.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_activity_reel.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/activity_reel.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_add.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_add.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_button_outline.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/button_outline.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-xxxhdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_premium_badge_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/premium_badge_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_button_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/button_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_shimmer_premium.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/shimmer_premium.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_lock.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_lock.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_favorite_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_favorite_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_home_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_home_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_arrow_forward.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_arrow_forward.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_notification_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xhdpi/ic_notification_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_select_video_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_select_video_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_notifications.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/notifications.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_phone_silver_frame.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/phone_silver_frame.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/xml_file_paths.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/xml/file_paths.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_premium_bg_gradient.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/premium_bg_gradient.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_category.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_category.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_bottom_gradient.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/bottom_gradient.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/xml_network_security_config.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/xml/network_security_config.xml"
+    },
+    {
+        "merged": "com.wall.mob.app-debug-5:/layout_fragment_reel.xml.flat",
+        "source": "com.wall.mob.app-main-7:/layout/fragment_reel.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_dot_active.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/dot_active.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_primary_button_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_primary_button_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_google.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_google.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_footer_loading.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_footer_loading.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-mdpi_ic_launcher_foreground.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-mdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_arrow_up.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_arrow_up.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_slide_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/slide_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_reels_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_reels_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_telegram.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_telegram.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_download.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_download.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/raw_placeholder.json.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/raw/placeholder.json"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_wallpaper_details.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/wallpaper_details.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_dashboard.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_dashboard.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_status_pill.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_status_pill.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_dialog_background_rounded.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/dialog_background_rounded.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_home.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/ic_home.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-hdpi_ic_launcher.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-hdpi/ic_launcher.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_back.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_back.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/anim_slide_in_right.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/anim/slide_in_right.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_home.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_home.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_settings.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_settings.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_register.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/register.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_premium_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_premium_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-xxhdpi_ic_launcher_monochrome.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-xxhdpi/ic_launcher_monochrome.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_lock.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_lock.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/color_tab_text_selector.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/color/tab_text_selector.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_notification.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/ic_notification.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_google.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_google.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_home_selector.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_home_selector.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_bottom_sheet_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/bottom_sheet_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_color_tone.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_color_tone.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_info_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_info_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_dialog_upload.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/dialog_upload.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_service.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/ic_service.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_premium_selector.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_premium_selector.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_notification_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_notification_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_info_outline.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_info_outline.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_settings.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_settings.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_info_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_info_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_slide_thumb_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/slide_thumb_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_up.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/ic_up.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_edit.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/edit.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_input_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_input_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_category_wallpaper.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_category_wallpaper.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_circle_ripple.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/circle_ripple.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_landscape.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_landscape.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_profile.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/profile.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-xhdpi_ic_launcher_monochrome.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-xhdpi/ic_launcher_monochrome.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_badge_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/badge_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_progress_dialog.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/progress_dialog.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_favorite_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xhdpi/ic_favorite_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_tab_background_unselected.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/tab_background_unselected.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_secondary_button_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_secondary_button_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_google.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_google.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_slide_arrow.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_slide_arrow.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_info_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/info_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_shimmer_placeholder_no_radius.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/shimmer_placeholder_no_radius.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_settings.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xhdpi/ic_settings.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_tab_background_selected.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/tab_background_selected.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_lock.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_lock.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_activity_settings.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/activity_settings.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_card_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/card_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_shimmer_placeholder.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/shimmer_placeholder.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_premium_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xhdpi/ic_premium_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_activity_admin.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/activity_admin.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_nav_item_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/nav_item_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_reel_send.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_reel_send.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_scrim_bottom.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/scrim_bottom.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_button_primary.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/button_primary.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_profile.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_profile.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_email.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_email.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_download_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_download_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_send_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_send_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_button_facebook_gradient.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/button_facebook_gradient.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_arrow_back.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_arrow_back.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_light.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_light.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_person.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_person.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_avatar_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/avatar_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_button_both_screens.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/button_both_screens.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-xxxhdpi_ic_launcher_foreground.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-xxxhdpi/ic_launcher_foreground.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_item_premium.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/item_premium.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_reel_comment_card_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/reel_comment_card_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_bg_section_rounded.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/bg_section_rounded.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-ldpi_ic_premium.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-ldpi/ic_premium.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_slide_track_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/slide_track_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_gradient_overlay.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/gradient_overlay.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_update.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_update.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_dialog_logout.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/dialog_logout.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/anim_slide_out_right.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/anim/slide_out_right.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_home_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_home_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_next.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/ic_next.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_dialog_earn_coins.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/dialog_earn_coins.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_ic_color_lens.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/ic_color_lens.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_icon_swipe_up.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/icon_swipe_up.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_circle_shape.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/circle_shape.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xhdpi_ic_premium.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable-xhdpi/ic_premium.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_quality_button_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/quality_button_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_pill_black.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/pill_black.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/mipmap-xxxhdpi_ic_launcher_background.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/mipmap-xxxhdpi/ic_launcher_background.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_scrim_top.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/scrim_top.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-anydpi-v24_ic_notification.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-anydpi-v24/ic_notification.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-hdpi_ic_notification_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-hdpi/ic_notification_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxhdpi_ic_settings.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxhdpi/ic_settings.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_slide_container_bg.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/slide_container_bg.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-mdpi_ic_favorite_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-mdpi/ic_favorite_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_bottom_nav_background.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/bottom_nav_background.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable-xxxhdpi_ic_home_outline.png.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-pngs-0:/drawable-xxxhdpi/ic_home_outline.png"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/layout_fragment_home_tab_content.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/layout/fragment_home_tab_content.xml"
+    },
+    {
+        "merged": "/root/.gradle/daemon/8.7/com.wall.mob.app-debug-5:/drawable_hero_scrim.xml.flat",
+        "source": "/root/.gradle/daemon/8.7/com.wall.mob.app-main-7:/drawable/hero_scrim.xml"
+    }
+]

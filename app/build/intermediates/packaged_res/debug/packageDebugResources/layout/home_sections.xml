@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/main_content_container">
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tab_layout"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:background="@color/background"
+        app:tabBackground="@drawable/tab_pill_indicator"
+        app:tabIndicatorHeight="0dp"
+        app:tabSelectedTextColor="@color/background"
+        app:tabTextColor="@color/tab_text_selector"
+        app:tabTextAppearance="@style/CustomTabTextAppearance"
+        app:tabMode="scrollable"
+        app:elevation="0dp"
+        app:tabInlineLabel="true"
+        app:tabIconTint="@color/tab_icon_selector"
+        app:tabRippleColor="@android:color/transparent"
+        app:paddingStart="16dp"
+        app:paddingEnd="16dp"
+        android:outlineProvider="none"
+        android:paddingTop="0dp"
+        android:paddingBottom="0dp"
+        app:textAllCaps="false" />
+
+    <View
+        android:id="@+id/tab_placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:visibility="gone" />
+
+    <com.wall.mob.WrapContentFrameLayout
+        android:id="@+id/viewpager_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/sections_viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </com.wall.mob.WrapContentFrameLayout>
+
+</LinearLayout>

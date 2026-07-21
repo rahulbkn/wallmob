@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">346741807438-rg62kjki7cr25ktvk9cp3bjdap4ie36m.apps.googleusercontent.com</string>
+    <string name="firebase_database_url" translatable="false">https://wallmob-wallpaper-default-rtdb.asia-southeast1.firebasedatabase.app</string>
+    <string name="gcm_defaultSenderId" translatable="false">346741807438</string>
+    <string name="google_api_key" translatable="false">AIzaSyCPAV0Un4ymT9Y6hmI29CmC_EmOaAJ0t_E</string>
+    <string name="google_app_id" translatable="false">1:346741807438:android:670ffb582f31c3b593e61f</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCPAV0Un4ymT9Y6hmI29CmC_EmOaAJ0t_E</string>
+    <string name="google_storage_bucket" translatable="false">wallmob-wallpaper.firebasestorage.app</string>
+    <string name="project_id" translatable="false">wallmob-wallpaper</string>
+</resources>

@@ -62,6 +62,7 @@ class ReelFragment : Fragment() {
         recyclerView = view.findViewById(R.id.reelsRecyclerView)
         statusText = view.findViewById(R.id.statusText)
         emptyStateContainer = view.findViewById(R.id.emptyStateContainer)
+        view.findViewById<View>(R.id.refreshButton).setOnClickListener { loadFeed() }
         loadingSpinner = view.findViewById(R.id.loadingSpinner)
         loadingMoreProgress = view.findViewById(R.id.loadingMoreProgress)
         toolbar = view.findViewById(R.id.toolbar)

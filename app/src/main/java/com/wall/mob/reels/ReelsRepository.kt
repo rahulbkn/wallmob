@@ -175,11 +175,11 @@ class ReelsRepository(context: Context) {
         uploader: String,
         description: String? = null,
         hashtagsCsv: String? = null,
-        onProgress: (percentage: Int, speedMBs: Double) -> Unit
+        onProgress: (percentage: Int, speedMBs: Double, etaSeconds: Int) -> Unit
     ): Result<UploadVideoResult> = runCatching {
         val userId = requireLoggedUserId()
         val totalSize = file.length()
-        val chunkSize = 24 * 1024 * 1024L // 24 MB
+        val chunkSize = 16 * 1024 * 1024L // 16 MB for better throughput
         val totalChunks = if (totalSize == 0L) 1 else Math.ceil(totalSize.toDouble() / chunkSize).toInt()
 
         // 1. Init upload
@@ -202,19 +202,80 @@ class ReelsRepository(context: Context) {
         }
         val uploadId = initResp.body()?.uploadId ?: error("UploadId not returned")
 
-        // 2. Upload chunks in parallel with progress tracking
+        // 2. Upload chunks in parallel with progress tracking and retry logic
         val bytesSentMap = java.util.concurrent.ConcurrentHashMap<Int, Long>()
         val startTime = System.currentTimeMillis()
 
-        // Use a Semaphore to control concurrency of uploads (e.g., 4 concurrent chunk uploads max)
-        val semaphore = Semaphore(4)
+        // Use a Semaphore to control concurrency of uploads (increased to 6 for better throughput)
+        val semaphore = Semaphore(6)
 
         fun updateProgress() {
             val totalSent = bytesSentMap.values.sum()
             val percentage = ((totalSent.toDouble() / totalSize) * 100).toInt().coerceIn(0, 100)
             val timeElapsedSec = (System.currentTimeMillis() - startTime) / 1000.0
             val speedMBs = if (timeElapsedSec > 0) (totalSent / 1024.0 / 1024.0) / timeElapsedSec else 0.0
-            onProgress(percentage, speedMBs)
+            
+            // Calculate ETA
+            val remainingBytes = totalSize - totalSent
+            val etaSeconds = if (speedMBs > 0) {
+                ((remainingBytes / 1024.0 / 1024.0) / speedMBs).toInt()
+            } else {
+                0
+            }
+            
+            onProgress(percentage, speedMBs, etaSeconds)
+        }
+
+        // Retry logic with exponential backoff
+        suspend fun uploadChunkWithRetry(index: Int, chunkBytes: ByteArray, maxRetries: Int = 3): Boolean {
+            var attempt = 0
+            var lastError: Exception? = null
+            
+            while (attempt < maxRetries) {
+                try {
+                    val requestBody = object : okhttp3.RequestBody() {
+                        override fun contentType() = "application/octet-stream".toMediaTypeOrNull()
+                        override fun contentLength() = chunkBytes.size.toLong()
+                        override fun writeTo(sink: okio.BufferedSink) {
+                            var uploaded = 0L
+                            val bufferSize = 4096
+                            val buffer = ByteArray(bufferSize)
+                            var read: Int
+                            val ins = java.io.ByteArrayInputStream(chunkBytes)
+                            while (ins.read(buffer).also { read = it } != -1) {
+                                sink.write(buffer, 0, read)
+                                uploaded += read
+                                bytesSentMap[index] = uploaded
+                                updateProgress()
+                            }
+                        }
+                    }
+
+                    val resp = api.uploadChunk(
+                        userId = userId,
+                        uploadId = uploadId,
+                        index = index,
+                        body = requestBody
+                    )
+                    
+                    if (resp.isSuccessful) {
+                        return true
+                    } else {
+                        lastError = Exception("HTTP ${resp.code()}: ${resp.errorBody()?.string()}")
+                    }
+                } catch (e: Exception) {
+                    lastError = e
+                }
+                
+                attempt++
+                if (attempt < maxRetries) {
+                    // Exponential backoff: 1s, 2s, 4s
+                    val delayMs = (1000L * (1 shl (attempt - 1))).coerceAtMost(4000L)
+                    kotlinx.coroutines.delay(delayMs)
+                }
+            }
+            
+            throw lastError ?: Exception("Failed to upload chunk $index after $maxRetries attempts")
         }
 
         coroutineScope {
@@ -230,33 +291,7 @@ class ReelsRepository(context: Context) {
                             raf.readFully(chunkBytes)
                         }
 
-                        val requestBody = object : okhttp3.RequestBody() {
-                            override fun contentType() = "application/octet-stream".toMediaTypeOrNull()
-                            override fun contentLength() = length.toLong()
-                            override fun writeTo(sink: okio.BufferedSink) {
-                                var uploaded = 0L
-                                val bufferSize = 4096
-                                val buffer = ByteArray(bufferSize)
-                                var read: Int
-                                val ins = java.io.ByteArrayInputStream(chunkBytes)
-                                while (ins.read(buffer).also { read = it } != -1) {
-                                    sink.write(buffer, 0, read)
-                                    uploaded += read
-                                    bytesSentMap[index] = uploaded
-                                    updateProgress()
-                                }
-                            }
-                        }
-
-                        val resp = api.uploadChunk(
-                            userId = userId,
-                            uploadId = uploadId,
-                            index = index,
-                            body = requestBody
-                        )
-                        if (!resp.isSuccessful) {
-                            error("Failed to upload chunk $index: ${resp.errorBody()?.string() ?: resp.code()}")
-                        }
+                        uploadChunkWithRetry(index, chunkBytes)
                     }
                 }
             }

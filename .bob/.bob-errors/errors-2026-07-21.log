@@ -1,0 +1,36 @@
+
+================================================================================
+ERROR LOGGED: 2026-07-21T01:42:52.133Z
+User ID: wallmobofficial@gmail.com
+================================================================================
+Error Name: GatewayError
+Error Message: Failed to handle chat completion - HTTP 502: Bad Gateway - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>cloudflare</center>
+</body>
+</html>
+
+
+Stack Trace:
+GatewayError: Failed to handle chat completion - HTTP 502: Bad Gateway - <html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>cloudflare</center>
+</body>
+</html>
+
+    at t.fromResponse (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:765:8933)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async t.createChatCompletion (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:777:9313)
+    at async oit.createChatCompletionWithTokenRenewal (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2152:235)
+    at async oit.generateContentStreamInternal (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2157:52)
+    at async _3.loggingStreamWrapper (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:800:31296)
+    at async MY.processStreamResponse (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2463:81)
+    at async file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2457:22044
+    at async sG.run (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2463:3153)
+    at async Bwe.sendMessageStream (file:///usr/local/lib/node_modules/bobshell/bundle/bob.js:2796:511)
+================================================================================
+

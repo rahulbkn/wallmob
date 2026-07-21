@@ -174,6 +174,21 @@ public class HomeTabContentFragment extends Fragment {
         });
     }
 
+    public void refreshAllContent() {
+        // Refresh recent wallpapers
+        updateRecentSection();
+        
+        // Refresh reels section
+        loadReels();
+        
+        // Notify all adapters to refresh their data
+        if (bestMonthAdapter != null) bestMonthAdapter.notifyDataSetChanged();
+        if (premiumAdapter != null) premiumAdapter.notifyDataSetChanged();
+        if (landscapeAdapter != null) landscapeAdapter.notifyDataSetChanged();
+        if (nasaApodAdapter != null) nasaApodAdapter.notifyDataSetChanged();
+        if (categoryGridAdapter != null) categoryGridAdapter.notifyDataSetChanged();
+    }
+
     private void shuffleTrending() {
         if (currentPortraitList.size() > 1) {
             List<Wallpaper> shuffled = new ArrayList<>(currentPortraitList);

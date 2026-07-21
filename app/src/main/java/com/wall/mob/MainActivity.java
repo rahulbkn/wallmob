@@ -719,10 +719,23 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        // Stop reel playback when app goes to background
+        if (reelFragment instanceof ReelFragment) {
+            ((ReelFragment) reelFragment).onStop();
+        }
         try {
             LocalBroadcastManager.getInstance(this).unregisterReceiver(coinsUpdateReceiver);
         } catch (Exception e) {
             Log.e(TAG, "Error unregistering receiver", e);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Ensure reel playback stops when app is paused (going to background)
+        if (reelFragment instanceof ReelFragment) {
+            ((ReelFragment) reelFragment).onPause();
         }
     }
 
@@ -1062,12 +1075,16 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
     }
 
     private void refreshCurrentFragment() {
+        // Stop refresh immediately for fragments that handle it themselves
+        boolean stopRefreshImmediately = false;
+        
         switch (currentPosition) {
             case 0:
                 if (homeFragment instanceof HomeFragment) {
                     FragmentManager fm = getSupportFragmentManager();
                     FragmentTransaction ft = fm.beginTransaction();
                     ft.detach(homeFragment).attach(homeFragment).commit();
+                    stopRefreshImmediately = true;
                 }
                 break;
             case 1:
@@ -1078,26 +1095,39 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             case 2:
                 if (favoriteFragment instanceof FavoriteFragment) {
                     ((FavoriteFragment) favoriteFragment).refreshData();
+                    stopRefreshImmediately = true;
                 }
                 break;
             case 3:
                 if (downloadsFragment instanceof DownloadsFragment) {
                     ((DownloadsFragment) downloadsFragment).refreshData();
+                    stopRefreshImmediately = true;
                 }
                 break;
             case 4:
                 if (reelFragment instanceof ReelFragment) {
                     ((ReelFragment) reelFragment).loadFeed();
+                    stopRefreshImmediately = true;
                 }
                 break;
         }
 
         if (swipeRefresh != null) {
-            swipeRefresh.postDelayed(() -> {
-                if (swipeRefresh != null && swipeRefresh.isRefreshing()) {
-                    swipeRefresh.setRefreshing(false);
-                }
-            }, 1200);
+            if (stopRefreshImmediately) {
+                // Stop immediately for fragments that reload synchronously
+                swipeRefresh.postDelayed(() -> {
+                    if (swipeRefresh != null && swipeRefresh.isRefreshing()) {
+                        swipeRefresh.setRefreshing(false);
+                    }
+                }, 500);
+            } else {
+                // Keep longer delay for async operations
+                swipeRefresh.postDelayed(() -> {
+                    if (swipeRefresh != null && swipeRefresh.isRefreshing()) {
+                        swipeRefresh.setRefreshing(false);
+                    }
+                }, 1500);
+            }
         }
     }
 
