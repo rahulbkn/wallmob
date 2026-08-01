@@ -293,7 +293,7 @@
                 android:id="@+id/uploadProgressText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0%"
+                android:text="@string/percent_zero"
                 android:textColor="@color/onSurface"
                 android:textSize="22sp"
                 android:textStyle="bold"

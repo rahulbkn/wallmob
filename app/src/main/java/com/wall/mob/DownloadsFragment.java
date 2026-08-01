@@ -1,8 +1,14 @@
 package com.wall.mob;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Build;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -171,21 +177,63 @@ public class DownloadsFragment extends Fragment implements WallpaperAdapter.OnWa
         }
 
         List<Integer> toRemove = new ArrayList<>(selectedPositions);
+        int deletedCount = 0;
         for (int i = toRemove.size() - 1; i >= 0; i--) {
             int pos = toRemove.get(i);
             if (pos >= 0 && pos < downloadedWallpapers.size()) {
                 Wallpaper wp = downloadedWallpapers.get(pos);
-                try {
-                    Uri fileUri = Uri.parse(wp.getImageUrl());
-                    File fileToDelete = new File(fileUri.getPath());
-                    if (fileToDelete.exists()) fileToDelete.delete();
-                } catch (Exception ignored) {}
+                if (deleteDownloadedFile(wp.getImageUrl())) {
+                    deletedCount++;
+                }
             }
         }
 
         loadDownloadedFiles();
         exitSelectionMode();
-        Toast.makeText(requireContext(), "Deleted " + toRemove.size() + " wallpapers", Toast.LENGTH_SHORT).show();
+        Toast.makeText(requireContext(), "Deleted " + deletedCount + " wallpapers", Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean deleteDownloadedFile(String imageUrl) {
+        try {
+            Uri fileUri = Uri.parse(imageUrl);
+            File fileToDelete = new File(fileUri.getPath());
+            String filePath = fileToDelete.getAbsolutePath();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                if (deleteViaMediaStore(filePath)) {
+                    return true;
+                }
+            }
+
+            if (fileToDelete.exists()) {
+                return fileToDelete.delete();
+            }
+            return false;
+        } catch (Exception e) {
+            Log.e("DownloadsFragment", "Failed to delete wallpaper: " + imageUrl, e);
+            return false;
+        }
+    }
+
+    private boolean deleteViaMediaStore(String filePath) {
+        try {
+            ContentResolver resolver = requireContext().getContentResolver();
+            Uri collection = MediaStore.Images.Media.getContentUri(MediaStore.VOLUME_EXTERNAL_PRIMARY);
+            String[] projection = { MediaStore.Images.Media._ID };
+            String selection = MediaStore.Images.Media.DATA + "=?";
+            String[] selectionArgs = { filePath };
+
+            try (Cursor cursor = resolver.query(collection, projection, selection, selectionArgs, null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    long id = cursor.getLong(cursor.getColumnIndexOrThrow(MediaStore.Images.Media._ID));
+                    Uri contentUri = ContentUris.withAppendedId(collection, id);
+                    return resolver.delete(contentUri, null, null) > 0;
+                }
+            }
+        } catch (Exception e) {
+            Log.e("DownloadsFragment", "MediaStore delete failed for: " + filePath, e);
+        }
+        return false;
     }
 
     @Override

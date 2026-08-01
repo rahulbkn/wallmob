@@ -62,6 +62,7 @@ public class MainActivity extends BaseActivity {
     // Material Bottom Navigation
     private BottomNavigationView bottomNavigationView;
     private View bottomNavigationContainer;
+    private View bottomNavigationSurface;
     private com.google.android.material.floatingactionbutton.FloatingActionButton fabUpload;
     
     private int currentPosition = -1;
@@ -447,6 +448,7 @@ public class MainActivity extends BaseActivity {
         }
 
         bottomNavigationContainer = findViewById(R.id.bottomNavigationContainer);
+        bottomNavigationSurface = findViewById(R.id.bottomNavigationSurface);
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         fabUpload = findViewById(R.id.fab_upload);
         notificationButton = findViewById(R.id.imageview3);
@@ -526,7 +528,7 @@ public class MainActivity extends BaseActivity {
 
         fabUpload.setOnClickListener(v -> {
             if (currentPosition == 4) {
-                UploadBottomSheet.show(getSupportFragmentManager(), new kotlin.jvm.functions.Function0<kotlin.Unit>() {
+                UploadBottomSheet.Companion.show(getSupportFragmentManager(), new kotlin.jvm.functions.Function0<kotlin.Unit>() {
                     @Override
                     public kotlin.Unit invoke() {
                         if (reelFragment instanceof ReelFragment) {
@@ -901,7 +903,7 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
     }  
 
     if (bottomNavigationView != null) {  
-        bottomNavigationView.setBackgroundColor(darkColor);  
+        applyBottomNavigationBackground(darkColor);  
         int[][] states = new int[][] {  
             new int[] { android.R.attr.state_checked },  
             new int[] { -android.R.attr.state_checked }  
@@ -977,7 +979,7 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         }
 
         if (bottomNavigationView != null) {
-            bottomNavigationView.setBackgroundColor(surfaceColor);
+            applyBottomNavigationBackground(surfaceColor);
             int[][] states = new int[][] {
                 new int[] { android.R.attr.state_checked },
                 new int[] { -android.R.attr.state_checked }
@@ -1013,7 +1015,7 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         }
 
         if (bottomNavigationView != null) {
-            bottomNavigationView.setBackgroundColor(blackColor);
+            applyBottomNavigationBackground(blackColor);
             int[][] states = new int[][] {
                 new int[] { android.R.attr.state_checked },
                 new int[] { -android.R.attr.state_checked }
@@ -1025,6 +1027,37 @@ if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         }
 
 
+    }
+
+    private void applyBottomNavigationBackground(int backgroundColor) {
+        float density = getResources().getDisplayMetrics().density;
+
+        if (bottomNavigationSurface != null) {
+            bottomNavigationSurface.setBackgroundColor(backgroundColor);
+        }
+        if (bottomNavigationView != null) {
+            bottomNavigationView.setBackgroundColor(Color.TRANSPARENT);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            float navElevation = 0f;
+            if (bottomNavigationContainer != null) {
+                bottomNavigationContainer.setElevation(navElevation);
+                bottomNavigationContainer.setTranslationZ(navElevation);
+            }
+            if (bottomNavigationSurface != null) {
+                bottomNavigationSurface.setElevation(0f);
+                bottomNavigationSurface.setTranslationZ(0f);
+            }
+            if (bottomNavigationView != null) {
+                bottomNavigationView.setElevation(0f);
+                bottomNavigationView.setTranslationZ(0f);
+            }
+            if (fabUpload != null) {
+                float fabElevation = 6f * density;
+                fabUpload.setElevation(fabElevation);
+                fabUpload.setTranslationZ(fabElevation);
+            }
+        }
     }
 
     private void updateNavigationSelection(int position) {

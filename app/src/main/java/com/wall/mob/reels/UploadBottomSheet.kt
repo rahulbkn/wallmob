@@ -3,6 +3,7 @@ package com.wall.mob.reels
 import android.content.Context
 import android.net.Uri
 import com.wall.mob.R
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,6 +11,8 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
 import java.io.File
@@ -25,9 +28,8 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
     private lateinit var categorySpinner: Spinner
     private lateinit var hashtagsInput: EditText
     private lateinit var progressContainer: LinearLayout
-    private lateinit var progressBar: ProgressBar
-    private lateinit var progressText: TextView
-    private lateinit var submitButton: Button
+    private lateinit var submitButton: View
+    private lateinit var selectVideoButton: View
 
     private var selectedFile: File? = null
 
@@ -38,11 +40,36 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
             try {
                 val file = uriToFile(requireContext(), it)
                 selectedFile = file
-                selectedVideoPath.text = "Selected: ${file.name} (${file.length() / 1024 / 1024} MB)"
+                val sizeMb = file.length() / 1024.0 / 1024.0
+                selectedVideoPath.text = "${file.name} · ${"%.1f".format(sizeMb)} MB"
             } catch (e: Exception) {
-                Toast.makeText(context, "Failed to load video file: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    "Failed to load video file: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
+    }
+
+    override fun getTheme(): Int = R.style.ReelBottomSheetDialog
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+        dialog.setOnShowListener {
+            val sheet = dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            sheet?.setBackgroundResource(android.R.color.transparent)
+            sheet?.let { bottomSheet ->
+                val behavior = BottomSheetBehavior.from(bottomSheet)
+                val height = (resources.displayMetrics.heightPixels * 0.92f).toInt()
+                bottomSheet.layoutParams?.height = height
+                bottomSheet.requestLayout()
+                behavior.peekHeight = height
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.skipCollapsed = true
+            }
+        }
+        return dialog
     }
 
     override fun onCreateView(
@@ -63,21 +90,21 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
         categorySpinner = view.findViewById(R.id.uploadCategorySpinner)
         hashtagsInput = view.findViewById(R.id.uploadHashtagsInput)
         progressContainer = view.findViewById(R.id.uploadProgressContainer)
-        progressBar = view.findViewById(R.id.uploadProgressBar)
-        progressText = view.findViewById(R.id.uploadProgressText)
         submitButton = view.findViewById(R.id.submitUploadButton)
+        selectVideoButton = view.findViewById(R.id.selectVideoButton)
 
         view.findViewById<ImageButton>(R.id.closeUploadButton).setOnClickListener {
             dismiss()
         }
 
-        view.findViewById<Button>(R.id.selectVideoButton).setOnClickListener {
+        selectVideoButton.setOnClickListener {
             pickVideoLauncher.launch("video/*")
         }
 
-        val categories = arrayOf("entertainment", "music", "sports", "education", "gaming", "news", "other")
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, categories)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        val categories = arrayOf(
+            "entertainment", "music", "sports", "education", "gaming", "news", "other"
+        )
+        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, categories)
         categorySpinner.adapter = adapter
 
         repo()?.loggedUserId()?.let { userId ->
@@ -106,7 +133,7 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
 
         val title = titleInput.text.toString().trim()
         val uploader = uploaderInput.text.toString().trim()
-        val category = categorySpinner.selectedItem.toString()
+        val category = categorySpinner.selectedItem?.toString().orEmpty()
         val desc = descInput.text.toString().trim().takeIf { it.isNotEmpty() }
         val hashtags = hashtagsInput.text.toString().trim().takeIf { it.isNotEmpty() }
 
@@ -123,52 +150,35 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
 
         progressContainer.visibility = View.VISIBLE
         submitButton.isEnabled = false
+        submitButton.alpha = 0.6f
 
         lifecycleScope.launch {
-            repo.uploadVideoChunked(
+            repo.uploadVideo(
                 file = file,
                 title = title,
                 category = category,
                 uploader = uploader,
                 description = desc,
-                hashtagsCsv = hashtags,
-                onProgress = { percentage, speedMBs, etaSeconds ->
-                    // Update UI on main thread to avoid CalledFromWrongThreadException
-                    activity?.runOnUiThread {
-                        progressBar.progress = percentage
-                        val etaText = if (etaSeconds > 0) {
-                            val minutes = etaSeconds / 60
-                            val seconds = etaSeconds % 60
-                            when {
-                                minutes > 0 -> " • ETA: ${minutes}m ${seconds}s"
-                                else -> " • ETA: ${seconds}s"
-                            }
-                        } else ""
-                        progressText.text = "Uploading: $percentage% (${"%.2f".format(speedMBs)} MB/s)$etaText"
-                    }
-                }
+                hashtagsCsv = hashtags
             ).onSuccess {
-                // Ensure all UI updates happen on main thread
-                activity?.runOnUiThread {
-                    progressContainer.visibility = View.GONE
-                    submitButton.isEnabled = true
-                    Toast.makeText(context, "Upload complete!", Toast.LENGTH_SHORT).show()
-                    onUploadSuccess?.invoke()
-                    dismissAllowingStateLoss()
-                }
+                progressContainer.visibility = View.GONE
+                submitButton.isEnabled = true
+                submitButton.alpha = 1f
+                Toast.makeText(context, "Upload complete!", Toast.LENGTH_SHORT).show()
+                onUploadSuccess?.invoke()
+                dismiss()
             }.onFailure { err ->
-                // Ensure all UI updates happen on main thread
-                activity?.runOnUiThread {
-                    progressContainer.visibility = View.GONE
-                    submitButton.isEnabled = true
-                    Toast.makeText(context, "Upload failed: ${err.message}", Toast.LENGTH_LONG).show()
-                }
+                progressContainer.visibility = View.GONE
+                submitButton.isEnabled = true
+                submitButton.alpha = 1f
+                Toast.makeText(context, "Upload failed: ${err.message}", Toast.LENGTH_LONG).show()
             }
         }
     }
 
     private fun uriToFile(context: Context, uri: Uri): File {
-        val inputStream = context.contentResolver.openInputStream(uri) ?: error("Failed to open input stream")
+        val inputStream = context.contentResolver.openInputStream(uri)
+            ?: error("Failed to open input stream")
         val tempFile = File.createTempFile("upload_", ".mp4", context.cacheDir)
         tempFile.deleteOnExit()
         tempFile.outputStream().use { output ->
@@ -180,7 +190,6 @@ class UploadBottomSheet : BottomSheetDialogFragment() {
     }
 
     companion object {
-        @JvmStatic
         fun show(fm: androidx.fragment.app.FragmentManager, onSuccess: () -> Unit) {
             val fragment = UploadBottomSheet()
             fragment.onUploadSuccess = onSuccess

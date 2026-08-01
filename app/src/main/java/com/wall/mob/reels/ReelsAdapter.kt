@@ -5,6 +5,8 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.wall.mob.R
 import com.google.android.exoplayer2.ExoPlayer
@@ -38,15 +40,54 @@ class ReelsAdapter(
         val reelDescription: android.widget.TextView = view.findViewById(R.id.reelDescription)
         val deleteButton: android.widget.ImageButton = view.findViewById(R.id.deleteButton)
         val deleteText: android.widget.TextView = view.findViewById(R.id.deleteText)
+        val progressBar: android.widget.ProgressBar = view.findViewById(R.id.reelProgressBar)
         var player: ExoPlayer? = null
         /** User manually paused this item (tap). Cleared when leaving the item. */
         var userPaused: Boolean = false
         var boundVideoId: String? = null
         var currentVideoUrl: String? = null
+        var progressRunnable: Runnable? = null
     }
 
     private val mainHandler = Handler(Looper.getMainLooper())
     private var recyclerView: RecyclerView? = null
+
+    private companion object {
+        const val PROGRESS_MAX = 10_000
+        const val PROGRESS_UPDATE_MS = 16L
+    }
+
+    private fun updateProgress(holder: ReelViewHolder) {
+        val player = holder.player ?: return
+        val duration = player.duration
+        if (duration > 0) {
+            val position = player.currentPosition.coerceIn(0, duration)
+            holder.progressBar.progress = ((position * PROGRESS_MAX) / duration).toInt()
+        } else {
+            holder.progressBar.progress = 0
+        }
+
+        val shouldContinue =
+            holder.bindingAdapterPosition == activePosition &&
+                playbackAllowed &&
+                !isScrolling &&
+                !holder.userPaused &&
+                holder.itemView.isAttachedToWindow
+        if (shouldContinue) {
+            holder.progressRunnable?.let { mainHandler.postDelayed(it, PROGRESS_UPDATE_MS) }
+        }
+    }
+
+    private fun startProgressUpdates(holder: ReelViewHolder) {
+        holder.progressRunnable?.let { runnable ->
+            mainHandler.removeCallbacks(runnable)
+            mainHandler.post(runnable)
+        }
+    }
+
+    private fun stopProgressUpdates(holder: ReelViewHolder) {
+        holder.progressRunnable?.let { mainHandler.removeCallbacks(it) }
+    }
 
     /** Index of the snap-centered reel that is allowed to play. */
     private var activePosition: Int = RecyclerView.NO_POSITION
@@ -63,6 +104,7 @@ class ReelsAdapter(
     /** Preloaded players for next videos to enable instant playback */
     private val preloadedPlayers = mutableMapOf<String, ExoPlayer>()
     private val PRELOAD_COUNT = 2 // Preload next 2 videos
+    private val playerPool = ExoPlayerPool(maxSize = 4)
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         super.onAttachedToRecyclerView(recyclerView)
@@ -76,7 +118,18 @@ class ReelsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReelViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_reel, parent, false)
-        return ReelViewHolder(view)
+        val holder = ReelViewHolder(view)
+        
+        val baseProgressBottomMargin =
+            (holder.progressBar.layoutParams as ViewGroup.MarginLayoutParams).bottomMargin
+        ViewCompat.setOnApplyWindowInsetsListener(holder.progressBar) { v, insets ->
+            val bars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val params = v.layoutParams as ViewGroup.MarginLayoutParams
+            params.bottomMargin = baseProgressBottomMargin + bars.bottom
+            v.layoutParams = params
+            insets
+        }
+        return holder
     }
 
     override fun getItemCount() = items.size
@@ -124,10 +177,14 @@ class ReelsAdapter(
         val videoUrl = getVideoUrlForQuality(reel, selectedQuality)
         holder.currentVideoUrl = videoUrl
 
-        // Use preloaded player if available, otherwise create new one
+        holder.progressBar.max = PROGRESS_MAX
+        holder.progressBar.progress = 0
+        holder.progressRunnable = Runnable { updateProgress(holder) }
+
+        // Use preloaded player if available, otherwise acquire from pool
         val player = preloadedPlayers.remove(reel.id)?.apply {
             volume = 1f // Restore volume (was muted during preload)
-        } ?: ExoPlayerFactory.create(holder.itemView.context).also {
+        } ?: playerPool.acquire(holder.itemView.context).also {
             it.setMediaItem(MediaItem.fromUri(videoUrl))
             it.repeatMode = Player.REPEAT_MODE_ONE
             it.volume = 1f
@@ -358,6 +415,7 @@ class ReelsAdapter(
             holder.userPaused = true
             player.playWhenReady = false
             player.pause()
+            stopProgressUpdates(holder)
             flashIcon(holder, R.drawable.ic_reel_play)
         } else {
             holder.userPaused = false
@@ -367,6 +425,7 @@ class ReelsAdapter(
             pauseAllExcept(pos)
             player.playWhenReady = true
             player.play()
+            startProgressUpdates(holder)
             flashIcon(holder, R.drawable.ic_reel_pause)
         }
     }
@@ -385,12 +444,13 @@ class ReelsAdapter(
         holder.player?.let { player ->
             player.playWhenReady = false
             player.stop()
-            player.release()
+            playerPool.recycle(player)
         }
         holder.player = null
         holder.currentVideoUrl = null
         holder.boundVideoId = null
         holder.userPaused = false
+        stopProgressUpdates(holder)
     }
 
     override fun onViewRecycled(holder: ReelViewHolder) {
@@ -410,6 +470,7 @@ class ReelsAdapter(
             player.pause()
             player.volume = 0f // Mute to prevent any audio leakage
         }
+        stopProgressUpdates(holder)
         super.onViewDetachedFromWindow(holder)
     }
 
@@ -441,22 +502,22 @@ class ReelsAdapter(
             idx < 0 || idx < currentPosition - 1 || idx > currentPosition + PRELOAD_COUNT + 1
         }
         toRemove.forEach { videoId ->
-            preloadedPlayers.remove(videoId)?.release()
+            preloadedPlayers.remove(videoId)?.let { playerPool.recycle(it) }
         }
 
         // Preload next videos
         for (i in 1..PRELOAD_COUNT) {
             val nextPos = currentPosition + i
             if (nextPos >= items.size) break
-            
+
             val nextReel = items[nextPos]
             if (preloadedPlayers.containsKey(nextReel.id)) continue
 
             val quality = qualityByVideoId[nextReel.id] ?: "Auto"
             val videoUrl = getVideoUrlForQuality(nextReel, quality)
-            
+
             try {
-                val player = ExoPlayerFactory.create(recyclerView?.context ?: return).apply {
+                val player = playerPool.acquire(recyclerView?.context ?: return).apply {
                     setMediaItem(MediaItem.fromUri(videoUrl))
                     repeatMode = Player.REPEAT_MODE_ONE
                     volume = 0f // Muted during preload
@@ -510,6 +571,7 @@ class ReelsAdapter(
             val player = holder.player ?: continue
             val pos = holder.bindingAdapterPosition
             if (pos == RecyclerView.NO_POSITION) {
+                stopProgressUpdates(holder)
                 player.playWhenReady = false
                 player.pause()
                 continue
@@ -528,7 +590,9 @@ class ReelsAdapter(
                     player.playWhenReady = true
                     player.play()
                 }
+                startProgressUpdates(holder)
             } else {
+                stopProgressUpdates(holder)
                 if (player.playWhenReady || player.isPlaying) {
                     player.playWhenReady = false
                     player.pause()
@@ -543,6 +607,7 @@ class ReelsAdapter(
             for (i in 0 until rv.childCount) {
                 val child = rv.getChildAt(i) ?: continue
                 val holder = rv.getChildViewHolder(child) as? ReelViewHolder ?: continue
+                stopProgressUpdates(holder)
                 holder.player?.let { player ->
                     player.playWhenReady = false
                     player.pause()
@@ -558,6 +623,7 @@ class ReelsAdapter(
             val holder = rv.getChildViewHolder(child) as? ReelViewHolder ?: continue
             val pos = holder.bindingAdapterPosition
             if (pos != exceptPosition) {
+                stopProgressUpdates(holder)
                 holder.player?.let { player ->
                     player.playWhenReady = false
                     player.pause()
@@ -590,9 +656,10 @@ class ReelsAdapter(
                 releasePlayer(holder)
             }
         }
-        // Release all preloaded players
-        preloadedPlayers.values.forEach { it.release() }
+        // Recycle all preloaded players back to the pool
+        preloadedPlayers.values.forEach { playerPool.recycle(it) }
         preloadedPlayers.clear()
+        playerPool.releaseAll()
         activePosition = RecyclerView.NO_POSITION
     }
 

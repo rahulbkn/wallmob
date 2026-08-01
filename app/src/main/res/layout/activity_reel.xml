@@ -125,7 +125,7 @@
             app:cornerRadius="24dp"
             app:icon="@drawable/ic_add"
             app:iconGravity="textStart"
-            app:backgroundTint="#FF005C" />
+            app:backgroundTint="@color/colorAccent" />
 
     </LinearLayout>
 
@@ -133,7 +133,7 @@
         android:id="@+id/loadingSpinner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:indeterminateTint="#FF005C"
+        android:indeterminateTint="@color/colorAccent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -147,7 +147,7 @@
         android:layout_margin="20dp"
         android:contentDescription="@string/upload"
         android:src="@drawable/ic_add"
-        app:backgroundTint="#FF005C"
+        app:backgroundTint="@color/colorAccent"
         app:tint="#FFFFFF"
         app:fabSize="normal"
         app:elevation="8dp"

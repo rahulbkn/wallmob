@@ -1,6 +1,7 @@
 package com.wall.mob.reels
 
 import com.wall.mob.R
+import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,11 +10,11 @@ import android.widget.*
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 class CommentsBottomSheet : BottomSheetDialogFragment() {
 
@@ -22,14 +23,36 @@ class CommentsBottomSheet : BottomSheetDialogFragment() {
     private var commentsRecyclerView: RecyclerView? = null
     private var adapter: CommentsAdapter? = null
     private var progressBar: ProgressBar? = null
+    private var noCommentsContainer: View? = null
     private var noCommentsText: TextView? = null
+    private var commentsSubtitle: TextView? = null
     private var authorInput: EditText? = null
     private var textInput: EditText? = null
     private var submitButton: ImageButton? = null
 
+    override fun getTheme(): Int = R.style.ReelBottomSheetDialog
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        videoId = arguments?.getString("videoId")
+        videoId = arguments?.getString(ARG_VIDEO_ID)
+    }
+
+    override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val dialog = super.onCreateDialog(savedInstanceState) as BottomSheetDialog
+        dialog.setOnShowListener {
+            val sheet = dialog.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            sheet?.setBackgroundResource(android.R.color.transparent)
+            sheet?.let { bottomSheet ->
+                val behavior = BottomSheetBehavior.from(bottomSheet)
+                val height = (resources.displayMetrics.heightPixels * 0.78f).toInt()
+                bottomSheet.layoutParams?.height = height
+                bottomSheet.requestLayout()
+                behavior.peekHeight = height
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                behavior.skipCollapsed = true
+            }
+        }
+        return dialog
     }
 
     override fun onCreateView(
@@ -45,14 +68,17 @@ class CommentsBottomSheet : BottomSheetDialogFragment() {
 
         commentsRecyclerView = view.findViewById(R.id.commentsRecyclerView)
         progressBar = view.findViewById(R.id.commentsProgressBar)
+        noCommentsContainer = view.findViewById(R.id.noCommentsContainer)
         noCommentsText = view.findViewById(R.id.noCommentsText)
+        commentsSubtitle = view.findViewById(R.id.commentsSubtitle)
         authorInput = view.findViewById(R.id.commentAuthorInput)
         textInput = view.findViewById(R.id.commentTextInput)
+        submitButton = view.findViewById(R.id.commentSubmitButton)
+
         repo()?.loggedUserId()?.let { userId ->
             authorInput?.setText(userId)
             authorInput?.isEnabled = false
         }
-        submitButton = view.findViewById(R.id.commentSubmitButton)
 
         view.findViewById<ImageButton>(R.id.closeCommentsButton).setOnClickListener {
             dismiss()
@@ -62,10 +88,7 @@ class CommentsBottomSheet : BottomSheetDialogFragment() {
         adapter = CommentsAdapter()
         commentsRecyclerView?.adapter = adapter
 
-        submitButton?.setOnClickListener {
-            postComment()
-        }
-
+        submitButton?.setOnClickListener { postComment() }
         loadComments()
     }
 
@@ -80,15 +103,18 @@ class CommentsBottomSheet : BottomSheetDialogFragment() {
         val id = videoId ?: return
         val repo = repo() ?: return
         progressBar?.visibility = View.VISIBLE
-        noCommentsText?.visibility = View.GONE
+        noCommentsContainer?.visibility = View.GONE
         lifecycleScope.launch {
             repo.getComments(id)
                 .onSuccess { commentsResp ->
                     progressBar?.visibility = View.GONE
                     val items = commentsResp.items
+                    updateCountLabel(items.size)
                     if (items.isEmpty()) {
-                        noCommentsText?.visibility = View.VISIBLE
+                        noCommentsContainer?.visibility = View.VISIBLE
+                        adapter?.submitList(emptyList())
                     } else {
+                        noCommentsContainer?.visibility = View.GONE
                         adapter?.submitList(items)
                     }
                 }
@@ -99,6 +125,14 @@ class CommentsBottomSheet : BottomSheetDialogFragment() {
         }
     }
 
+    private fun updateCountLabel(count: Int) {
+        commentsSubtitle?.text = when (count) {
+            0 -> "Join the conversation"
+            1 -> "1 comment"
+            else -> "$count comments"
+        }
+    }
+
     private fun postComment() {
         val id = videoId ?: return
         val repo = repo() ?: return
@@ -106,8 +140,8 @@ class CommentsBottomSheet : BottomSheetDialogFragment() {
             Toast.makeText(context, "Admin access is required to comment", Toast.LENGTH_SHORT).show()
             return
         }
-        val author = authorInput?.text?.toString()?.trim() ?: return
-        val text = textInput?.text?.toString()?.trim() ?: return
+        val author = authorInput?.text?.toString()?.trim().orEmpty()
+        val text = textInput?.text?.toString()?.trim().orEmpty()
 
         if (author.isEmpty() || text.isEmpty()) {
             Toast.makeText(context, "Fields cannot be empty", Toast.LENGTH_SHORT).show()
@@ -120,13 +154,18 @@ class CommentsBottomSheet : BottomSheetDialogFragment() {
                 .onSuccess { comment ->
                     submitButton?.isEnabled = true
                     textInput?.setText("")
-                    noCommentsText?.visibility = View.GONE
+                    noCommentsContainer?.visibility = View.GONE
                     adapter?.addComment(comment)
+                    updateCountLabel(adapter?.itemCount ?: 0)
                     commentsRecyclerView?.smoothScrollToPosition(0)
                 }
                 .onFailure { err ->
                     submitButton?.isEnabled = true
-                    Toast.makeText(context, "Failed to post comment: ${err.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Failed to post comment: ${err.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
         }
     }
@@ -158,7 +197,8 @@ class CommentsBottomSheet : BottomSheetDialogFragment() {
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CommentViewHolder {
-            val view = LayoutInflater.from(parent.context).inflate(R.layout.item_comment, parent, false)
+            val view = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_comment, parent, false)
             return CommentViewHolder(view)
         }
 
@@ -166,17 +206,32 @@ class CommentsBottomSheet : BottomSheetDialogFragment() {
             val comment = list[position]
             holder.author.text = comment.author
             holder.text.text = comment.text
-
-            val sdf = SimpleDateFormat("MMM dd, yyyy HH:mm", Locale.getDefault())
-            holder.time.text = sdf.format(Date(comment.createdAt))
+            holder.time.text = relativeTime(comment.createdAt)
+            val initial = comment.author.trim().firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+            holder.avatar.text = initial
         }
 
         override fun getItemCount() = list.size
+
+        private fun relativeTime(createdAt: Long): String {
+            val diff = System.currentTimeMillis() - createdAt
+            val minutes = TimeUnit.MILLISECONDS.toMinutes(diff)
+            val hours = TimeUnit.MILLISECONDS.toHours(diff)
+            val days = TimeUnit.MILLISECONDS.toDays(diff)
+            return when {
+                minutes < 1 -> "now"
+                minutes < 60 -> "${minutes}m"
+                hours < 24 -> "${hours}h"
+                days < 7 -> "${days}d"
+                else -> "${days / 7}w"
+            }
+        }
 
         inner class CommentViewHolder(v: View) : RecyclerView.ViewHolder(v) {
             val author: TextView = v.findViewById(R.id.commentAuthor)
             val time: TextView = v.findViewById(R.id.commentTime)
             val text: TextView = v.findViewById(R.id.commentText)
+            val avatar: TextView = v.findViewById(R.id.commentAvatar)
         }
     }
 }

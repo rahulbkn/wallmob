@@ -62,7 +62,7 @@ class ReelFragment : Fragment() {
         recyclerView = view.findViewById(R.id.reelsRecyclerView)
         statusText = view.findViewById(R.id.statusText)
         emptyStateContainer = view.findViewById(R.id.emptyStateContainer)
-        view.findViewById<View>(R.id.refreshButton).setOnClickListener { loadFeed() }
+        view.findViewById<View>(R.id.emptyRefreshButton).setOnClickListener { loadFeed() }
         loadingSpinner = view.findViewById(R.id.loadingSpinner)
         loadingMoreProgress = view.findViewById(R.id.loadingMoreProgress)
         toolbar = view.findViewById(R.id.toolbar)
@@ -136,6 +136,15 @@ class ReelFragment : Fragment() {
         }
     }
 
+    private fun resumePlaybackWhenReady() {
+        if (!::adapter.isInitialized || !::recyclerView.isInitialized) return
+        recyclerView.post {
+            if (!isAdded || isHidden || !isResumed) return@post
+            adapter.setPlaybackAllowed(true)
+            activateSnappedItem()
+        }
+    }
+
     private fun applyTopInsets() {
         val topBar = requireView().findViewById<View>(R.id.topBar)
         ViewCompat.setOnApplyWindowInsetsListener(topBar) { view, insets ->
@@ -156,8 +165,7 @@ class ReelFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         if (::adapter.isInitialized && !isHidden) {
-            adapter.setPlaybackAllowed(true)
-            activateSnappedItem()
+            resumePlaybackWhenReady()
         }
     }
 
@@ -168,8 +176,7 @@ class ReelFragment : Fragment() {
             // Switched away from Reels tab — no background playback
             adapter.setPlaybackAllowed(false)
         } else {
-            adapter.setPlaybackAllowed(true)
-            activateSnappedItem()
+            resumePlaybackWhenReady()
         }
     }
 
